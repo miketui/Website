@@ -1,0 +1,15 @@
+@import "../styles/aciss-tokens.css";
+@import "../styles/typography.css";
+@import "../styles/motion.css";
+@import "../styles/page-experiences.css";
+@import "../styles/gateway.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { background: var(--aciss-obsidian); color: var(--aciss-white-gold); }
+body { margin: 0; overflow-x: hidden; font-family: var(--font-body), system-ui, sans-serif; background: var(--aciss-obsidian); }
+a { color: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+::selection { background: var(--aciss-antique-gold); color: var(--aciss-obsidian); }
+input, textarea, select { font: inherit; }

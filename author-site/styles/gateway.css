@@ -1,0 +1,696 @@
+/* ============================================================
+   Curls & Contemplation — Cinematic Book Gateway (React port)
+   Ported from the verified standalone gateway. All selectors are
+   namespaced under #book-gateway / .gw-* so they cannot collide
+   with site styles. Every color derives from the locked ACISS
+   palette: Obsidian #111111 · Antique Gold #B08D57 · White Gold
+   #D8D1C5 · Deep Jade #145B4B · Soft Jade Mist #C7D9D2.
+   Motion budget: transform/opacity + one 2D canvas atmosphere.
+   ============================================================ */
+
+#book-gateway {
+  --gw-obsidian: var(--aciss-obsidian, #111111);
+  --gw-jade: var(--aciss-deep-jade, #145B4B);
+  --gw-gold: var(--aciss-antique-gold, #B08D57);
+  --gw-gold-bright: color-mix(in srgb, var(--aciss-antique-gold, #B08D57) 70%, var(--aciss-white-gold, #D8D1C5));
+  --gw-ivory: var(--aciss-white-gold, #D8D1C5);
+  --gw-muted: rgba(216, 209, 197, 0.68);
+  --gw-hairline: rgba(188, 161, 120, 0.18);
+  --gw-serif: var(--font-display, "Cormorant Garamond"), Georgia, "Times New Roman", serif;
+  --gw-sans: var(--font-body, "Inter"), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --gw-cover: url("/gateway-cover.jpg");
+  /* cursor-driven vars (lerped in JS — transform/opacity only) */
+  --gw-tilt-x: 0deg;
+  --gw-tilt-y: 0deg;
+  --gw-aura-x: 50%;
+  --gw-aura-y: 46%;
+
+  position: fixed;
+  inset: 0;
+  z-index: 9000; /* must cover the fixed site header (z-30) */
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--gw-ivory);
+  font-family: var(--gw-sans);
+  background:
+    radial-gradient(circle at var(--gw-aura-x) var(--gw-aura-y), rgba(20, 91, 75, 0.2), transparent 22rem),
+    radial-gradient(circle at 48% 72%, rgba(176, 141, 87, 0.12), transparent 18rem),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--gw-obsidian) 80%, black) 0%,
+      color-mix(in srgb, var(--gw-obsidian) 94%, var(--gw-gold)) 50%,
+      var(--gw-obsidian) 100%
+    );
+  transition: opacity 1.1s ease;
+}
+#book-gateway * { box-sizing: border-box; }
+#book-gateway button { font: inherit; }
+
+/* The whole overlay fades out to reveal the real homepage beneath. */
+#book-gateway.is-opening,
+#book-gateway.is-entered,
+#book-gateway.is-revealed { pointer-events: none; }
+#book-gateway.is-revealed { opacity: 0; }
+
+/* Visible keyboard focus survives light + grain */
+#book-gateway :focus-visible {
+  outline: 2px solid var(--gw-gold-bright);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.gw-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------
+   The loader is act one, not an apology.
+   ------------------------------------------------------------ */
+.gw-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(20, 91, 75, 0.1), transparent 24rem),
+    var(--gw-obsidian);
+  transition: opacity 0.7s ease, visibility 0.7s ease;
+}
+.gw-loader.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+.gw-loader-mark { display: grid; place-items: center; gap: 1.1rem; text-align: center; }
+.gw-loader-word {
+  font-family: var(--gw-serif);
+  font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(216, 209, 197, 0.88);
+  padding-left: 0.42em; /* optically center the tracked text */
+  animation: gwLoaderTrack 1s cubic-bezier(0.19, 1, 0.22, 1) both;
+}
+.gw-loader-word em { font-style: normal; color: var(--gw-gold-bright); }
+@keyframes gwLoaderTrack {
+  from { opacity: 0; letter-spacing: 0.8em; filter: blur(6px); }
+  to { opacity: 1; letter-spacing: 0.42em; filter: blur(0); }
+}
+.gw-loader-rule {
+  width: clamp(140px, 26vw, 260px);
+  height: 34px;
+  overflow: visible;
+}
+.gw-loader-rule line {
+  stroke: var(--gw-gold-bright);
+  stroke-width: 1;
+  stroke-dasharray: 260;
+  stroke-dashoffset: 260;
+  animation: gwRuleDraw 1.05s cubic-bezier(0.55, 0, 0.2, 1) 0.12s forwards;
+  filter: drop-shadow(0 0 6px rgba(188, 161, 120, 0.5));
+}
+@keyframes gwRuleDraw { to { stroke-dashoffset: 0; } }
+
+/* The single gated cinematic moment: a 2D canvas atmosphere. */
+.gw-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.82;
+}
+
+/* Film grain unifies the frame */
+.gw-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  opacity: 0.14;
+  mix-blend-mode: screen;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 3px 3px, 5px 5px;
+  animation: gwGrainShift 9s steps(6) infinite;
+}
+@keyframes gwGrainShift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  25% { transform: translate3d(-1.5%, 0.75%, 0); }
+  50% { transform: translate3d(1%, -1%, 0); }
+  75% { transform: translate3d(0.75%, 1.25%, 0); }
+}
+
+/* ------------------------------------------------------------
+   THE GATEWAY — every entrance animation is paused until
+   #book-gateway.is-ready (the loader's hand-off).
+   ------------------------------------------------------------ */
+.gw-gate {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  pointer-events: auto;
+  transition: background 1.2s ease;
+}
+#book-gateway.is-opening .gw-gate,
+#book-gateway.is-entered .gw-gate { pointer-events: none; }
+.gw-gate::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  z-index: -2;
+  opacity: 1;
+  background:
+    radial-gradient(circle at var(--gw-aura-x) var(--gw-aura-y), rgba(20, 91, 75, 0.22), transparent 20rem),
+    radial-gradient(circle at 50% 44%, rgba(188, 161, 120, 0.1), transparent 16rem),
+    radial-gradient(circle at 18% 14%, rgba(20, 91, 75, 0.16), transparent 28rem);
+  filter: blur(4px);
+  animation: gwAuroraBreathe 7.2s ease-in-out infinite alternate;
+  transition: opacity 1s ease, transform 1.3s ease;
+}
+.gw-gate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.08) 45%, rgba(0, 0, 0, 0.62)),
+    radial-gradient(circle at center, transparent 10%, rgba(0, 0, 0, 0.62) 78%);
+  pointer-events: none;
+  transition: opacity 1.1s ease;
+}
+@keyframes gwAuroraBreathe {
+  0% { transform: translate3d(-1.6rem, 0.8rem, 0) scale(0.96) rotate(-3deg); opacity: 0.62; }
+  100% { transform: translate3d(1.2rem, -1.1rem, 0) scale(1.08) rotate(4deg); opacity: 0.9; }
+}
+
+/* Kinetic serif: masked line-by-line reveal */
+.gw-copy {
+  position: absolute;
+  top: clamp(2rem, 5vw, 4.5rem);
+  left: clamp(1.4rem, 6vw, 6.5rem);
+  max-width: 30rem;
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+.gw-kicker {
+  margin: 0 0 0.8rem;
+  color: var(--gw-gold-bright);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: gwKickerIn 1s cubic-bezier(0.19, 1, 0.22, 1) 1.7s forwards;
+  animation-play-state: paused;
+}
+@keyframes gwKickerIn {
+  from { opacity: 0; letter-spacing: 0.6em; }
+  to { opacity: 0.92; letter-spacing: 0.32em; }
+}
+.gw-title {
+  margin: 0;
+  font-family: var(--gw-serif);
+  font-size: clamp(2rem, 5vw, 5rem);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.06em;
+  text-wrap: balance;
+}
+.gw-title .gw-line { display: block; overflow: hidden; }
+.gw-title .gw-line > span {
+  display: block;
+  transform: translateY(110%);
+  animation: gwLineRise 1.15s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  animation-play-state: paused;
+}
+.gw-title .gw-line:nth-child(1) > span { animation-delay: 2s; }
+.gw-title .gw-line:nth-child(2) > span { animation-delay: 2.14s; }
+@keyframes gwLineRise { to { transform: translateY(0); } }
+
+/* Three depth planes: aurora (back), book (mid), grain (front).
+   The tilt wrapper answers the cursor. */
+.gw-book-scene {
+  position: relative;
+  z-index: 3;
+  width: min(76vw, 680px);
+  height: min(78vh, 760px);
+  display: grid;
+  place-items: center;
+  perspective: 1600px;
+  transform-style: preserve-3d;
+}
+.gw-book-tilt {
+  transform-style: preserve-3d;
+  transform: rotateX(var(--gw-tilt-x)) rotateY(var(--gw-tilt-y));
+  transition: transform 0.12s linear;
+  will-change: transform;
+}
+.gw-book-stage {
+  position: relative;
+  width: clamp(190px, 24vw, 312px);
+  aspect-ratio: 2 / 3;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 46px 80px rgba(0, 0, 0, 0.76));
+  opacity: 0;
+  animation: gwBookFromBackToFront 5s cubic-bezier(0.19, 1, 0.22, 1) 0.15s forwards;
+  animation-play-state: paused;
+  will-change: transform, opacity, filter;
+}
+/* The book is unmistakably arriving inside second 3 */
+@keyframes gwBookFromBackToFront {
+  0% { opacity: 0; filter: blur(18px) drop-shadow(0 8px 26px rgba(0, 0, 0, 0.2)); transform: translate3d(0, 7vh, -1100px) scale(0.22) rotateX(11deg) rotateY(-28deg); }
+  10% { opacity: 0.42; }
+  26% { opacity: 1; filter: blur(8px) drop-shadow(0 20px 60px rgba(0, 0, 0, 0.45)); transform: translate3d(0, 3vh, -520px) scale(0.52) rotateX(7deg) rotateY(-16deg); }
+  46% { filter: blur(1.5px) drop-shadow(0 34px 78px rgba(0, 0, 0, 0.7)); transform: translate3d(0, 0, 80px) scale(1.03) rotateX(0deg) rotateY(7deg); }
+  62% { filter: blur(0) drop-shadow(0 52px 92px rgba(0, 0, 0, 0.82)); transform: translate3d(0, -1vh, 170px) scale(1.12) rotateX(1deg) rotateY(-7deg); }
+  78% { transform: translate3d(0, 0, 95px) scale(1.06) rotateX(0deg) rotateY(0deg); }
+  100% { opacity: 1; filter: blur(0) drop-shadow(0 46px 80px rgba(0, 0, 0, 0.76)); transform: translate3d(0, 0, 0) scale(1) rotateX(0deg) rotateY(0deg); }
+}
+.gw-book {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateY(-10deg);
+  animation: gwBookEditorialRock 5s cubic-bezier(0.2, 0.9, 0.2, 1) 0.15s forwards;
+  animation-play-state: paused;
+}
+@keyframes gwBookEditorialRock {
+  0%, 30% { transform: rotateY(-24deg) rotateX(4deg); }
+  48% { transform: rotateY(12deg) rotateX(0deg); }
+  63% { transform: rotateY(-8deg) rotateX(0deg); }
+  86%, 100% { transform: rotateY(0deg) rotateX(0deg); }
+}
+.gw-book-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -15%;
+  width: 118%;
+  height: 18%;
+  transform: translateX(-50%) rotateX(68deg);
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.84), transparent 70%);
+  filter: blur(18px);
+  opacity: 0.76;
+}
+.gw-book-cover, .gw-inside-paper, .gw-page-stack, .gw-spine, .gw-back-cover {
+  position: absolute;
+  border-radius: 3px;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+.gw-book-cover {
+  inset: 0;
+  transform-origin: left center;
+  transform: translateZ(30px) rotateY(0deg);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent 17%, rgba(0, 0, 0, 0.18) 76%),
+    var(--gw-cover) center/cover no-repeat;
+  border: 1px solid rgba(188, 161, 120, 0.38);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 16px 0 28px rgba(0, 0, 0, 0.42),
+    0 26px 86px rgba(0, 0, 0, 0.72),
+    0 0 55px rgba(176, 141, 87, 0.12);
+  animation: gwFrontCoverOpenAndReturn 5s cubic-bezier(0.2, 0.9, 0.2, 1) 0.15s forwards;
+  animation-play-state: paused;
+  z-index: 8;
+  overflow: hidden;
+}
+.gw-book-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.36) 47%, transparent 62%);
+  transform: translateX(-135%);
+  animation: gwCoverGlint 5s ease 0.15s forwards;
+  animation-play-state: paused;
+  mix-blend-mode: screen;
+  opacity: 0.72;
+}
+.gw-book-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 42%, transparent 45%, rgba(0, 0, 0, 0.42));
+  pointer-events: none;
+}
+@keyframes gwCoverGlint {
+  0%, 28% { transform: translateX(-135%); opacity: 0; }
+  42% { opacity: 0.66; }
+  52% { transform: translateX(120%); opacity: 0.1; }
+  70%, 100% { transform: translateX(135%); opacity: 0; }
+}
+@keyframes gwFrontCoverOpenAndReturn {
+  0%, 43% { transform: translateZ(30px) rotateY(0deg); }
+  55%, 66% { transform: translateZ(30px) rotateY(-118deg); }
+  82%, 100% { transform: translateZ(30px) rotateY(0deg); }
+}
+.gw-inside-paper {
+  inset: 2.5% 3.5% 2.5% 4.5%;
+  transform: translateZ(16px);
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.12), transparent 17%, rgba(176, 141, 87, 0.07) 55%, rgba(0, 0, 0, 0.12)),
+    repeating-linear-gradient(180deg, rgba(176, 141, 87, 0.16) 0 1px, transparent 1px 14px),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--gw-ivory) 72%, white),
+      color-mix(in srgb, var(--gw-ivory) 80%, var(--gw-gold)) 50%,
+      color-mix(in srgb, var(--gw-ivory) 80%, white)
+    );
+  border: 1px solid rgba(176, 141, 87, 0.22);
+  display: grid;
+  place-items: center;
+  padding: 1.3rem;
+  color: rgb(57, 48, 35);
+  box-shadow: inset 22px 0 30px rgba(0, 0, 0, 0.12);
+  z-index: 2;
+}
+.gw-inside-message {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: gwPageMessage 5s ease 0.15s forwards;
+  animation-play-state: paused;
+}
+.gw-inside-message strong {
+  display: block;
+  font-family: var(--gw-serif);
+  font-size: clamp(1.7rem, 3vw, 3rem);
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  line-height: 0.95;
+}
+.gw-inside-message span {
+  display: block;
+  margin-top: 0.65rem;
+  color: rgba(57, 48, 35, 0.78);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+@keyframes gwPageMessage {
+  0%, 49% { opacity: 0; transform: translateY(12px); }
+  58%, 68% { opacity: 1; transform: translateY(0); }
+  82%, 100% { opacity: 0; transform: translateY(-8px); }
+}
+.gw-page-stack {
+  top: 1.9%;
+  right: -5.2%;
+  width: 9%;
+  height: 96.2%;
+  transform: rotateY(90deg) translateZ(18px);
+  background:
+    repeating-linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--gw-ivory) 82%, white) 0 3px,
+      color-mix(in srgb, var(--gw-ivory) 62%, var(--gw-gold)) 3px 4px
+    ),
+    linear-gradient(
+      color-mix(in srgb, var(--gw-ivory) 78%, white),
+      color-mix(in srgb, var(--gw-ivory) 52%, var(--gw-gold))
+    );
+  border: 1px solid rgba(176, 141, 87, 0.16);
+  z-index: 1;
+}
+.gw-spine {
+  top: 0;
+  left: -7.3%;
+  width: 14.6%;
+  height: 100%;
+  transform: rotateY(-90deg) translateZ(18px);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--gw-obsidian) 65%, black),
+    color-mix(in srgb, var(--gw-obsidian) 86%, var(--gw-gold)) 42%,
+    color-mix(in srgb, var(--gw-obsidian) 64%, var(--gw-gold)) 60%,
+    color-mix(in srgb, var(--gw-obsidian) 72%, black)
+  );
+  border: 1px solid rgba(176, 141, 87, 0.22);
+  box-shadow: inset -4px 0 16px rgba(188, 161, 120, 0.12);
+}
+.gw-back-cover {
+  inset: 0;
+  transform: translateZ(-24px) rotateY(180deg);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--gw-obsidian) 88%, black),
+    color-mix(in srgb, var(--gw-obsidian) 86%, var(--gw-gold)) 52%,
+    color-mix(in srgb, var(--gw-obsidian) 65%, black)
+  );
+  border: 1px solid rgba(176, 141, 87, 0.22);
+}
+
+/* The light that pours out of the book on click */
+.gw-bloom {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  z-index: 6;
+  width: 12rem;
+  height: 12rem;
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(circle, rgba(216, 209, 197, 0.95) 0%, rgba(188, 161, 120, 0.7) 30%, rgba(20, 91, 75, 0.28) 58%, transparent 72%);
+  filter: blur(8px);
+  will-change: transform, opacity;
+}
+#book-gateway.is-opening .gw-bloom { animation: gwBloomOut 1.15s cubic-bezier(0.55, 0, 0.2, 1) forwards; }
+@keyframes gwBloomOut {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+  22% { opacity: 0.95; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(16); }
+}
+
+/* The gold CTA — the one elevation on this view. Magnetic. */
+.gw-action {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + min(27vh, 250px));
+  transform: translateX(-50%);
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  gap: 0.85rem;
+  text-align: center;
+  opacity: 0;
+  animation: gwButtonArrives 0.9s cubic-bezier(0.19, 1, 0.22, 1) 4.9s forwards;
+  animation-play-state: paused;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.gw-action small {
+  display: block;
+  color: rgba(216, 209, 197, 0.5);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+@keyframes gwButtonArrives {
+  from { opacity: 0; transform: translateX(-50%) translateY(18px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.gw-open-mind {
+  appearance: none;
+  border: 1px solid rgba(188, 161, 120, 0.48);
+  background:
+    linear-gradient(135deg, rgba(188, 161, 120, 0.22), rgba(176, 141, 87, 0.08)),
+    rgba(17, 17, 17, 0.52);
+  color: var(--gw-gold-bright);
+  padding: 1rem 2.4rem;
+  min-width: 15rem;
+  min-height: 48px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.48), 0 0 42px rgba(176, 141, 87, 0.16);
+  transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1), border-color 0.45s ease, box-shadow 0.45s ease, background 0.45s ease;
+  animation: gwCtaBreathe 3.4s ease-in-out 5.9s infinite;
+  animation-play-state: paused;
+  will-change: transform;
+}
+@keyframes gwCtaBreathe {
+  0%, 100% { box-shadow: 0 18px 60px rgba(0, 0, 0, 0.48), 0 0 42px rgba(176, 141, 87, 0.16); }
+  50% { box-shadow: 0 18px 60px rgba(0, 0, 0, 0.48), 0 0 64px rgba(188, 161, 120, 0.3); }
+}
+.gw-open-mind .gw-btn-label {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  will-change: transform;
+}
+.gw-open-mind:hover, .gw-open-mind:focus-visible {
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(188, 161, 120, 0.84);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 58px rgba(188, 161, 120, 0.24), 0 0 32px rgba(20, 91, 75, 0.18);
+  background:
+    linear-gradient(135deg, rgba(188, 161, 120, 0.3), rgba(176, 141, 87, 0.12)),
+    rgba(17, 17, 17, 0.64);
+}
+.gw-open-mind:active { transform: translateY(0) scale(0.985); transition-duration: 0.12s; }
+
+/* Spectacle never blocks the door. Quiet skip. */
+.gw-skip {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  z-index: 40;
+  border: 1px solid rgba(216, 209, 197, 0.16);
+  background: rgba(17, 17, 17, 0.55);
+  color: rgba(216, 209, 197, 0.62);
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  min-height: 40px;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.6s ease 0.2s, color 0.3s ease, border-color 0.3s ease;
+}
+#book-gateway.is-ready .gw-skip { opacity: 0.8; }
+.gw-skip:hover, .gw-skip:focus-visible { color: var(--gw-gold-bright); border-color: rgba(188, 161, 120, 0.4); }
+#book-gateway.is-opening .gw-skip,
+#book-gateway.is-entered .gw-skip { opacity: 0; pointer-events: none; }
+
+/* Run the show only once the loader hands off */
+#book-gateway.is-ready .gw-kicker,
+#book-gateway.is-ready .gw-title .gw-line > span,
+#book-gateway.is-ready .gw-book-stage,
+#book-gateway.is-ready .gw-book,
+#book-gateway.is-ready .gw-book-cover,
+#book-gateway.is-ready .gw-book-cover::before,
+#book-gateway.is-ready .gw-inside-message,
+#book-gateway.is-ready .gw-action,
+#book-gateway.is-ready .gw-open-mind { animation-play-state: running; }
+
+/* Skip = jump every gateway animation to its final frame */
+#book-gateway.is-skipped .gw-kicker,
+#book-gateway.is-skipped .gw-title .gw-line > span,
+#book-gateway.is-skipped .gw-book-stage,
+#book-gateway.is-skipped .gw-book,
+#book-gateway.is-skipped .gw-book-cover,
+#book-gateway.is-skipped .gw-book-cover::before,
+#book-gateway.is-skipped .gw-inside-message,
+#book-gateway.is-skipped .gw-action { animation-delay: -20s !important; }
+
+/* ------------------------------------------------------------
+   THE OPENING — click → cover swings → light pours out →
+   the camera passes THROUGH the book into the homepage.
+   Transform/opacity only.
+   ------------------------------------------------------------ */
+#book-gateway.is-opening .gw-copy,
+#book-gateway.is-opening .gw-action {
+  opacity: 0 !important;
+  transform: translateY(14px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+}
+#book-gateway.is-opening .gw-book-stage {
+  animation: gwFlyThrough 1.25s cubic-bezier(0.55, 0, 0.18, 1) forwards !important;
+}
+@keyframes gwFlyThrough {
+  0% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0) drop-shadow(0 46px 80px rgba(0, 0, 0, 0.76)); }
+  55% { opacity: 1; transform: translate3d(0, 1vh, 0) scale(2.6); filter: blur(0); }
+  100% { opacity: 0; transform: translate3d(0, 4vh, 0) scale(8.5); filter: blur(10px); }
+}
+#book-gateway.is-opening .gw-book { animation: none !important; transform: rotateY(0deg); }
+#book-gateway.is-opening .gw-book-cover {
+  animation: none !important;
+  transform: translateZ(30px) rotateY(-160deg);
+  transition: transform 0.9s cubic-bezier(0.55, 0, 0.2, 1);
+}
+#book-gateway.is-opening .gw-book-cover::before { animation: none !important; opacity: 0; }
+#book-gateway.is-opening .gw-inside-message { animation: none !important; opacity: 1; transform: none; }
+
+/* Ivory-gold wash: the blink as you cross the threshold */
+.gw-wash {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(216, 209, 197, 0.92), rgba(188, 161, 120, 0.6) 38%, rgba(17, 17, 17, 0.96) 78%);
+}
+.gw-wash.is-flashing { animation: gwWashCross 1.2s cubic-bezier(0.55, 0, 0.2, 1) 0.35s forwards; }
+@keyframes gwWashCross {
+  0% { opacity: 0; }
+  38% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* After the fly-through the overlay fades out; the book gives a
+   final settle as the homepage takes over beneath. */
+#book-gateway.is-entered .gw-gate::before { opacity: 0.22; transform: scale(0.92); }
+#book-gateway.is-entered .gw-gate::after { opacity: 0; }
+#book-gateway.is-entered .gw-copy,
+#book-gateway.is-entered .gw-action { opacity: 0 !important; transform: translateY(20px); pointer-events: none; }
+#book-gateway.is-entered .gw-book-tilt { transform: none; }
+#book-gateway.is-entered .gw-book-stage {
+  animation: gwBookSettle 1.4s cubic-bezier(0.19, 1, 0.22, 1) forwards !important;
+  filter: blur(0) drop-shadow(0 52px 92px rgba(0, 0, 0, 0.78));
+}
+@keyframes gwBookSettle {
+  0% { opacity: 0; transform: translate3d(0, 2vh, 0) scale(0.66) rotateY(-10deg); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(0.72) rotateY(-10deg); }
+}
+#book-gateway.is-entered .gw-book { animation: none !important; transform: rotateY(-8deg) rotateX(0deg); }
+#book-gateway.is-entered .gw-book-cover { animation: none !important; transform: translateZ(30px) rotateY(0deg); transition: none; }
+#book-gateway.is-entered .gw-book-cover::before { animation: none !important; }
+#book-gateway.is-entered .gw-inside-message { display: none; }
+
+@media (max-width: 900px) {
+  /* top clears the fixed Skip-intro pill so the kicker never collides with it */
+  .gw-copy { left: 1.2rem; right: 1.2rem; top: 3.8rem; text-align: center; margin-inline: auto; }
+  .gw-title { font-size: clamp(2rem, 13vw, 3.6rem); }
+  .gw-book-stage { width: clamp(175px, 45vw, 260px); }
+  .gw-action { top: calc(50% + min(25vh, 215px)); }
+  #book-gateway.is-entered .gw-book-stage { animation: gwBookSettleMobile 1.4s cubic-bezier(0.19, 1, 0.22, 1) forwards !important; }
+}
+@keyframes gwBookSettleMobile {
+  0% { opacity: 0; transform: translate3d(0, -4vh, 0) scale(0.62) rotateY(-8deg); }
+  100% { opacity: 1; transform: translate3d(0, -2vh, 0) scale(0.68) rotateY(-8deg); }
+}
+
+/* ------------------------------------------------------------
+   A dignified reduced-motion experience. Tone, light and depth
+   stay; kinetic motion calms. The book sits centered and present;
+   the door opens with a calm crossfade.
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  #book-gateway { transition: opacity 0.45s ease; }
+  .gw-loader { transition: opacity 0.3s ease, visibility 0.3s ease; }
+  .gw-loader-word, .gw-loader-rule line { animation: none; opacity: 1; stroke-dashoffset: 0; }
+  .gw-gate::before { animation: none; }
+  .gw-grain { animation: none; }
+  .gw-book-tilt { transform: none !important; transition: none; }
+  .gw-book-stage, .gw-book, .gw-book-cover, .gw-book-cover::before, .gw-inside-message,
+  .gw-kicker, .gw-title .gw-line > span, .gw-action, .gw-open-mind {
+    animation: none !important;
+  }
+  .gw-book-stage { opacity: 1; transform: none; filter: drop-shadow(0 46px 80px rgba(0, 0, 0, 0.76)); }
+  .gw-book { transform: rotateY(-10deg); }
+  .gw-book-cover { transform: translateZ(30px) rotateY(0deg); }
+  .gw-book-cover::before { opacity: 0; }
+  .gw-inside-message { opacity: 0; }
+  .gw-kicker { opacity: 0.92; }
+  .gw-title .gw-line > span { transform: translateY(0); }
+  .gw-action { opacity: 1; transform: translateX(-50%); }
+  .gw-skip { display: none; }
+  #book-gateway.is-opening .gw-book-stage { animation: none !important; opacity: 0; transition: opacity 0.45s ease; }
+  #book-gateway.is-opening .gw-book-cover { transition: none; transform: translateZ(30px) rotateY(0deg); }
+  #book-gateway.is-opening .gw-bloom, .gw-wash.is-flashing { animation: none; opacity: 0; }
+  #book-gateway.is-entered .gw-book-stage { animation: none !important; opacity: 0; transition: opacity 0.45s ease; }
+  .gw-open-mind { transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; }
+  .gw-open-mind:hover { transform: none; }
+}

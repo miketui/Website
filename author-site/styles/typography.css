@@ -1,0 +1,12 @@
+:root {
+  --font-display: "Cormorant Garamond";
+  --font-body: "Inter";
+}
+
+.editorial-kicker {
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--aciss-antique-gold);
+  font-size: 0.75rem;
+  font-weight: 700;
+}

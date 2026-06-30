@@ -1,0 +1,2 @@
+import type { ReactNode } from "react";
+export function DashboardShell({ title, children }: { title: string; children: ReactNode }) { return <main className="mx-auto min-h-[70vh] max-w-5xl px-5 py-14 md:px-6 md:py-16"><p className="editorial-kicker">Customer area</p><h1 className="mt-4 font-display text-4xl leading-tight text-white md:text-6xl">{title}</h1><p className="mt-5 max-w-3xl text-whitegold/75">Everything you&rsquo;ve bought, in one place — quiet, protected, and direct.</p><div className="mt-8">{children}</div></main>; }

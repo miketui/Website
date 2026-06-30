@@ -1,0 +1,2 @@
+import { Button } from "@/components/Button";
+export function ProductCard({ title, price, description, href }: { title: string; price: string; description: string; href?: string }) { return <article className="rounded-3xl border border-whitegold/15 bg-white/5 p-6"><h3 className="font-display text-3xl text-white">{title}</h3><p className="mt-2 text-2xl text-antique">{price}</p><p className="mt-4 text-whitegold/80">{description}</p>{href ? <Button href={href} className="mt-6">Choose this path</Button> : null}</article>; }

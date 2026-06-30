@@ -1,0 +1,18 @@
+.experience-surface {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(176, 141, 87, 0.18), transparent 28rem),
+    radial-gradient(circle at 86% 18%, rgba(199, 217, 210, 0.10), transparent 25rem),
+    linear-gradient(135deg, var(--aciss-obsidian), #111111 58%, var(--aciss-deep-jade));
+}
+
+.editorial-panel {
+  border: 1px solid rgba(216, 209, 197, 0.15);
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: 0 24px 80px rgba(176, 141, 87, 0.12);
+}
+
+.hairline-orbit {
+  background:
+    radial-gradient(ellipse at center, transparent 58%, rgba(176, 141, 87, 0.16) 59%, transparent 61%),
+    radial-gradient(ellipse at 48% 52%, transparent 45%, rgba(199, 217, 210, 0.10) 46%, transparent 48%);
+}

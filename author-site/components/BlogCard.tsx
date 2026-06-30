@@ -1,0 +1,2 @@
+import Link from "next/link";
+export function BlogCard({ post }: { post: { slug: string; title: string; excerpt: string; date: string } }) { return <Link href={`/blog/${post.slug}`} className="block rounded-3xl border border-whitegold/15 p-6 hover:border-antique"><p className="text-sm text-antique">{post.date}</p><h3 className="mt-2 font-display text-3xl text-white">{post.title}</h3><p className="mt-3 text-whitegold/80">{post.excerpt}</p></Link>; }
