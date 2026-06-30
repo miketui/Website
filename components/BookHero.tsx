@@ -1,6 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
 import { book, priceConfig } from "@/content/book";
-import { BookMockup } from "@/components/BookMockup";
 import { BookTilt } from "@/components/motion/BookTilt";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 
@@ -21,7 +21,7 @@ export function BookHero() {
           <p className="mt-5 text-sm text-whitegold/65">Direct launch price. Kindle (${priceConfig.kindleExternal.amount.toFixed(2)}) and paperback (${priceConfig.paperbackExternal.amount.toFixed(2)}) editions follow through their own stores.</p>
         </div>
         <div className="relative z-10">
-          <BookTilt><BookMockup /></BookTilt>
+          <BookTilt><Image src="/gateway-cover.jpg" alt="Curls & Contemplation — cover" width={800} height={1200} priority className="mx-auto w-full max-w-sm rounded-lg shadow-gold" /></BookTilt>
           <Link href="/book" className="mx-auto mt-6 block max-w-xs text-center text-sm text-whitegold/70 underline decoration-antique underline-offset-4">See what the book covers</Link>
         </div>
       </div>

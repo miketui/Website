@@ -418,10 +418,10 @@ export function BookGateway() {
             <p className="gw-kicker">Curls &amp; Contemplation</p>
             <h2 className="gw-title">
               <span className="gw-line">
-                <span>A book that opens</span>
+                <span>You learned the craft.</span>
               </span>
               <span className="gw-line">
-                <span>like a threshold.</span>
+                <span>Nobody taught you the business.</span>
               </span>
             </h2>
           </div>

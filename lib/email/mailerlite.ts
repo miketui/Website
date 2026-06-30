@@ -11,7 +11,8 @@ export type MailerLiteGroup =
   | "bonus_claim_completed"
   | "refunded"
   | "blog_readers"
-  | "vip_early_readers";
+  | "vip_early_readers"
+  | "quiz";
 
 export const mailerLiteGroups: Record<MailerLiteGroup, string> = {
   subscribers: "Subscribers",
@@ -23,7 +24,8 @@ export const mailerLiteGroups: Record<MailerLiteGroup, string> = {
   bonus_claim_completed: "Bonus Claim Completed",
   refunded: "Refunded",
   blog_readers: "Blog Readers",
-  vip_early_readers: "VIP / Early Readers"
+  vip_early_readers: "VIP / Early Readers",
+  quiz: "Quiz / Blind-Spot"
 };
 
 const emailSchema = z.string().email();

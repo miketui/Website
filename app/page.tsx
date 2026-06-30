@@ -5,6 +5,8 @@ import { ExperienceCard } from "@/components/design/ExperienceCard";
 import { EditorialGrid } from "@/components/design/EditorialGrid";
 import { ChapterPathway } from "@/components/motion/ChapterPathway";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
+import { ScrollReveal } from "@/components/motion/ScrollReveal";
+import { Testimonials, AuthorNote } from "@/components/SocialProof";
 import { bookJsonLd } from "@/lib/schema";
 import { pageMetadata } from "@/lib/seo";
 import { siteConfig } from "@/content/site";
@@ -38,6 +40,15 @@ export default function HomePage() {
         </div>
       </Section>
 
+      <ScrollReveal>
+        <section className="mx-auto w-full max-w-4xl px-5 py-16 text-center md:px-6 md:py-24">
+          <span aria-hidden="true" className="mx-auto mb-8 block h-px w-16 bg-jade" />
+          <p className="font-display text-3xl leading-snug text-white md:text-5xl">
+            You&rsquo;re not behind. You were never given the map.<span className="text-antique"> Here it is.</span>
+          </p>
+        </section>
+      </ScrollReveal>
+
       <Section eyebrow="The path forward" title="A four-part path from creative identity to sustainable rhythm.">
         <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div className="editorial-panel rounded-[2rem] p-6 md:p-8">
@@ -55,6 +66,9 @@ export default function HomePage() {
           <ChapterPathway compact />
         </div>
       </Section>
+
+      <Testimonials />
+      <AuthorNote />
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseServerConfig } from "@/lib/env";
+import { orEquals } from "@/lib/supabase/filters";
 
 export const tableNames = [
   "profiles",
@@ -50,6 +51,6 @@ export async function isAdminUser(user: SessionUser | null, allowlist: string[])
   if (allowlist.includes(user.email.toLowerCase())) return true;
   const supabase = createServerSupabaseClient(true);
   if (!supabase) return false;
-  const { data } = await supabase.from("admin_users").select("id").or(`user_id.eq.${user.id},email.eq.${user.email.toLowerCase()}`).maybeSingle();
+  const { data } = await supabase.from("admin_users").select("id").or(orEquals([["user_id", user.id], ["email", user.email.toLowerCase()]])).maybeSingle();
   return Boolean(data?.id);
 }

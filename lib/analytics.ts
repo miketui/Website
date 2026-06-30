@@ -31,6 +31,8 @@ export const analyticsEvents = {
   bonusClaimSubmitted: "bonus_claim_submitted",
   heroCtaSeen: "hero_cta_seen",
   chapterPathwayInteraction: "chapter_pathway_interaction",
+  quizStarted: "quiz_started",
+  quizCompleted: "quiz_completed",
   curlCursorEnabled: "curl_cursor_enabled",
   reducedMotionDetected: "reduced_motion_detected",
   // Backward-compatible aliases for Prompt 4 components/tests; values remain in the approved event map.
