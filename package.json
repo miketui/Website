@@ -1,0 +1,46 @@
+{
+  "name": "@curls/author-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "next build",
+    "check:sandbox-env": "node scripts/check-sandbox-env.mjs",
+    "check:deliverables": "node scripts/check-public-deliverables.mjs",
+    "check:supabase-storage": "node scripts/verify-supabase-storage-paths.mjs",
+    "check:stripe-test": "node scripts/stripe-test-mode-check.mjs",
+    "check:sandbox": "pnpm check:sandbox-env && pnpm check:deliverables && pnpm check:supabase-storage && pnpm check:stripe-test"
+  },
+  "dependencies": {
+    "@stripe/stripe-js": "latest",
+    "@supabase/supabase-js": "latest",
+    "clsx": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "stripe": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@testing-library/react": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "autoprefixer": "latest",
+    "axe-core": "^4.12.1",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "latest",
+    "jsdom": "latest",
+    "playwright": "^1.60.0",
+    "postcss": "latest",
+    "tailwindcss": "^3.4.17",
+    "typescript": "latest",
+    "vitest": "latest"
+  },
+  "packageManager": "pnpm@10.0.0"
+}
