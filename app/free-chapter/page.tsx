@@ -3,7 +3,7 @@ import { PageHero } from "@/components/design/PageHero";
 import { Section } from "@/components/design/Section";
 import { FreeChapterForm } from "@/components/FreeChapterForm";
 
-export const metadata = pageMetadata("Free Chapter", "Read Chapter 1 of Curls & Contemplation free — plus the Pricing Confidence Checklist, delivered instantly.", { path: "/free-chapter" });
+export const metadata = pageMetadata("Free Chapter", "Read Chapter 1 of Curls & Contemplation free — plus the Pricing Confidence Checklist, delivered instantly.", { path: "/free-chapter", image: "/gateway-cover.jpg" });
 
 export default function Page() {
   return (

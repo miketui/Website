@@ -14,7 +14,7 @@ import { siteConfig } from "@/content/site";
 export const metadata = pageMetadata(
   "Freelance Hairstylist's Guide to Creative Excellence",
   siteConfig.description,
-  { path: "/" }
+  { path: "/", image: "/gateway-cover.jpg" }
 );
 
 const problemCards = [

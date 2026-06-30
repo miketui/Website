@@ -93,3 +93,16 @@ export function blogPostingJsonLd(slug: string) {
     publisher: { "@type": "Organization", name: siteConfig.name, url: absoluteUrl("/") }
   };
 }
+
+export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: absoluteUrl(item.path)
+    }))
+  };
+}

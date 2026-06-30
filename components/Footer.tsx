@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { siteConfig } from "@/content/site";
+import { NewsletterForm } from "@/components/NewsletterForm";
 
 const readLinks = [
   { href: "/free-chapter", label: "Free Chapter" },
@@ -22,6 +23,9 @@ const legalLinks = [
 export function Footer() {
   return (
     <footer className="border-t border-whitegold/10 px-6 py-12">
+      <div className="mx-auto mb-12 max-w-6xl">
+        <NewsletterForm source="footer" tone="footer" />
+      </div>
       <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1.2fr_0.8fr_1fr]">
         <div>
           <p className="font-display text-2xl text-white">Curls &amp; Contemplation</p>

@@ -4,12 +4,25 @@ import { Section } from "@/components/design/Section";
 import { PurchaseSummary } from "@/components/PurchaseSummary";
 import { PreorderCheckout } from "@/components/PreorderCheckout";
 import { priceConfig } from "@/content/book";
+import { productJsonLd, breadcrumbJsonLd } from "@/lib/schema";
 
-export const metadata = pageMetadata("Preorder", "Reserve the direct digital edition of Curls & Contemplation at the $17.99 launch price.", { path: "/preorder" });
+export const metadata = pageMetadata("Preorder", "Reserve the direct digital edition of Curls & Contemplation at the $17.99 launch price.", { path: "/preorder", image: "/gateway-cover.jpg" });
 
 export default function Page() {
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd()) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd([
+              { name: "Home", path: "/" },
+              { name: "Preorder", path: "/preorder" }
+            ])
+          )
+        }}
+      />
       <PageHero
         eyebrow="Direct preorder"
         title="Reserve the direct edition."
