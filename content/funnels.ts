@@ -59,6 +59,86 @@ export const quizQuestions = [
   "If your business kept its current rhythm for five more years, what would be left of your creativity?"
 ] as const;
 
+/**
+ * Interactive quiz model. Each question offers one option per archetype; the
+ * archetype with the most selected options wins (ties resolve to the earliest
+ * archetype in `quizArchetypes`, keeping scoring deterministic and testable).
+ */
+export type QuizOption = { label: string; archetype: QuizArchetype["slug"] };
+export type QuizItem = { question: string; options: QuizOption[] };
+
+export const quizItems: QuizItem[] = [
+  {
+    question: "When a client asks your rate, what happens in the second before you answer?",
+    options: [
+      { label: "I brace, then quote a little lower than I meant to.", archetype: "underpriced-artist" },
+      { label: "I wonder if they even know what I'm capable of.", archetype: "invisible-talent" },
+      { label: "I calculate whether I have the energy to take it on.", archetype: "burned-out-booked" },
+      { label: "I quote it cleanly — the number isn't the hard part anymore.", archetype: "almost-ceo" }
+    ]
+  },
+  {
+    question: "Where does your next booking usually come from?",
+    options: [
+      { label: "Honestly, I'm not sure — it's unpredictable.", archetype: "invisible-talent" },
+      { label: "Referrals who expect my old, lower price.", archetype: "underpriced-artist" },
+      { label: "Existing clients, back-to-back, with no room to breathe.", archetype: "burned-out-booked" },
+      { label: "A pipeline I built on purpose.", archetype: "almost-ceo" }
+    ]
+  },
+  {
+    question: "What does the night before a fully booked day feel like?",
+    options: [
+      { label: "Dread — even though it's good news.", archetype: "burned-out-booked" },
+      { label: "I'm calculating whether the day is even worth what I'll net.", archetype: "underpriced-artist" },
+      { label: "Quiet. I wish more of the right people knew to book me.", archetype: "invisible-talent" },
+      { label: "Calm. The day is designed, not survived.", archetype: "almost-ceo" }
+    ]
+  },
+  {
+    question: "When did you last raise your prices — and what made you do it?",
+    options: [
+      { label: "I genuinely can't remember the last time.", archetype: "underpriced-artist" },
+      { label: "When I hit a wall — not on a plan.", archetype: "burned-out-booked" },
+      { label: "I would, but I'm not sure I can justify it to them.", archetype: "invisible-talent" },
+      { label: "On a schedule I set, tied to my standards.", archetype: "almost-ceo" }
+    ]
+  },
+  {
+    question: "Which rooms move your career — and which ones aren't you in?",
+    options: [
+      { label: "There are rooms I should be in that don't know my name.", archetype: "invisible-talent" },
+      { label: "I'm in rooms that quietly undervalue what I charge.", archetype: "underpriced-artist" },
+      { label: "I'm too booked to get into any new rooms.", archetype: "burned-out-booked" },
+      { label: "I choose my rooms deliberately.", archetype: "almost-ceo" }
+    ]
+  },
+  {
+    question: "If your business kept its current rhythm for five more years, what would be left of your creativity?",
+    options: [
+      { label: "Honestly? Not much — I'd be running on fumes.", archetype: "burned-out-booked" },
+      { label: "I'd be just as skilled and still underpaid.", archetype: "underpriced-artist" },
+      { label: "Great work that nobody discovered.", archetype: "invisible-talent" },
+      { label: "A real practice — I just want the map to scale it.", archetype: "almost-ceo" }
+    ]
+  }
+];
+
+export function scoreQuiz(answers: string[]): QuizArchetype {
+  const tally: Record<string, number> = {};
+  for (const slug of answers) tally[slug] = (tally[slug] ?? 0) + 1;
+  let best = quizArchetypes[0];
+  let bestCount = -1;
+  for (const archetype of quizArchetypes) {
+    const count = tally[archetype.slug] ?? 0;
+    if (count > bestCount) {
+      best = archetype;
+      bestCount = count;
+    }
+  }
+  return best;
+}
+
 export type ChallengeDay = {
   day: number;
   title: string;

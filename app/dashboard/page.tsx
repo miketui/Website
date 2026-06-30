@@ -18,6 +18,14 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ c
           </p>
         </div>
       ) : null}
+      <div className="editorial-panel mb-6 rounded-3xl p-6">
+        <h2 className="font-display text-2xl text-white">Sign in to load your orders</h2>
+        <p className="mt-2 text-whitegold/75">
+          Your purchases and downloads appear here once you&rsquo;re signed in with your checkout email.{" "}
+          <Link href="/login" className="text-antique underline underline-offset-4">Sign in</Link> or{" "}
+          <Link href="/signup" className="text-antique underline underline-offset-4">create your account</Link>.
+        </p>
+      </div>
       <div className="grid gap-5 md:grid-cols-2">
         <div className="editorial-panel rounded-3xl p-6">
           <h2 className="font-display text-3xl text-white">Purchases</h2>

@@ -1,4 +1,5 @@
 import { createServerSupabaseClient, type SessionUser } from "@/lib/supabase/server";
+import { orEquals } from "@/lib/supabase/filters";
 
 export type DeliverableKind = "epub" | "pdf" | "card_deck" | "workbook" | "preorder_bonus";
 export type DownloadDenialReason = "unauthenticated" | "no_purchase" | "refunded" | "revoked" | "download_limit_reached" | "config_missing" | "storage_error";
@@ -32,7 +33,7 @@ export async function checkDownloadEntitlement(user: SessionUser | string | null
     .from("purchases")
     .select("id, user_id, email, status, entitlement_status, refunded_at, revoked_at, download_count")
     .eq("book_slug", entitlementSlugFor(normalizedDeliverable))
-    .or(`user_id.eq.${normalizedUser.id},email.eq.${normalizedUser.email}`)
+    .or(orEquals([["user_id", normalizedUser.id], ["email", normalizedUser.email]]))
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();

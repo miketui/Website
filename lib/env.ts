@@ -38,6 +38,7 @@ const serverEnvSchema = publicEnvSchema.extend({
   MAILERLITE_GROUP_REFUNDED: z.string().optional(),
   MAILERLITE_GROUP_BLOG_READERS: z.string().optional(),
   MAILERLITE_GROUP_VIP_EARLY_READERS: z.string().optional(),
+  MAILERLITE_GROUP_QUIZ: z.string().optional(),
   TURNSTILE_SECRET_KEY: z.string().optional(),
   ADMIN_EMAILS: z.string().optional(),
   GA4_API_SECRET: z.string().optional()
@@ -135,7 +136,8 @@ export function getMailerLiteConfig(): RuntimeConfigResult<{ apiKey: string; gro
         bonus_claim_completed: process.env.MAILERLITE_GROUP_BONUS_CLAIM_COMPLETED,
         refunded: process.env.MAILERLITE_GROUP_REFUNDED,
         blog_readers: process.env.MAILERLITE_GROUP_BLOG_READERS,
-        vip_early_readers: process.env.MAILERLITE_GROUP_VIP_EARLY_READERS
+        vip_early_readers: process.env.MAILERLITE_GROUP_VIP_EARLY_READERS,
+        quiz: process.env.MAILERLITE_GROUP_QUIZ
       }
     }
   };
