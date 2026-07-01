@@ -3,7 +3,6 @@ import { BookHero } from "@/components/BookHero";
 import { ProofBand } from "@/components/design/ProofBand";
 import { Section } from "@/components/design/Section";
 import { ExperienceCard } from "@/components/design/ExperienceCard";
-import { EditorialGrid } from "@/components/design/EditorialGrid";
 import { ChapterPathway } from "@/components/motion/ChapterPathway";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
@@ -25,6 +24,12 @@ const problemCards = [
   ["Burnout", "The book stays full. The hands stay steady. Something underneath it is running on fumes and nobody's asked about that part."],
   ["Leadership", "You call yourself a freelancer so no one expects you to lead. Every client in your chair is being led whether you name it or not."],
   ["Uncertainty", "The good weeks feel like luck. The slow weeks feel like a warning. Neither one tells you what actually happened."]
+] as const;
+
+const pathwayRows = [
+  ["Worksheets", "The audit tools — pricing, standards, next moves — you'd otherwise have to build yourself at 1 a.m."],
+  ["Resources", "A member library taking shape behind the book. Nothing sold here that isn't ready yet."],
+  ["Career map", "Read it as a map, not a miracle. The chapters are sequenced; the decisions are still yours."]
 ] as const;
 
 export default function HomePage() {
@@ -55,11 +60,14 @@ export default function HomePage() {
         <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div className="editorial-panel rounded-[2rem] p-6 md:p-8">
             <p>Curls & Contemplation moves in order on purpose: name what your work is actually worth, shape the client experience around that standard, build a business rhythm that doesn&rsquo;t eat the version of you that started this — and protect the quiet space that keeps your judgment sharp when the calendar won&rsquo;t.</p>
-            <EditorialGrid>
-              <ExperienceCard title="Worksheets">The audit tools — pricing, standards, next moves — you&rsquo;d otherwise have to build yourself at 1 a.m.</ExperienceCard>
-              <ExperienceCard title="Resources">A member library taking shape behind the book. Nothing sold here that isn&rsquo;t ready yet.</ExperienceCard>
-              <ExperienceCard title="Career map">Read it as a map, not a miracle. The chapters are sequenced; the decisions are still yours.</ExperienceCard>
-            </EditorialGrid>
+            <div className="mt-8 border-y border-whitegold/10">
+              {pathwayRows.map(([title, copy]) => (
+                <div key={title} className="grid gap-1 border-b border-whitegold/10 py-4 last:border-b-0 sm:grid-cols-[8.5rem_1fr] sm:gap-5">
+                  <h3 className="font-display text-xl leading-tight text-antique">{title}</h3>
+                  <p className="text-sm leading-7 text-whitegold/80">{copy}</p>
+                </div>
+              ))}
+            </div>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <MagneticCurlButton href="/preorder">Preorder — ${priceConfig.preorderDirect.amount.toFixed(2)}</MagneticCurlButton>
               <MagneticCurlButton href="/book" variant="secondary">Explore the Book</MagneticCurlButton>

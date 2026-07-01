@@ -49,3 +49,19 @@
 .proof-figure { font-variant-numeric: tabular-nums; }
 .credit-rail { color: rgba(216, 209, 197, 0.72); letter-spacing: 0.06em; }
 .credit-rail b { color: var(--aciss-dawn-gold); font-weight: 600; }
+
+/* ── Ambient hero motion (transform/opacity only) ──────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .dawn-bloom { animation: dawnBreathe 8s ease-in-out infinite alternate; }
+  .hairline-orbit { animation: orbitDrift 46s linear infinite; }
+  .hero-book-float { animation: heroBookFloat 6.5s ease-in-out infinite alternate; }
+}
+@keyframes dawnBreathe {
+  from { opacity: 0.7; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1.06); }
+}
+@keyframes orbitDrift { to { transform: rotate(360deg); } }
+@keyframes heroBookFloat {
+  from { transform: translateY(0); }
+  to { transform: translateY(-10px); }
+}

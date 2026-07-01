@@ -32,6 +32,16 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: siteConfig.name, images: ["/og-default.png"] }
 };
 
+/**
+ * Runs synchronously before first paint. When the cinematic gateway is going
+ * to play (first visit this session), it raises the obsidian curtain
+ * (html[data-cc-gateway] body::before in gateway.css) so the homepage never
+ * flashes before the overlay hydrates. BookGateway removes the attribute.
+ */
+const gatewayCurtainScript = `try{if(location.pathname==="/"&&sessionStorage.getItem("curls-gateway-seen")!=="1")document.documentElement.setAttribute("data-cc-gateway","")}catch(e){}`;
+
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  return <html lang="en"><body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><Header /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><GoogleAnalytics /><SiteCurlTrail /></ReducedMotionProvider><SpeedInsights /></body></html>;
+  /* suppressHydrationWarning: the gateway curtain script (below) sets a
+     data attribute on <html> before hydration by design. */
+  return <html lang="en" suppressHydrationWarning><body><script dangerouslySetInnerHTML={{ __html: gatewayCurtainScript }} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><Header /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><GoogleAnalytics /><SiteCurlTrail /></ReducedMotionProvider><SpeedInsights /></body></html>;
 }

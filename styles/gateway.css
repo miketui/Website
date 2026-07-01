@@ -93,7 +93,7 @@
   text-transform: uppercase;
   color: rgba(216, 209, 197, 0.88);
   padding-left: 0.42em; /* optically center the tracked text */
-  animation: gwLoaderTrack 1s cubic-bezier(0.19, 1, 0.22, 1) both;
+  animation: gwLoaderTrack 0.7s cubic-bezier(0.19, 1, 0.22, 1) both;
 }
 .gw-loader-word em { font-style: normal; color: var(--gw-gold-bright); }
 @keyframes gwLoaderTrack {
@@ -110,7 +110,7 @@
   stroke-width: 1;
   stroke-dasharray: 260;
   stroke-dashoffset: 260;
-  animation: gwRuleDraw 1.05s cubic-bezier(0.55, 0, 0.2, 1) 0.12s forwards;
+  animation: gwRuleDraw 0.7s cubic-bezier(0.55, 0, 0.2, 1) 0.06s forwards;
   filter: drop-shadow(0 0 6px rgba(188, 161, 120, 0.5));
 }
 @keyframes gwRuleDraw { to { stroke-dashoffset: 0; } }
@@ -207,7 +207,7 @@
   letter-spacing: 0.32em;
   text-transform: uppercase;
   opacity: 0;
-  animation: gwKickerIn 1s cubic-bezier(0.19, 1, 0.22, 1) 1.7s forwards;
+  animation: gwKickerIn 0.9s cubic-bezier(0.19, 1, 0.22, 1) 0.35s forwards;
   animation-play-state: paused;
 }
 @keyframes gwKickerIn {
@@ -230,8 +230,8 @@
   animation: gwLineRise 1.15s cubic-bezier(0.19, 1, 0.22, 1) forwards;
   animation-play-state: paused;
 }
-.gw-title .gw-line:nth-child(1) > span { animation-delay: 2s; }
-.gw-title .gw-line:nth-child(2) > span { animation-delay: 2.14s; }
+.gw-title .gw-line:nth-child(1) > span { animation-delay: 0.5s; }
+.gw-title .gw-line:nth-child(2) > span { animation-delay: 0.66s; }
 @keyframes gwLineRise { to { transform: translateY(0); } }
 
 /* Three depth planes: aurora (back), book (mid), grain (front).
@@ -259,11 +259,11 @@
   transform-style: preserve-3d;
   filter: drop-shadow(0 46px 80px rgba(0, 0, 0, 0.76));
   opacity: 0;
-  animation: gwBookFromBackToFront 5s cubic-bezier(0.19, 1, 0.22, 1) 0.15s forwards;
+  animation: gwBookFromBackToFront 2.5s cubic-bezier(0.19, 1, 0.22, 1) 0.1s forwards;
   animation-play-state: paused;
   will-change: transform, opacity, filter;
 }
-/* The book is unmistakably arriving inside second 3 */
+/* The book is unmistakably arriving inside second 2 */
 @keyframes gwBookFromBackToFront {
   0% { opacity: 0; filter: blur(18px) drop-shadow(0 8px 26px rgba(0, 0, 0, 0.2)); transform: translate3d(0, 7vh, -1100px) scale(0.22) rotateX(11deg) rotateY(-28deg); }
   10% { opacity: 0.42; }
@@ -278,7 +278,7 @@
   inset: 0;
   transform-style: preserve-3d;
   transform: rotateY(-10deg);
-  animation: gwBookEditorialRock 5s cubic-bezier(0.2, 0.9, 0.2, 1) 0.15s forwards;
+  animation: gwBookEditorialRock 2.5s cubic-bezier(0.2, 0.9, 0.2, 1) 0.1s forwards;
   animation-play-state: paused;
 }
 @keyframes gwBookEditorialRock {
@@ -317,8 +317,8 @@
     inset 16px 0 28px rgba(0, 0, 0, 0.42),
     0 26px 86px rgba(0, 0, 0, 0.72),
     0 0 55px rgba(176, 141, 87, 0.12);
-  animation: gwFrontCoverOpenAndReturn 5s cubic-bezier(0.2, 0.9, 0.2, 1) 0.15s forwards;
-  animation-play-state: paused;
+  /* The cover stays closed on arrival — opening is the visitor's act,
+     answered by gwFlyThrough on click. */
   z-index: 8;
   overflow: hidden;
 }
@@ -328,7 +328,7 @@
   inset: 0;
   background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.36) 47%, transparent 62%);
   transform: translateX(-135%);
-  animation: gwCoverGlint 5s ease 0.15s forwards;
+  animation: gwCoverGlint 2.5s ease 0.1s forwards;
   animation-play-state: paused;
   mix-blend-mode: screen;
   opacity: 0.72;
@@ -345,11 +345,6 @@
   42% { opacity: 0.66; }
   52% { transform: translateX(120%); opacity: 0.1; }
   70%, 100% { transform: translateX(135%); opacity: 0; }
-}
-@keyframes gwFrontCoverOpenAndReturn {
-  0%, 43% { transform: translateZ(30px) rotateY(0deg); }
-  55%, 66% { transform: translateZ(30px) rotateY(-118deg); }
-  82%, 100% { transform: translateZ(30px) rotateY(0deg); }
 }
 .gw-inside-paper {
   inset: 2.5% 3.5% 2.5% 4.5%;
@@ -372,11 +367,10 @@
   z-index: 2;
 }
 .gw-inside-message {
+  /* Hidden until the visitor opens the book (is-opening reveals it). */
   text-align: center;
   opacity: 0;
   transform: translateY(12px);
-  animation: gwPageMessage 5s ease 0.15s forwards;
-  animation-play-state: paused;
 }
 .gw-inside-message strong {
   display: block;
@@ -394,11 +388,6 @@
   font-weight: 800;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-}
-@keyframes gwPageMessage {
-  0%, 49% { opacity: 0; transform: translateY(12px); }
-  58%, 68% { opacity: 1; transform: translateY(0); }
-  82%, 100% { opacity: 0; transform: translateY(-8px); }
 }
 .gw-page-stack {
   top: 1.9%;
@@ -483,7 +472,7 @@
   gap: 0.85rem;
   text-align: center;
   opacity: 0;
-  animation: gwButtonArrives 0.9s cubic-bezier(0.19, 1, 0.22, 1) 4.9s forwards;
+  animation: gwButtonArrives 0.8s cubic-bezier(0.19, 1, 0.22, 1) 1.9s forwards;
   animation-play-state: paused;
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
@@ -516,7 +505,7 @@
   text-transform: uppercase;
   box-shadow: 0 18px 60px rgba(0, 0, 0, 0.48), 0 0 42px rgba(176, 141, 87, 0.16);
   transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1), border-color 0.45s ease, box-shadow 0.45s ease, background 0.45s ease;
-  animation: gwCtaBreathe 3.4s ease-in-out 5.9s infinite;
+  animation: gwCtaBreathe 3.4s ease-in-out 3s infinite;
   animation-play-state: paused;
   will-change: transform;
 }
@@ -569,9 +558,7 @@
 #book-gateway.is-ready .gw-title .gw-line > span,
 #book-gateway.is-ready .gw-book-stage,
 #book-gateway.is-ready .gw-book,
-#book-gateway.is-ready .gw-book-cover,
 #book-gateway.is-ready .gw-book-cover::before,
-#book-gateway.is-ready .gw-inside-message,
 #book-gateway.is-ready .gw-action,
 #book-gateway.is-ready .gw-open-mind { animation-play-state: running; }
 
@@ -580,9 +567,7 @@
 #book-gateway.is-skipped .gw-title .gw-line > span,
 #book-gateway.is-skipped .gw-book-stage,
 #book-gateway.is-skipped .gw-book,
-#book-gateway.is-skipped .gw-book-cover,
 #book-gateway.is-skipped .gw-book-cover::before,
-#book-gateway.is-skipped .gw-inside-message,
 #book-gateway.is-skipped .gw-action { animation-delay: -20s !important; }
 
 /* ------------------------------------------------------------
@@ -654,9 +639,11 @@
 @media (max-width: 900px) {
   /* top clears the fixed Skip-intro pill so the kicker never collides with it */
   .gw-copy { left: 1.2rem; right: 1.2rem; top: 3.8rem; text-align: center; margin-inline: auto; }
-  .gw-title { font-size: clamp(2rem, 13vw, 3.6rem); }
-  .gw-book-stage { width: clamp(175px, 45vw, 260px); }
-  .gw-action { top: calc(50% + min(25vh, 215px)); }
+  .gw-title { font-size: clamp(1.9rem, 11vw, 3.1rem); }
+  /* Book sits below the four-line centered headline instead of under it */
+  .gw-book-scene { transform: translateY(5vh); }
+  .gw-book-stage { width: clamp(150px, 40vw, 240px); }
+  .gw-action { top: calc(50% + min(28vh, 235px)); }
   #book-gateway.is-entered .gw-book-stage { animation: gwBookSettleMobile 1.4s cubic-bezier(0.19, 1, 0.22, 1) forwards !important; }
 }
 @keyframes gwBookSettleMobile {
@@ -669,6 +656,28 @@
    stay; kinetic motion calms. The book sits centered and present;
    the door opens with a calm crossfade.
    ------------------------------------------------------------ */
+/* ------------------------------------------------------------
+   Pre-hydration curtain. An inline script in the layout sets
+   data-cc-gateway on <html> before first paint whenever the
+   gateway will play, so the visitor never sees the homepage
+   flash before the overlay mounts. BookGateway removes the
+   attribute once the overlay is painted (or when skipped); the
+   4s keyframe fallback guarantees nobody is ever trapped if
+   hydration fails.
+   ------------------------------------------------------------ */
+html[data-cc-gateway] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 8999; /* just beneath #book-gateway (9000) */
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(20, 91, 75, 0.1), transparent 24rem),
+    var(--aciss-obsidian, #111111);
+  animation: gwCurtainRelease 0.6s ease 4s forwards;
+}
+@keyframes gwCurtainRelease { to { opacity: 0; visibility: hidden; } }
+
 @media (prefers-reduced-motion: reduce) {
   #book-gateway { transition: opacity 0.45s ease; }
   .gw-loader { transition: opacity 0.3s ease, visibility 0.3s ease; }
