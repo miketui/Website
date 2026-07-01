@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { getResendConfig } from "@/lib/env";
+import { getResendConfig, getSiteUrl } from "@/lib/env";
 
 type EmailPayload = { to: string; subject: string; html: string; text?: string };
 export type TransactionalEmailResult = { ok: true; skipped: false } | { ok: false; skipped: true; reason: "config_missing" } | { ok: false; skipped: false; reason: "invalid_recipient" | "provider_error" };
@@ -36,6 +36,19 @@ export function freeChapterTemplate(links?: { chapter: string; checklist: string
     subject: "Chapter 1 is yours — read it tonight",
     html: `<p>Thank you for reading with me. Here is everything, instantly:</p><p><a href="${links.chapter}">Chapter 1 — free excerpt (PDF)</a><br/><a href="${links.checklist}">Pricing Confidence Checklist (PDF)</a></p><p>One honest note on price: the direct edition is $17.99 through the first fifteen days after release, then $19.99 permanently. No countdown games — just the real schedule.</p>`
   };
+}
+
+export function welcomeSubscriberTemplate() {
+  const freeChapterUrl = `${getSiteUrl().replace(/\/$/, "")}/free-chapter`;
+  return {
+    subject: "You're in — one honest welcome",
+    html: `<p>Thank you for subscribing to Curls &amp; Contemplation.</p><p>Here's the deal: one welcome note (this one), then the occasional letter on pricing, craft, and the business nobody taught you. No spam, no daily blasts, and you can leave any time from the link at the bottom of every email.</p><p>If you haven't read it yet, Chapter 1 is free — <a href="${freeChapterUrl}">read it tonight</a>. And when the book launches, the direct edition is $17.99 through the first fifteen days after release, then $19.99 permanently. No countdown games — just the real schedule.</p><p>Talk soon,<br/>Michael David</p>`,
+    text: `Thank you for subscribing to Curls & Contemplation. One welcome note (this one), then the occasional letter on pricing, craft, and the business nobody taught you. No spam. Chapter 1 is free: ${freeChapterUrl} — Michael David`
+  };
+}
+
+export async function sendWelcomeEmail(to: string) {
+  return sendTransactionalEmail({ to, ...welcomeSubscriberTemplate() });
 }
 
 export const bonusClaimReceivedTemplate = { subject: "Bonus claim received", html: "<p>Your bonus claim was received and is queued for review.</p>" };
