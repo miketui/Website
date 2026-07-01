@@ -3,7 +3,11 @@ import { posts } from "@/content/blog";
 import { chapters } from "@/content/chapters";
 import { siteConfig } from "@/content/site";
 
-const publicRoutes = ["/", "/book", "/preorder", "/buy", "/free-chapter", "/chapters", "/blog", "/resources", "/worksheets", "/about", "/media-kit", "/faq", "/contact"];
+// /resources is login-gated (see lib/route-policy.ts + proxy.ts) and is
+// intentionally excluded below — search engines should not index
+// members-only content. Blog stays public: it's the organic-search
+// acquisition surface.
+const publicRoutes = ["/", "/book", "/preorder", "/buy", "/free-chapter", "/chapters", "/blog", "/worksheets", "/about", "/media-kit", "/faq", "/contact"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

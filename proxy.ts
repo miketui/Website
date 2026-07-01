@@ -3,7 +3,14 @@ import { createServerClient } from "@supabase/ssr";
 import { isProtectedRoute } from "@/lib/route-policy";
 import { getSupabaseBrowserConfig } from "@/lib/env";
 
-const LOGIN_REDIRECT_PREFIXES = ["/dashboard", "/downloads"] as const;
+// Pages that redirect an unauthenticated visitor to /login. This list is
+// intentionally NOT the same as protectedRoutePrefixes in lib/route-policy.ts:
+// /admin has its own requireAdmin() server-side check per page, and
+// /bonus-claim is a JSON API route that would break if a redirect Response
+// replaced its response. Resources is gated here per product decision:
+// it's members-only content. Blog stays public — it's the organic-search
+// acquisition surface and should not be removed from indexing.
+const LOGIN_REDIRECT_PREFIXES = ["/dashboard", "/downloads", "/resources"] as const;
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -16,10 +23,10 @@ export async function proxy(request: NextRequest) {
 
   // Refresh the Supabase Auth session cookie on every request (Supabase's
   // documented pattern for Next.js — without this, sessions silently expire
-  // even with a valid refresh token). Only the two real customer-facing
-  // pages redirect an unauthenticated visitor to /login; API routes like
-  // /bonus-claim are excluded on purpose — they return JSON, not a page,
-  // and would break if a redirect Response replaced their response.
+  // even with a valid refresh token). See LOGIN_REDIRECT_PREFIXES above for
+  // which routes actually redirect to /login; API routes like /bonus-claim
+  // are excluded on purpose — they return JSON, not a page, and would break
+  // if a redirect Response replaced their response.
   const config = getSupabaseBrowserConfig();
   const needsAuthCheck = LOGIN_REDIRECT_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 

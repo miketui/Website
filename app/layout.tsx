@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { SiteCurlTrail } from "@/components/SiteCurlTrail";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { ReducedMotionProvider } from "@/components/motion/ReducedMotionProvider";
@@ -32,7 +33,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  return <html lang="en"><body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><Header /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><SiteCurlTrail /></ReducedMotionProvider><SpeedInsights /></body></html>;
-}
+  return <html lang="en"><body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><Header /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><GoogleAnalytics /><SiteCurlTrail /></ReducedMotionProvider><SpeedInsights /></body></html>;
 }

@@ -59,17 +59,34 @@ function missing(names: string[]) {
   return names.filter((name) => !process.env[name]);
 }
 
+/**
+ * Use this instead of `process.env.X ?? fallback` for any env var that feeds
+ * a default. The `??` operator only falls back on null/undefined — an env
+ * var saved as an empty string (easy to do by accident in the Vercel
+ * dashboard, or when a value is deleted but the key is left behind) passes
+ * `??` untouched and silently becomes "". For most vars that's just a bad
+ * default; for RELEASE_DATE specifically it crashed the entire production
+ * build (new Date("" + "T00:00:00Z") throws RangeError: Invalid time value
+ * during static prerender of /book — see tierFlipDate() in lib/schema.ts).
+ * This treats "" and whitespace-only strings the same as unset.
+ */
+export function envOrDefault(value: string | undefined | null, fallback: string): string {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : fallback;
+}
+
 export function requireRuntimeConfig<T>(result: RuntimeConfigResult<T>, label: string): T {
   if (result.ok) return result.value;
   throw new Error(`${label} is not configured. Missing: ${result.missing.join(", ")}`);
 }
 
 export function getSiteUrl() {
-  return publicEnv.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  return envOrDefault(publicEnv.NEXT_PUBLIC_SITE_URL, "http://localhost:3000");
 }
 
 export function getLaunchMode(): LaunchMode {
-  return publicEnv.NEXT_PUBLIC_LAUNCH_MODE ?? "preorder";
+  const raw = envOrDefault(publicEnv.NEXT_PUBLIC_LAUNCH_MODE, "preorder");
+  return launchModeSchema.safeParse(raw).success ? (raw as LaunchMode) : "preorder";
 }
 
 export function getStripeConfig(): RuntimeConfigResult<{

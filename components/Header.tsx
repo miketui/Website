@@ -6,7 +6,7 @@ const nav = [
   { href: "/book", label: "The Book" },
   { href: "/chapters", label: "Chapters" },
   { href: "/free-chapter", label: "Free Chapter" },
-  { href: "/resources", label: "Resources" },
+  { href: "/resources", label: "Resources", memberOnly: true },
   { href: "/about", label: "About" }
 ];
 

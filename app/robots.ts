@@ -6,8 +6,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/book", "/preorder", "/buy", "/free-chapter", "/chapters", "/chapter/", "/blog", "/blog/", "/resources", "/worksheets", "/about", "/media-kit", "/faq", "/contact"],
-        disallow: ["/admin", "/dashboard", "/downloads", "/bonus-claim", "/login", "/signup", "/thank-you", "/quiz", "/challenge", "/api/"]
+        allow: ["/", "/book", "/preorder", "/buy", "/free-chapter", "/chapters", "/chapter/", "/worksheets", "/blog", "/blog/", "/about", "/media-kit", "/faq", "/contact"],
+        disallow: ["/admin", "/dashboard", "/downloads", "/bonus-claim", "/login", "/signup", "/thank-you", "/quiz", "/challenge", "/resources", "/api/"]
       }
     ],
     sitemap: `${siteConfig.siteUrl}/sitemap.xml`,

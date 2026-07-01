@@ -1,4 +1,4 @@
-export const protectedRoutePrefixes = ["/dashboard", "/downloads", "/bonus-claim", "/admin"] as const;
+export const protectedRoutePrefixes = ["/dashboard", "/downloads", "/bonus-claim", "/admin", "/resources"] as const;
 
 export const authRoutePrefixes = ["/login", "/signup", "/logout"] as const;
 export const commerceQuietRoutePrefixes = ["/checkout", "/buy"] as const;
