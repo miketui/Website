@@ -5,3 +5,13 @@
   --aciss-deep-jade: #145B4B;
   --aciss-soft-jade-mist: #C7D9D2;
 }
+
+/* ── Warm "sunny" radiance ──────────────────────────────────────────────
+   Derived ONLY from the five locked ACISS colors above — no new hues.
+   The sunrise feeling comes from added gold luminance + bloom, never a
+   palette change. */
+:root {
+  --aciss-dawn-gold: color-mix(in srgb, var(--aciss-antique-gold) 68%, var(--aciss-white-gold));
+  --aciss-gold-glow: color-mix(in srgb, var(--aciss-antique-gold) 86%, var(--aciss-white-gold));
+  --aciss-warm-veil: color-mix(in srgb, var(--aciss-obsidian) 84%, var(--aciss-antique-gold));
+}

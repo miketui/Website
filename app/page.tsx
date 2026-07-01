@@ -1,5 +1,6 @@
 import { BookGateway } from "@/components/gateway/BookGateway";
 import { BookHero } from "@/components/BookHero";
+import { ProofBand } from "@/components/design/ProofBand";
 import { Section } from "@/components/design/Section";
 import { ExperienceCard } from "@/components/design/ExperienceCard";
 import { EditorialGrid } from "@/components/design/EditorialGrid";
@@ -9,11 +10,11 @@ import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { Testimonials, AuthorNote } from "@/components/SocialProof";
 import { bookJsonLd } from "@/lib/schema";
 import { pageMetadata } from "@/lib/seo";
-import { siteConfig } from "@/content/site";
+import { priceConfig } from "@/content/book";
 
 export const metadata = pageMetadata(
   "Freelance Hairstylist's Guide to Creative Excellence",
-  siteConfig.description,
+  "The business guide freelance hairstylists were never handed — pricing, networking, on-set etiquette, leadership, and burnout, sequenced across 16 chapters with a guided worksheet in every one.",
   { path: "/", image: "/gateway-cover.jpg" }
 );
 
@@ -32,6 +33,7 @@ export default function HomePage() {
       <BookGateway />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(bookJsonLd()) }} />
       <BookHero />
+      <ProofBand />
 
       <Section eyebrow="The unspoken problem" title="Your hands know the work. Nobody handed you the rest of the job.">
         <p className="max-w-3xl">Technique gets taught. What happens after — the pricing conversation, the boundary that costs you a client if you hold it and costs you more if you don&rsquo;t, the quiet math of a full calendar that still doesn&rsquo;t feel like enough — gets learned alone, usually the expensive way.</p>
@@ -59,7 +61,7 @@ export default function HomePage() {
               <ExperienceCard title="Career map">Read it as a map, not a miracle. The chapters are sequenced; the decisions are still yours.</ExperienceCard>
             </EditorialGrid>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <MagneticCurlButton href="/preorder">Preorder — $17.99</MagneticCurlButton>
+              <MagneticCurlButton href="/preorder">Preorder — ${priceConfig.preorderDirect.amount.toFixed(2)}</MagneticCurlButton>
               <MagneticCurlButton href="/book" variant="secondary">Explore the Book</MagneticCurlButton>
             </div>
           </div>
@@ -69,6 +71,25 @@ export default function HomePage() {
 
       <Testimonials />
       <AuthorNote />
+
+      <ScrollReveal>
+        <section className="sunrise-surface relative overflow-hidden">
+          <div aria-hidden="true" className="dawn-bloom pointer-events-none absolute inset-x-0 -top-8 mx-auto h-64 w-[40rem] max-w-full rounded-full" />
+          <div className="relative z-10 mx-auto max-w-4xl px-5 py-20 text-center md:px-6 md:py-28">
+            <p className="editorial-kicker mb-5">Launching July 14</p>
+            <h2 className="hero-display font-display text-4xl leading-[0.95] text-white md:text-6xl">
+              Stop learning the business the <span className="text-dawn">expensive way.</span>
+            </h2>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-whitegold/85">
+              Preorder the direct edition for ${priceConfig.preorderDirect.amount.toFixed(2)} — instant digital delivery, launch price locked through release day.
+            </p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <MagneticCurlButton href="/preorder">Preorder — ${priceConfig.preorderDirect.amount.toFixed(2)}</MagneticCurlButton>
+              <MagneticCurlButton href="/free-chapter" variant="secondary">Read Chapter 1 Free</MagneticCurlButton>
+            </div>
+          </div>
+        </section>
+      </ScrollReveal>
     </main>
   );
 }

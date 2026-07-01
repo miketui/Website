@@ -10,3 +10,14 @@
   font-size: 0.75rem;
   font-weight: 700;
 }
+
+/* ── Sunny type helpers (added) ────────────────────────────────────────── */
+.text-dawn {
+  background: linear-gradient(100deg, var(--aciss-antique-gold), var(--aciss-gold-glow) 45%, var(--aciss-white-gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.text-balance { text-wrap: balance; }
+.text-pretty { text-wrap: pretty; }
+.hero-display { letter-spacing: -0.015em; text-wrap: balance; }

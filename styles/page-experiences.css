@@ -16,3 +16,36 @@
     radial-gradient(ellipse at center, transparent 58%, rgba(176, 141, 87, 0.16) 59%, transparent 61%),
     radial-gradient(ellipse at 48% 52%, transparent 45%, rgba(199, 217, 210, 0.10) 46%, transparent 48%);
 }
+
+/* ── Sunny elevation layer (added) ─────────────────────────────────────── */
+.sunrise-surface {
+  position: relative;
+  background:
+    radial-gradient(120% 90% at 50% -12%, rgba(176, 141, 87, 0.30), transparent 60%),
+    radial-gradient(90% 70% at 82% 0%, rgba(216, 209, 197, 0.14), transparent 55%),
+    radial-gradient(70% 60% at 8% 100%, rgba(20, 91, 75, 0.22), transparent 60%),
+    linear-gradient(180deg, var(--aciss-warm-veil), var(--aciss-obsidian) 64%);
+}
+.dawn-bloom {
+  background:
+    radial-gradient(circle at 50% 12%, rgba(216, 209, 197, 0.16), transparent 42%),
+    radial-gradient(circle at 50% 12%, rgba(176, 141, 87, 0.30), transparent 55%);
+  filter: blur(2px);
+}
+.editorial-panel--warm {
+  border: 1px solid rgba(176, 141, 87, 0.28);
+  background:
+    radial-gradient(140% 120% at 0% 0%, rgba(176, 141, 87, 0.10), transparent 55%),
+    rgba(255, 255, 255, 0.045);
+  box-shadow: 0 30px 90px rgba(176, 141, 87, 0.18);
+}
+.proof-band {
+  border-top: 1px solid rgba(176, 141, 87, 0.20);
+  border-bottom: 1px solid rgba(176, 141, 87, 0.20);
+  background:
+    radial-gradient(80% 140% at 50% 0%, rgba(176, 141, 87, 0.12), transparent 60%),
+    rgba(17, 17, 17, 0.40);
+}
+.proof-figure { font-variant-numeric: tabular-nums; }
+.credit-rail { color: rgba(216, 209, 197, 0.72); letter-spacing: 0.06em; }
+.credit-rail b { color: var(--aciss-dawn-gold); font-weight: 600; }
