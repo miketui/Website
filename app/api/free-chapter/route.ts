@@ -6,6 +6,7 @@ import { analyticsEvents } from "@/lib/analytics";
 import { recordServerEvent } from "@/lib/events/server-analytics";
 import { requestIp, verifyTurnstileToken } from "@/lib/turnstile";
 import { freeChapterLinks } from "@/lib/free-assets";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const schema = z.object({ email: z.string().email(), turnstileToken: z.string().optional() });
 
@@ -19,10 +20,24 @@ export async function POST(request: Request) {
   const mailerlite = await upsertSubscriber(parsed.data.email, "free_chapter", { source: "free_chapter" });
   const links = freeChapterLinks();
   const resend = await sendFreeChapter(parsed.data.email, links.configured ? links : undefined);
+
+  // Lead magnet tracking: activates a table that previously had zero code
+  // references. One row per claim (not an upsert) — repeat requests from the
+  // same email are legitimate signal, not duplicates to collapse, matching
+  // the append-only pattern already used by subscriber_events/download_events.
+  const supabase = createServerSupabaseClient(true);
+  if (supabase) {
+    await supabase.from("magnet_leads").insert({
+      email: parsed.data.email,
+      magnet_slug: "free-chapter",
+      delivered_at: resend.ok ? new Date().toISOString() : null
+    });
+  }
+
   await recordServerEvent({
     eventName: analyticsEvents.freeChapterRequested,
     route: "/api/free-chapter",
-    metadata: { mailerliteSkipped: mailerlite.skipped, resendSkipped: resend.skipped, turnstileSkipped: turnstile.skipped, linksConfigured: links.configured },
+    metadata: { mailerliteSkipped: mailerlite.skipped, resendSkipped: resend.skipped, turnstileSkipped: turnstile.skipped, linksConfigured: links.configured, supabaseSkipped: !supabase },
     operational: true
   });
   return NextResponse.json({ ok: true, mailerlite, resend, delivery: resend.ok ? "email_sent" : "email_not_configured_no_public_link" });

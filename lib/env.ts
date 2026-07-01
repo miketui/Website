@@ -22,9 +22,7 @@ const serverEnvSchema = publicEnvSchema.extend({
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
   STRIPE_PRICE_ID_PREORDER: z.string().optional(),
   STRIPE_PRICE_ID_REGULAR: z.string().optional(),
-  STRIPE_PRICE_ID_BUNDLE: z.string().optional(),
   STRIPE_PRICE_ID_CARD_DECK: z.string().optional(),
-  STRIPE_PRICE_ID_WORKSHEETS: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   RESEND_FROM_EMAIL: z.string().email().optional(),
   SUPPORT_EMAIL: z.string().email().optional(),
@@ -94,9 +92,7 @@ export function getStripeConfig(): RuntimeConfigResult<{
   webhookSecret?: string;
   preorderPriceId: string;
   regularPriceId: string;
-  bundlePriceId?: string;
   cardDeckPriceId?: string;
-  worksheetsPriceId?: string;
 }> {
   const required = ["STRIPE_SECRET_KEY", "STRIPE_PRICE_ID_PREORDER", "STRIPE_PRICE_ID_REGULAR"];
   const absent = missing(required);
@@ -108,9 +104,7 @@ export function getStripeConfig(): RuntimeConfigResult<{
       webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
       preorderPriceId: process.env.STRIPE_PRICE_ID_PREORDER!,
       regularPriceId: process.env.STRIPE_PRICE_ID_REGULAR!,
-      bundlePriceId: process.env.STRIPE_PRICE_ID_BUNDLE,
-      cardDeckPriceId: process.env.STRIPE_PRICE_ID_CARD_DECK,
-      worksheetsPriceId: process.env.STRIPE_PRICE_ID_WORKSHEETS
+      cardDeckPriceId: process.env.STRIPE_PRICE_ID_CARD_DECK
     }
   };
 }

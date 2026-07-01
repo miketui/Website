@@ -58,16 +58,17 @@ before your first real sale**, or a paying customer could receive a blank or
 placeholder message. The other two automations (Free Chapter Welcome,
 Abandoned Checkout) are correctly disabled and safe.
 
-## 🟡 Stripe — missing Price IDs
+## 🟡 Stripe — missing Price ID
 
 Confirmed present: `STRIPE_PRICE_ID_PREORDER`, `STRIPE_PRICE_ID_REGULAR`.
-Still needed, if you intend to sell these:
+Still needed, if you intend to sell it:
 - `STRIPE_PRICE_ID_CARD_DECK` — the $7.99 Affirmation Card Deck order bump.
   Code checks `session.metadata?.card_deck === "true"` to grant this
   entitlement; without a real Price ID, the order-bump can't be offered.
-- `STRIPE_PRICE_ID_BUNDLE`, `STRIPE_PRICE_ID_WORKSHEETS` — referenced in
-  `lib/env.ts` but not confirmed either way; tell me if these products exist
-  yet or should be removed from the code as not-yet-real.
+
+*(`STRIPE_PRICE_ID_BUNDLE` and `STRIPE_PRICE_ID_WORKSHEETS` — removed from
+the codebase entirely. Never confirmed real, and the live checkout UI never
+sent a product type other than the direct ebook.)*
 
 ## 🟡 Stripe Dashboard — the webhook 404 source
 
@@ -85,11 +86,19 @@ root cause — not just the symptom — is gone).
   optional. If you record a 60-second welcome video at some point, drop
   the YouTube ID in here.
 - Legacy Supabase tables (`users`, `products`, `prices`, `orders_legacy_v1`,
-  `order_items`, `entitlements`, `downloads`, `magnet_leads`, `testimonials`,
-  `blog_posts`, `audit_log`) — zero code references, zero rows. Safe to drop
-  whenever, no rush.
-- `EmailSignup` and `AnalyticsEvent` components — built, never placed on any
-  page. Either use them somewhere or I can remove them to reduce dead code.
+  `order_items`, `entitlements`, `downloads`, `testimonials`, `blog_posts`,
+  `audit_log`) — zero code references, zero rows. Safe to drop whenever, no
+  rush. (`magnet_leads` was in this list — now activated, see below.)
 - `/quiz` — real component (`QuizFlow`) exists and posts to a real API route,
   but the live page shows a "coming next" placeholder instead. Tell me when
   you want it switched on.
+
+## ✅ Resolved this session
+
+- `EmailSignup` and `AnalyticsEvent` — dead code, never placed on any page.
+  Deleted.
+- `magnet_leads` table — previously zero code references. `/api/free-chapter`
+  now writes a row to it on every claim (email, magnet_slug: "free-chapter",
+  delivered_at). Free chapter is your only live lead magnet right now, so
+  that's the only writer for the moment — if you add more lead magnets later,
+  point them at the same table with a different `magnet_slug`.

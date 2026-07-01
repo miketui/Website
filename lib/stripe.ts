@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { getLaunchMode, getSiteUrl, getStripeConfig, getStripeWebhookConfig, type LaunchMode } from "@/lib/env";
 
-export type CheckoutProduct = "direct_ebook" | "bundle" | "worksheets";
+export type CheckoutProduct = "direct_ebook";
 export type PriceTier = "preorder" | "regular";
 
 export function getStripe() {
@@ -16,13 +16,12 @@ export function getStripeForWebhook() {
   return new Stripe(config.value.secretKey);
 }
 
-export function resolveServerPriceId(mode: LaunchMode, product: CheckoutProduct) {
+export function resolveServerPriceId(mode: LaunchMode, _product: CheckoutProduct) {
   const config = getStripeConfig();
   if (!config.ok) return { ok: false as const, reason: "config_missing" as const, missing: config.missing };
   if (mode === "paused") return { ok: false as const, reason: "checkout_paused" as const };
-  const fallback = mode === "launched" ? config.value.regularPriceId : config.value.preorderPriceId;
-  const productPrice = product === "bundle" ? config.value.bundlePriceId : product === "worksheets" ? config.value.worksheetsPriceId : undefined;
-  return { ok: true as const, priceId: productPrice ?? fallback, tier: (mode === "launched" ? "regular" : "preorder") as PriceTier };
+  const priceId = mode === "launched" ? config.value.regularPriceId : config.value.preorderPriceId;
+  return { ok: true as const, priceId, tier: (mode === "launched" ? "regular" : "preorder") as PriceTier };
 }
 
 /** $7.99 Affirmation Card Deck order bump — only offered when its price ID is configured. */

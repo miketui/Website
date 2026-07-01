@@ -6,7 +6,7 @@ import { recordServerEvent } from "@/lib/events/server-analytics";
 import { buildCheckoutMetadata, checkoutUrls, getStripe, resolveCardDeckPriceId, resolveServerPriceId } from "@/lib/stripe";
 
 const checkoutSchema = z.object({
-  product: z.enum(["direct_ebook", "bundle", "worksheets"]).default("direct_ebook"),
+  product: z.enum(["direct_ebook"]).default("direct_ebook"),
   addCardDeck: z.boolean().default(false),
   sourcePage: z.string().max(120).optional(),
   utm: z.object({ utm_source: z.string().max(80).optional(), utm_medium: z.string().max(80).optional(), utm_campaign: z.string().max(120).optional() }).optional(),

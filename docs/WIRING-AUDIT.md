@@ -9,13 +9,13 @@ Every row below was checked against a real system, not just read from source.
 | Form / component | Lives on | Posts to | MailerLite | Supabase | Resend email | Status |
 |---|---|---|---|---|---|---|
 | `NewsletterForm` | Footer (every page) + `/blog/[slug]` | `/api/subscribe` | ✅ `subscribers` group | ✅ `subscribers` + `subscriber_events` | — (no confirmation email exists) | ✅ **Fixed this session** — Supabase write was silently failing (see below) |
-| `FreeChapterForm` | `/free-chapter` | `/api/free-chapter` | ✅ `free_chapter` group | ❌ no DB write | ✅ `sendFreeChapter` | ✅ Working. Email content depends on `curls-free` bucket files existing (see Missing Information doc) |
+| `FreeChapterForm` | `/free-chapter` | `/api/free-chapter` | ✅ `free_chapter` group | ✅ **Newly wired this session** — writes to `magnet_leads` | ✅ `sendFreeChapter` | ✅ Working. Email content depends on `curls-free` bucket files existing (see Missing Information doc) |
 | `PreorderCheckout` | `/buy`, `/preorder` | `/api/checkout` → Stripe Checkout | — (tagged later via webhook) | — (order row created by webhook, not this route) | — | ✅ Working, verified structurally |
 | `AuthForm` | `/login`, `/signup` | Supabase `signInWithOtp()` directly (no custom API route) | — | ✅ Supabase Auth | Supabase's own magic-link email (not Resend) | ✅ Working |
 | `QuizFlow` | Nowhere yet | `/api/quiz` | — | — | — | 🟡 **Built, not wired.** `/quiz` currently renders a "Coming next" `StagedNotice`, not the real quiz. Intentional per your funnel-staging convention — flip it on when ready |
-| `EmailSignup` | Nowhere | `/api/subscribe` (plain HTML form, no JS) | — | — | — | ⚠️ **Dead code.** Defined, never placed on any page. If you ever drop it onto a page, it has no Turnstile token attachment — would bypass bot protection |
-| `AnalyticsEvent` | Nowhere | `/api/track` | — | — | — | ⚠️ **Dead code.** Component exists, zero usages anywhere |
 | Bonus claim | `/bonus-claim` (unlinked from every other page) | *(page has no form at all — just descriptive text)* | — | — | — | 🟡 **Intentionally scaffolded** — page itself says "requires Michael's approval before launch." `/api/bonus-claim` exists as a real API route but nothing calls it yet |
+
+*(`EmailSignup` and `AnalyticsEvent` — the two dead-code components flagged in the previous version of this audit — have been deleted.)*
 
 ### Bug found and fixed this session
 `/api/subscribe` upserted `{ email, source, updated_at }` into `public.subscribers`,
@@ -61,15 +61,18 @@ not just quiet for an hour.
 
 The database has **two generations of schema living side by side**:
 
-- **Legacy (11 tables, zero code references, zero rows):** `users`, `products`,
+- **Legacy (10 tables, zero code references, zero rows):** `users`, `products`,
   `prices`, `orders_legacy_v1`, `order_items`, `entitlements`, `downloads`,
-  `magnet_leads`, `testimonials`, `blog_posts`, `audit_log`. None of these are
+  `testimonials`, `blog_posts`, `audit_log`. None of these are
   read or written by any current code path — `content/testimonials.ts` and
   `content/blog.ts` (local files) power those pages instead. Safe to drop
   whenever you want to clean up; not urgent, not costing you anything.
-- **Live (8 tables, actively used):** `orders`, `purchases`, `webhook_events`,
+  (`magnet_leads` was previously in this list — see below, now activated.)
+- **Live (9 tables, actively used):** `orders`, `purchases`, `webhook_events`,
   `subscriber_events`, `bonus_claims`, `download_events`, `admin_users`,
-  `analytics_events` — all confirmed referenced in code, all with RLS enabled.
+  `analytics_events`, and now `magnet_leads` — all confirmed referenced in
+  code, all with RLS enabled. `/api/free-chapter` now writes one row per
+  claim to `magnet_leads` (email, magnet_slug, delivered_at).
 - RLS shows as "enabled, no policy" on the live tables — that's correct, not a
   bug: every write goes through server-side code using the service-role key,
   which bypasses RLS by design. No anon/client-side access exists to any of

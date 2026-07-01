@@ -35,9 +35,9 @@ so this is now the only place these live.
 | `STRIPE_WEBHOOK_SECRET` | `whsec_...` for the "whimsical-celebration" destination |
 | `STRIPE_PRICE_ID_PREORDER` | Confirmed present |
 | `STRIPE_PRICE_ID_REGULAR` | Confirmed present |
-| `STRIPE_PRICE_ID_BUNDLE` | Status unconfirmed — see Missing Information doc |
 | `STRIPE_PRICE_ID_CARD_DECK` | Needed for the $7.99 order bump — not yet created per prior notes |
-| `STRIPE_PRICE_ID_WORKSHEETS` | Status unconfirmed |
+
+*(`STRIPE_PRICE_ID_BUNDLE` and `STRIPE_PRICE_ID_WORKSHEETS` were removed from the codebase — never confirmed real, and the live checkout UI never sent a product type other than `direct_ebook`. `CheckoutProduct` is now just `"direct_ebook"`.)*
 
 ## MailerLite — 1 API key + 11 groups, all IDs verified live via API this session
 
@@ -116,5 +116,5 @@ so this is now the only place these live.
   `DOWNLOAD_TOKEN_SECRET`, `POSTHOG_PERSONAL_API_KEY` — all vestigial, zero
   code references anywhere in the repo. Leftovers from an earlier
   architecture (client-side Stripe checkout, a custom download-token scheme)
-  that's since been replaced. Safe to leave unset; safe to delete from any
-  local `.env.local` you keep.
+  that's since been replaced. Removed from the regenerated `.env` and
+  `.env.example` entirely.

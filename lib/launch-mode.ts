@@ -17,9 +17,3 @@ export function getLaunchCta(mode: LaunchMode = getLaunchMode()) {
       return { label: `Preorder — $${priceConfig.preorderDirect.amount.toFixed(2)}`, href: "/preorder", helper: "Direct from the author — delivered to your account.", priceTier: "preorder" as const };
   }
 }
-
-export function resolveStripePriceId(mode: LaunchMode, product: "direct_ebook" | "bundle" | "worksheets") {
-  if (product === "bundle") return process.env.STRIPE_PRICE_ID_BUNDLE;
-  if (product === "worksheets") return process.env.STRIPE_PRICE_ID_WORKSHEETS;
-  return mode === "launched" ? process.env.STRIPE_PRICE_ID_REGULAR : process.env.STRIPE_PRICE_ID_PREORDER;
-}
