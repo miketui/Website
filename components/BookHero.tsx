@@ -38,9 +38,11 @@ export function BookHero() {
           </p>
         </div>
         <div className="relative z-10">
-          <BookTilt>
-            <Image src="/gateway-cover.jpg" alt="Curls & Contemplation by Michael David — book cover" width={800} height={1200} priority className="mx-auto w-full max-w-sm rounded-lg shadow-gold" />
-          </BookTilt>
+          <div className="hero-book-float">
+            <BookTilt>
+              <Image src="/gateway-cover.jpg" alt="Curls & Contemplation by Michael David — book cover" width={800} height={1200} priority className="mx-auto w-full max-w-sm rounded-lg shadow-gold" />
+            </BookTilt>
+          </div>
           <Link href="/book" className="mx-auto mt-6 block max-w-xs text-center text-sm text-whitegold/70 underline decoration-antique underline-offset-4">See what the book covers</Link>
         </div>
       </div>

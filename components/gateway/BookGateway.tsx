@@ -76,11 +76,22 @@ export function BookGateway() {
       seen = false;
     }
     if (seen) {
+      /* Replays skip the show — drop the pre-hydration curtain right away. */
+      document.documentElement.removeAttribute("data-cc-gateway");
       setGone(true);
     } else {
       setOverlayMounted(true);
     }
   }, []);
+
+  /* The layout's inline script raises an obsidian curtain before first paint
+     so the homepage never flashes ahead of the overlay. Release it only after
+     the overlay is painted (this effect runs post-paint). */
+  useEffect(() => {
+    if (overlayMounted || gone) {
+      document.documentElement.removeAttribute("data-cc-gateway");
+    }
+  }, [overlayMounted, gone]);
 
   /* prefers-reduced-motion, observed reactively via matchMedia. */
   useEffect(() => {
@@ -108,10 +119,10 @@ export function BookGateway() {
     if (!overlayMounted || gone) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const loaderMs = reduceMotionRef.current ? 350 : 1050;
+    const loaderMs = reduceMotionRef.current ? 300 : 500;
     later(() => setReady(true), loaderMs);
     /* Safety: never trap the visitor behind the curtain. */
-    later(() => setReady(true), 3200);
+    later(() => setReady(true), 2000);
     return () => {
       document.body.style.overflow = previousOverflow;
     };
