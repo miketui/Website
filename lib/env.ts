@@ -45,7 +45,8 @@ const serverEnvSchema = publicEnvSchema.extend({
   GA4_API_SECRET: z.string().optional(),
   SENTRY_ORG: z.string().optional(),
   SENTRY_PROJECT: z.string().optional(),
-  SENTRY_AUTH_TOKEN: z.string().optional()
+  SENTRY_AUTH_TOKEN: z.string().optional(),
+  CRON_SECRET: z.string().optional()
 });
 
 export type LaunchMode = z.infer<typeof launchModeSchema>;
