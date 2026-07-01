@@ -2,6 +2,22 @@
 **Curls & Contemplation — curlscontemplation.beauty**
 Audited: 2026-06-30/07-01, live via MCP connectors + direct code review of `miketui/Website` @ `f56b654` (main). Every finding below is either a real API response or a cited file/line — nothing in this document is asserted from memory or training data.
 
+## 🟢 STATUS UPDATE — 2026-07-01, follow-up pass
+Everything in this section was fixed live this session, verified, and is sitting on branch `feat/auth-sentry-posthog` awaiting your merge (not yet on `main`).
+
+- **B1 (Supabase paused) — FIXED.** Project restored via `Supabase:restore_project`, confirmed `ACTIVE_HEALTHY`.
+- **New, bigger finding than B1 implied — FIXED.** The live database schema predated the app code entirely: `purchases`, `webhook_events`, `subscriber_events`, `bonus_claims`, `download_events`, `admin_users` didn't exist, and the one shared table name (`orders`) had incompatible columns (`stripe_session_id` vs. code's `stripe_checkout_session_id`, etc.). Confirmed with `to_regclass()` returning `null` for all six. Applied migration `app_schema_alignment` — renamed the legacy `orders` to `orders_legacy_v1` (0 rows everywhere, nothing lost) and created the schema the code has always assumed, including `purchases UNIQUE(order_id, book_slug)` — the exact constraint the webhook handler's defensive fallback comment (`"Migration 0002 not applied yet"`) was waiting on. `get_advisors` (security + performance) run clean — INFO-level only, correct for service-role-only tables.
+- **B3 (login/signup non-functional) — FIXED.** Real Supabase Auth, passwordless magic-link (one flow for both signup and login). New: `lib/supabase/browser.ts`, `app/auth/callback/route.ts`, rewritten `components/AuthForm.tsx`. Also fixed a second, independent bug found while building this: `getSessionUser()` was using a client with `persistSession: false` — cookie-blind, could never see a real session even with working auth code elsewhere. Now uses a proper `@supabase/ssr` cookie-aware client. `app/dashboard/page.tsx` now queries real purchases; `components/DownloadList.tsx` now actually calls `/api/downloads/sign` instead of raw-POSTing to display JSON on screen; `app/logout/route.ts` now calls real `signOut()`.
+- **H3 (Sentry unwired) — FIXED.** New dedicated project `curls-contemplation-website` created (not the generic default). DSN: `https://79379bde875c5981a7150c413b4bc8fa@o4510096051404800.ingest.us.sentry.io/4511657443459072` — paste as `NEXT_PUBLIC_SENTRY_DSN` in Vercel. `instrumentation.ts` + `instrumentation-client.ts` (the correct pattern for Next.js 16 + Turbopack — the older `sentry.client.config.ts` convention does not auto-load under Turbopack), `app/global-error.tsx`, `next.config.ts` wrapped with `withSentryConfig`.
+- **H4, PostHog half — FIXED.** Wired via `components/PostHogProvider.tsx`, but strictly gated behind the site's existing consent banner (`cc_analytics_consent` in localStorage) — zero init, zero capture until the visitor actually clicks "Allow analytics." Extracted the consent-reading logic into `lib/consent.ts` so the banner and PostHog share one source of truth instead of duplicating it.
+- **H4, GA4 half — still open.** Property age mismatch unresolved, needs your confirmation in the GA4 Admin UI (see original finding below).
+- **Real bug found and fixed during this build, unrelated to the ask:** `components/DownloadList.tsx` (client component) was importing from `lib/downloads.ts`, which also contains server-only Supabase signing logic (`next/headers`) — Turbopack correctly refused to build it. Split the client-safe deliverable metadata into `lib/deliverables.ts`.
+- **New surface found, not yet audited:** the build revealed a full `/admin` route tree (`/admin`, `/admin/analytics`, `/admin/claims`, `/admin/content`, `/admin/orders`, `/admin/subscribers`) that wasn't part of any prior audit pass. Flagging for a future session — not touched here.
+- **Verified:** typecheck 0, lint 0, 66/66 tests, build exit 0 (Next.js 16.2.9, Turbopack).
+- **Still open, unchanged:** B2 (Stripe webhook URL), H1 (MailerLite automations), M1 (Resend domain verification), M3 (confirm `ALLOW_DEMO_SESSION` absent from prod), and everything else not listed above.
+
+---
+
 ## Verdict
 **Not launch-ready.** Two infrastructure items are actively broken in production right now (Supabase paused, Stripe webhook 404ing). Auth/signup is unbuilt. Everything else ranges from "correctly coded, awaiting real credentials" to "dashboard exists, zero code wiring."
 
