@@ -32,7 +32,7 @@ export function bookJsonLd() {
     description: book.description,
     url: absoluteUrl("/book"),
     inLanguage: "en",
-    numberOfPages: 467,
+    numberOfPages: book.numberOfPages,
     datePublished: siteConfig.releaseDate,
     bookEdition: "Digital Edition",
     publisher: { "@type": "Organization", name: siteConfig.name },

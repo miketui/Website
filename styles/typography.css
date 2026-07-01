@@ -18,6 +18,4 @@
   background-clip: text;
   color: transparent;
 }
-.text-balance { text-wrap: balance; }
-.text-pretty { text-wrap: pretty; }
 .hero-display { letter-spacing: -0.015em; text-wrap: balance; }

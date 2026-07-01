@@ -13,6 +13,7 @@ export const book = {
   description:
     "A grounded, premium guide for freelance hairstylists who want steadier creativity, clearer business decisions, and a more sustainable path behind the chair.",
   credibilityNote: "Built from Michael's lived hairstylist and creative practice experience.",
+  numberOfPages: 467,
   preorderPrice: priceConfig.preorderDirect.amount,
   regularPrice: priceConfig.regularDirect.amount
 } as const;
