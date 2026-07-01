@@ -18,6 +18,17 @@ Everything in this section was fixed live this session, verified, and is sitting
 
 ---
 
+## 🟢 STATUS UPDATE #2 — 2026-07-01, this pass
+- **Stripe connector confirmed live, but webhook endpoint management is genuinely not exposed by it.** Verified with 4 search phrasings + a direct operation-ID probe (`PostWebhookEndpoints` → not available), corroborated by Stripe's own docs presenting webhook creation as a Dashboard/Workbench-only action. **B2 remains a manual dashboard fix** — exact steps unchanged, see Blocker B2 below.
+- **New real bug found and fixed:** `analytics_events` — declared in code's `tableNames`, actively written by `recordServerEvent()` (called from *every* route in the app), but the table never existed. Every analytics call site-wide has been silently failing. Created, verified with a real insert/delete round-trip.
+- **Confirmed via grep:** the other 4 declared-but-missing tables (`profiles`, `download_tokens`, `consent_log`, `gate_ledger`) are genuinely unused — no code queries them. Left uncreated rather than adding speculative schema.
+- **`/admin` audited:** all 6 pages correctly call `requireAdmin()` — genuinely gated, not a leak — and that gate now actually *works* for the first time (it depends on this session's `getSessionUser()` fix + the `admin_users` table). But every page body is identical scaffold (`AdminSurface`), zero real data queries. **`admin_users` is empty — nobody, including you, can pass the gate yet.** Needs a row inserted with your real account email, or `ADMIN_EMAILS` set in Vercel.
+- **New: autonomous launch-day EPUB send, built.** `app/api/cron/launch-day/route.ts` + `vercel.json` (daily 14:00 UTC). No-ops until `RELEASE_DATE` arrives, then sends the *existing* approved `sendDownloadAccess()` template to every active purchase that hasn't received it — idempotent via a new `launch_email_sent_at` column, safe to run forever. Auth-gated on `CRON_SECRET` (add this to Vercel).
+- **MailerLite automations — structure built, all inactive:** Free Chapter welcome, Abandoned Checkout +24h reminder, Customers post-purchase onboarding. All three need real subject lines + HTML body written in the MailerLite visual editor before activating — genuinely cannot be done via API, and the copy is your voice, not mine to invent.
+- **Verified:** typecheck 0, lint 0, 70/70 tests, build exit 0.
+
+---
+
 ## Verdict
 **Not launch-ready.** Two infrastructure items are actively broken in production right now (Supabase paused, Stripe webhook 404ing). Auth/signup is unbuilt. Everything else ranges from "correctly coded, awaiting real credentials" to "dashboard exists, zero code wiring."
 
