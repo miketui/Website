@@ -20,6 +20,7 @@
     "@stripe/stripe-js": "latest",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "latest",
+    "@vercel/speed-insights": "^2.0.0",
     "clsx": "latest",
     "next": "latest",
     "posthog-js": "^1.396.3",
