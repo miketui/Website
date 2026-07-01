@@ -38,7 +38,7 @@ export const metadata: Metadata = {
  * (html[data-cc-gateway] body::before in gateway.css) so the homepage never
  * flashes before the overlay hydrates. BookGateway removes the attribute.
  */
-const gatewayCurtainScript = `try{if(location.pathname==="/"&&sessionStorage.getItem("curls-gateway-seen")!=="1")document.documentElement.setAttribute("data-cc-gateway","")}catch(e){}`;
+const gatewayCurtainScript = `try{var seen=false;try{seen=sessionStorage.getItem("curls-gateway-seen")==="1"}catch(e){}if(location.pathname==="/"&&!seen)document.documentElement.setAttribute("data-cc-gateway","")}catch(e){}`;
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   /* suppressHydrationWarning: the gateway curtain script (below) sets a
