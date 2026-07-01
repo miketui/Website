@@ -1,2 +1,13 @@
 import { NextResponse } from "next/server";
-export async function GET() { const response = NextResponse.redirect(new URL("/", process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000")); response.cookies.delete("cc_demo_email"); response.cookies.delete("cc_demo_user"); return response; }
+import { createSupabaseSessionClient } from "@/lib/supabase/server";
+import { getSiteUrl } from "@/lib/env";
+
+export async function GET() {
+  const supabase = await createSupabaseSessionClient();
+  if (supabase) await supabase.auth.signOut();
+
+  const response = NextResponse.redirect(new URL("/", getSiteUrl()));
+  response.cookies.delete("cc_demo_email");
+  response.cookies.delete("cc_demo_user");
+  return response;
+}

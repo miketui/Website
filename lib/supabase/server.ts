@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
 import { getSupabaseServerConfig } from "@/lib/env";
 import { orEquals } from "@/lib/supabase/filters";
 
@@ -30,6 +31,32 @@ export function createServerSupabaseClient(useServiceRole = false): SupabaseClie
   return createClient(config.value.url, config.value.key, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
+/**
+ * Cookie-aware server client — the ONLY client that can actually see a signed-in
+ * user's session, because it reads/writes the real Supabase Auth cookies via
+ * Next's cookies() API. The plain createServerSupabaseClient() below cannot do
+ * this (persistSession: false, no cookie store) and must never be used for
+ * session reads — it exists for service-role and stateless anon writes only.
+ */
+export async function createSupabaseSessionClient(): Promise<SupabaseClient | null> {
+  const config = getSupabaseServerConfig(false);
+  if (!config.ok) return null;
+  const cookieStore = await cookies();
+  return createServerClient(config.value.url, config.value.key, {
+    cookies: {
+      getAll: () => cookieStore.getAll(),
+      setAll: (cookiesToSet) => {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+        } catch {
+          // Called from a Server Component render — middleware refreshes the
+          // session cookie on the next request instead. Safe to ignore.
+        }
+      }
+    }
+  });
+}
+
 export async function getSessionUser(): Promise<SessionUser | null> {
   const cookieStore = await cookies();
   // Demo-session cookies are a sandbox convenience only. They are unsigned and
@@ -40,7 +67,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     const userId = cookieStore.get("cc_demo_user")?.value;
     if (email && userId) return { id: userId, email };
   }
-  const supabase = createServerSupabaseClient(false);
+  const supabase = await createSupabaseSessionClient();
   if (!supabase) return null;
   const { data } = await supabase.auth.getUser();
   return data.user ? { id: data.user.id, email: data.user.email ?? "" } : null;

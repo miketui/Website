@@ -65,9 +65,10 @@ describe("Prompt 6 sandbox integration readiness", () => {
     expect(lockedStorage.bucket).toBe("curls-deliverables");
     expect(lockedStorage.epub).toBe(lockedEpubPath);
     expect(lockedStorage.pdf).toBe(lockedPdfPath);
+    const deliverables = readFileSync(join(appDir, "lib/deliverables.ts"), "utf8");
+    expect(deliverables).toContain(lockedEpubPath);
+    expect(deliverables).toContain(lockedPdfPath);
     const downloads = readFileSync(join(appDir, "lib/downloads.ts"), "utf8");
-    expect(downloads).toContain(lockedEpubPath);
-    expect(downloads).toContain(lockedPdfPath);
     expect(downloads).not.toContain("release/Curls-and-Contemplation");
   });
 

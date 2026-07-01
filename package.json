@@ -16,10 +16,13 @@
     "check:sandbox": "pnpm check:sandbox-env && pnpm check:deliverables && pnpm check:supabase-storage && pnpm check:stripe-test"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.62.0",
     "@stripe/stripe-js": "latest",
+    "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "latest",
     "clsx": "latest",
     "next": "latest",
+    "posthog-js": "^1.396.3",
     "react": "latest",
     "react-dom": "latest",
     "stripe": "latest",

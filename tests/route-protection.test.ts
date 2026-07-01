@@ -10,7 +10,7 @@ describe("route protection and indexing policy", () => {
 
   it("uses Next.js proxy convention and noindex headers for protected surfaces", () => {
     const proxy = readFileSync(join(process.cwd(), "proxy.ts"), "utf8");
-    expect(proxy).toContain("export function proxy");
+    expect(proxy).toContain("export async function proxy");
     expect(proxy).toContain("X-Robots-Tag");
     expect(proxy).toContain("noindex, nofollow");
   });

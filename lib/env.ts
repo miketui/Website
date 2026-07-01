@@ -11,7 +11,8 @@ const publicEnvSchema = z.object({
   NEXT_PUBLIC_THANKYOU_VIDEO_ID: z.string().optional(),
   NEXT_PUBLIC_GA4_MEASUREMENT_ID: z.string().optional(),
   NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
-  NEXT_PUBLIC_POSTHOG_HOST: z.string().url().optional()
+  NEXT_PUBLIC_POSTHOG_HOST: z.string().url().optional(),
+  NEXT_PUBLIC_SENTRY_DSN: z.string().optional()
 });
 
 const serverEnvSchema = publicEnvSchema.extend({
@@ -41,7 +42,10 @@ const serverEnvSchema = publicEnvSchema.extend({
   MAILERLITE_GROUP_QUIZ: z.string().optional(),
   TURNSTILE_SECRET_KEY: z.string().optional(),
   ADMIN_EMAILS: z.string().optional(),
-  GA4_API_SECRET: z.string().optional()
+  GA4_API_SECRET: z.string().optional(),
+  SENTRY_ORG: z.string().optional(),
+  SENTRY_PROJECT: z.string().optional(),
+  SENTRY_AUTH_TOKEN: z.string().optional()
 });
 
 export type LaunchMode = z.infer<typeof launchModeSchema>;
