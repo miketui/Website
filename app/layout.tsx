@@ -9,6 +9,7 @@ import { PageTransition } from "@/components/motion/PageTransition";
 import { ReducedMotionProvider } from "@/components/motion/ReducedMotionProvider";
 import { siteConfig } from "@/content/site";
 import { personJsonLd } from "@/lib/schema";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: {
@@ -30,5 +31,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  return <html lang="en"><body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><Header /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><SiteCurlTrail /></ReducedMotionProvider></body></html>;
+  return <html lang="en"><body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><Header /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><SiteCurlTrail /></ReducedMotionProvider><SpeedInsights /></body></html>;
 }
