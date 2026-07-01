@@ -27,8 +27,12 @@ export async function POST(request: Request) {
   // your inbox for the welcome note", and there is no MailerLite automation on
   // the signup group to honor that — so send it directly via Resend, matching
   // the free-chapter/bonus-claim pattern. Skips gracefully (skipped:true) if
-  // Resend isn't configured; never blocks the signup from succeeding.
-  const resend = await sendWelcomeEmail(parsed.data.email);
+  // Resend isn't configured. The .catch() guarantees a network/timeout failure
+  // in the underlying fetch can never throw past this line — the signup (and the
+  // Supabase writes below) must still succeed even if email delivery is down.
+  const resend = await sendWelcomeEmail(parsed.data.email).catch(
+    () => ({ ok: false as const, skipped: false as const, reason: "provider_error" as const })
+  );
 
   const supabase = createServerSupabaseClient(true);
   if (supabase) {
