@@ -4,8 +4,23 @@ import { Section } from "@/components/design/Section";
 import { WorksheetCard } from "@/components/WorksheetCard";
 import { worksheets } from "@/content/worksheets";
 
-export const metadata = pageMetadata("Resources", "A quiet resource library for the work behind the work.", { path: "/resources" });
+export const metadata = pageMetadata("Resources", "Member resource library for Curls & Contemplation readers.", { path: "/resources", noIndex: true });
 
 export default function Page() {
-  return <main><PageHero eyebrow="Resources" title="Tools for the work behind the work." description="Resource-library surfaces are prepared for future expansion, without activating a live subscription offer." primaryHref="/worksheets" primaryLabel="Preview Worksheets" secondaryHref="/preorder" secondaryLabel="Preorder — $17.99" /><Section eyebrow="Scaffolded library" title="Useful, quiet, not overpromised."><div className="grid gap-5 md:grid-cols-2">{worksheets.map((worksheet) => <WorksheetCard key={worksheet.slug} worksheet={worksheet} />)}</div></Section></main>;
+  return (
+    <main>
+      <PageHero
+        eyebrow="Resources · Members"
+        title="You made it in. Here's what's actually ready."
+        description="This library grows as the book grows — nothing sold here that isn't finished, nothing promised that isn't real yet."
+        primaryHref="/worksheets"
+        primaryLabel="Preview Worksheets"
+        secondaryHref="/book"
+        secondaryLabel="Back to the Book"
+      />
+      <Section eyebrow="What's live now" title="Useful today, honest about what's next.">
+        <div className="grid gap-5 md:grid-cols-2">{worksheets.map((worksheet) => <WorksheetCard key={worksheet.slug} worksheet={worksheet} />)}</div>
+      </Section>
+    </main>
+  );
 }
