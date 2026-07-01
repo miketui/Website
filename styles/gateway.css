@@ -33,7 +33,9 @@
   color: var(--gw-ivory);
   font-family: var(--gw-sans);
   background:
+    radial-gradient(circle at 50% 8%, rgba(216, 209, 197, 0.10), transparent 16rem),
     radial-gradient(circle at var(--gw-aura-x) var(--gw-aura-y), rgba(20, 91, 75, 0.2), transparent 22rem),
+    radial-gradient(circle at 50% 30%, rgba(176, 141, 87, 0.20), transparent 24rem),
     radial-gradient(circle at 48% 72%, rgba(176, 141, 87, 0.12), transparent 18rem),
     linear-gradient(
       180deg,

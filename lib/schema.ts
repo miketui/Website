@@ -31,6 +31,12 @@ export function bookJsonLd() {
     author: { "@type": "Person", name: book.author, url: absoluteUrl("/about") },
     description: book.description,
     url: absoluteUrl("/book"),
+    inLanguage: "en",
+    numberOfPages: book.numberOfPages,
+    datePublished: siteConfig.releaseDate,
+    bookEdition: "Digital Edition",
+    publisher: { "@type": "Organization", name: siteConfig.name },
+    audience: { "@type": "Audience", audienceType: "Freelance hairstylists and beauty professionals" },
     workExample: {
       "@type": "Book",
       bookFormat: "https://schema.org/EBook",
