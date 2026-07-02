@@ -25,7 +25,7 @@ export function orderConfirmationTemplate(orderId: string) {
 }
 
 export function downloadAccessTemplate() {
-  return { subject: "Your protected download access", html: "<p>Your EPUB access is available from your secure dashboard after sign-in.</p>" };
+  return { subject: "Your protected download access", html: "<p>Your digital downloads are available from your secure dashboard after sign-in.</p>" };
 }
 
 /**
