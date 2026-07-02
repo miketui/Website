@@ -43,7 +43,6 @@ export function JourneyExperience() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     document.documentElement.removeAttribute("data-cc-gateway");
     if (reduce) return;
-    document.documentElement.setAttribute("data-journey", "on");
 
     const root = rootRef.current;
     if (!root) return;
@@ -60,6 +59,8 @@ export function JourneyExperience() {
     const stations = [...root.querySelectorAll<HTMLDivElement>(".jr-station")];
     const cards = [...root.querySelectorAll<HTMLDivElement>(".jr-card")];
     if (!world || !bookScene || !book || !cover || !bookTrack || !journeyTrack || !hero || !heroLine) return;
+    /* Fail closed: journey chrome only appears once every required node exists. */
+    document.documentElement.setAttribute("data-journey", "on");
 
     /* Split the hero line into words client-side only (copy stays intact in the
        server HTML for crawlers/no-JS). Mutating here is React-safe: this subtree
@@ -107,18 +108,22 @@ export function JourneyExperience() {
     }
 
     /* Pointer answers the hand before the wheel does (landing only). */
-    let tiltX = 0;
-    let tiltY = 0;
-    const onPointer = (e: PointerEvent) => {
-      tiltY = (e.clientX / window.innerWidth - 0.5) * 6;
-      tiltX = -(e.clientY / window.innerHeight - 0.5) * 4;
-    };
-    window.addEventListener("pointermove", onPointer, { passive: true });
-
     let target = window.scrollY;
     let current = window.scrollY;
     let raf = 0;
     let running = false;
+    let tiltX = 0;
+    let tiltY = 0;
+    const onPointer = (e: PointerEvent) => {
+      tiltY = (e.clientX / window.innerWidth - 0.5) * 7;
+      tiltX = -(e.clientY / window.innerHeight - 0.5) * 4.5;
+      /* The book answers the hand even before the first scroll. */
+      if (!running) {
+        running = true;
+        raf = requestAnimationFrame(tick);
+      }
+    };
+    window.addEventListener("pointermove", onPointer, { passive: true });
 
     /* Layout metrics are read once per resize, never inside the rAF loop —
        offsetTop/offsetHeight reads per frame would force layout thrashing. */
@@ -192,9 +197,15 @@ export function JourneyExperience() {
         const yy = ramp(w, [0, 0.3, 0.7, 1], [60, 0, 0, -40]);
         const rx = ramp(w, [0, 0.3], [14, 0]);
         c.style.opacity = String(op);
+        c.style.visibility = op === 0 ? "hidden" : "visible";
         c.style.transform = `translate(-50%,-50%) translateY(${yy}px) rotateX(${rx}deg) scale(${sc})`;
         const cta = c.querySelector<HTMLElement>(".jr-cta");
-        if (cta) cta.style.pointerEvents = op > 0.6 ? "auto" : "none";
+        if (cta) {
+          /* Hidden cards leave the tab order too — anchors stay focusable
+             unless explicitly removed. */
+          cta.style.pointerEvents = op > 0.6 ? "auto" : "none";
+          cta.tabIndex = op > 0.6 ? 0 : -1;
+        }
       });
     };
 
@@ -255,6 +266,10 @@ export function JourneyExperience() {
             </div>
             <svg className="jr-curl" style={{ left: "8%", top: "16%", width: 90 }} viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6c-14 9-20 24-16 40 8-2 14-8 17-16 2 8 8 14 16 15 3-16-4-31-17-39z" fill="none" stroke="#B08D57" strokeWidth="1.6" opacity=".9" /></svg>
             <svg className="jr-curl" style={{ right: "10%", top: "58%", width: 70, animationDelay: "1.2s" }} viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6c-14 9-20 24-16 40 8-2 14-8 17-16 2 8 8 14 16 15 3-16-4-31-17-39z" fill="none" stroke="#B08D57" strokeWidth="1.4" opacity=".7" /></svg>
+            {/* The wounds, made physical — the camera walks through them */}
+            <div className="jr-plate" style={{ left: "18%", top: "62%", transform: "translateZ(140px) rotateY(8deg)" }}>The flinch before the quote<small>Pricing</small></div>
+            <div className="jr-plate" style={{ left: "64%", top: "26%", transform: "translateZ(60px) rotateY(-7deg)" }}>Full book. Empty tank.<small>Burnout</small></div>
+            <div className="jr-plate" style={{ left: "56%", top: "68%", transform: "translateZ(220px) rotateY(-4deg)" }}>The room you never entered<small>Networking</small></div>
           </div>
           {/* 02 · The Mirror — jade mist: recognition is a cold clear light */}
           <div className="jr-station" style={{ transform: `translate(-50%,-50%) translateZ(${WORLDS[1].z}px)` }}>
@@ -271,12 +286,21 @@ export function JourneyExperience() {
             {[0, 1, 2, 3, 4].map((i) => (
               <span key={i} className="jr-tick" style={{ left: `calc(50% + ${(i - 2) * 64}px)`, top: "44%", animationDelay: `${i * 0.2}s` }} />
             ))}
+            <div className="jr-plate" style={{ left: "50%", top: "62%", transform: "translate(-50%,0) translateZ(90px)" }}>One small move a day<small>Price &middot; Pitch &middot; Protect</small></div>
           </div>
           {/* 04 · The Bloom — deep jade ground, the book waits ahead */}
           <div className="jr-station" style={{ transform: `translate(-50%,-50%) translateZ(${WORLDS[3].z}px)` }}>
             <div className="jr-floor" />
             <span className="jr-trace" style={{ width: "60%", left: "20%", top: "36%" }} />
             <span className="jr-trace" style={{ width: "44%", left: "30%", top: "56%", animationDelay: ".8s" }} />
+            {/* Sixteen chapters, drawn as gold points converging on the book */}
+            {Array.from({ length: 16 }, (_, i) => {
+              const t = i / 15;
+              const x = 14 + t * 36;
+              const y = 74 - t * 32 + Math.sin(t * Math.PI) * -6;
+              return <span key={i} className="jr-chapterdot" style={{ left: `${i % 2 === 0 ? x : 100 - x}%`, top: `${y}%`, transform: `translateZ(${-40 - t * 260}px)`, animationDelay: `${t * 1.6}s` }} />;
+            })}
+            <div className="jr-plate" style={{ left: "50%", top: "66%", transform: "translate(-50%,0) translateZ(120px)" }}>Sixteen chapters. A worksheet in every one.<small>The whole map</small></div>
             <div className="jr-farbook" />
           </div>
         </div>
@@ -287,6 +311,8 @@ export function JourneyExperience() {
       <div className="jr-book-scene">
         <div className="jr-book-stage">
           <div className="jr-book">
+            <div className="jr-bookshadow" aria-hidden="true" />
+            <div className="jr-bookinner">
             <div className="jr-backboard" />
             <div className="jr-pageedges" />
             <div className="jr-titlepage">
@@ -309,13 +335,14 @@ export function JourneyExperience() {
                 }
               }}
             >
-              <div className="jr-coverfront" />
+              <div className="jr-coverfront"><span className="jr-coversheen" aria-hidden="true" /></div>
               <div className="jr-coverinside"><span>for every stylist building the business nobody taught them</span></div>
+            </div>
             </div>
           </div>
           <div className="jr-landing-copy">
             <p className="jr-kicker">You learned the craft</p>
-            <p className="jr-line">Nobody taught you the business. This book is the door.</p>
+            <span className="jr-lineclip"><p className="jr-line">Nobody taught you the business. This book is the door.</p></span>
             <p className="jr-open-cue">Scroll to open the book</p>
           </div>
         </div>
