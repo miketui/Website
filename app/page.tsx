@@ -6,6 +6,7 @@ import { ExperienceCard } from "@/components/design/ExperienceCard";
 import { ChapterPathway } from "@/components/motion/ChapterPathway";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
+import { CaptureBand } from "@/components/CaptureBand";
 import { Testimonials, AuthorNote } from "@/components/SocialProof";
 import { bookJsonLd } from "@/lib/schema";
 import { pageMetadata } from "@/lib/seo";
@@ -79,6 +80,8 @@ export default function HomePage() {
 
       <Testimonials />
       <AuthorNote />
+
+      <CaptureBand source="home-midscroll" heading="Not ready to buy? Read Chapter 1 free." copy="Join the letters and the full Chapter 1 PDF lands in your inbox tonight — with the Pricing Confidence Checklist alongside it. One welcome note, then the occasional letter. No spam." />
 
       <ScrollReveal>
         <section className="sunrise-surface relative overflow-hidden">
