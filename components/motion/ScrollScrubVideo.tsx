@@ -106,6 +106,8 @@ export function ScrollScrubVideo({ src, webmSrc, poster, trackVh = 240, classNam
     );
   }
 
+  const activeStage = stages && stages.length > 0 ? Math.min(stages.length - 1, Math.floor((progressPct / 100) * stages.length)) : 0;
+
   return (
     <div ref={trackRef} className={className} style={{ height: `${trackVh}vh` }}>
       <section className="sticky top-0 h-screen overflow-hidden">
@@ -121,14 +123,11 @@ export function ScrollScrubVideo({ src, webmSrc, poster, trackVh = 240, classNam
           {stages && stages.length > 0 && (
             /* The story beats: one caption per act, crossfading with progress */
             <div className="relative grid w-full max-w-3xl place-items-center">
-              {stages.map((stage, index) => {
-                const act = Math.min(stages.length - 1, Math.floor((progressPct / 100) * stages.length));
-                return (
-                  <div key={index} className={`col-start-1 row-start-1 transition-opacity duration-700 ${act === index ? "opacity-100" : "opacity-0"}`} aria-hidden={act !== index}>
-                    {stage}
-                  </div>
-                );
-              })}
+              {stages.map((stage, index) => (
+                <div key={index} className={`col-start-1 row-start-1 transition-opacity duration-700 ${activeStage === index ? "opacity-100" : "opacity-0"}`} aria-hidden={activeStage !== index}>
+                  {stage}
+                </div>
+              ))}
             </div>
           )}
           <div aria-hidden="true" className="absolute bottom-10 left-1/2 w-40 -translate-x-1/2">
