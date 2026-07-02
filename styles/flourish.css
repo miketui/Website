@@ -1,0 +1,126 @@
+/* ── Silk & strand 2.5D layer ────────────────────────────────────────────
+   The lush editorial direction: frosted glass panels, gold strand
+   ornaments, oversized silky curls floating at parallax depths, and glowing
+   jade circuit lines connecting the chapter network. Every color below is a
+   luminance mix of the five locked ACISS colors — no new hues. All ambient
+   motion is transform/opacity only and gated behind prefers-reduced-motion. */
+
+:root {
+  --aciss-jade-glow: color-mix(in srgb, var(--aciss-deep-jade) 52%, var(--aciss-soft-jade-mist));
+  --aciss-veil: color-mix(in srgb, var(--aciss-obsidian) 70%, var(--aciss-deep-jade));
+  --aciss-strand-deep: color-mix(in srgb, var(--aciss-obsidian) 46%, var(--aciss-deep-jade));
+  --aciss-strand-mid: color-mix(in srgb, var(--aciss-deep-jade) 78%, var(--aciss-soft-jade-mist));
+}
+
+/* ── Frosted glass panels (the concept-film card) ──────────────────────── */
+.glass-panel {
+  position: relative;
+  border: 1px solid rgba(216, 209, 197, 0.16);
+  border-radius: inherit;
+  background:
+    linear-gradient(152deg, rgba(199, 217, 210, 0.09), rgba(199, 217, 210, 0.02) 40%, rgba(20, 91, 75, 0.12)),
+    rgba(17, 17, 17, 0.46);
+  box-shadow:
+    0 26px 80px rgba(17, 17, 17, 0.5),
+    0 12px 44px rgba(20, 91, 75, 0.16),
+    inset 0 1px 0 rgba(216, 209, 197, 0.12);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-panel {
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+    background:
+      linear-gradient(152deg, rgba(199, 217, 210, 0.09), rgba(199, 217, 210, 0.02) 40%, rgba(20, 91, 75, 0.12)),
+      rgba(17, 17, 17, 0.30);
+  }
+}
+/* Gold hairline glint along the top edge, like light catching the glass. */
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 8% auto 8%;
+  height: 1px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, rgba(176, 141, 87, 0.55) 30%, rgba(216, 209, 197, 0.7) 50%, rgba(176, 141, 87, 0.55) 70%, transparent);
+  opacity: 0.8;
+  pointer-events: none;
+}
+.glass-panel--warm {
+  border-color: rgba(176, 141, 87, 0.30);
+  box-shadow:
+    0 30px 90px rgba(17, 17, 17, 0.5),
+    0 14px 50px rgba(176, 141, 87, 0.14),
+    inset 0 1px 0 rgba(216, 209, 197, 0.12);
+}
+
+/* ── Flourish fields: curls pinned to the section edges ────────────────── */
+.flourish-field { position: relative; }
+.flourish-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.flourish-item { position: absolute; will-change: transform; }
+.flourish-item svg { display: block; height: auto; }
+/* Depth veil pulls the section floor toward deep jade. */
+.veil-surface {
+  background:
+    radial-gradient(110% 80% at 8% 0%, rgba(20, 91, 75, 0.34), transparent 58%),
+    radial-gradient(90% 70% at 96% 12%, rgba(20, 91, 75, 0.22), transparent 52%),
+    radial-gradient(120% 90% at 50% 118%, rgba(20, 91, 75, 0.28), transparent 62%),
+    linear-gradient(178deg, var(--aciss-obsidian) 4%, var(--aciss-veil) 56%, var(--aciss-obsidian) 98%);
+}
+
+/* ── Glowing jade circuit (chapter network) ────────────────────────────── */
+.jade-circuit { overflow: visible; }
+.jade-circuit-path {
+  fill: none;
+  stroke: var(--aciss-jade-glow);
+  stroke-width: 1.6;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 5px rgba(20, 91, 75, 0.9)) drop-shadow(0 0 14px rgba(20, 91, 75, 0.45));
+}
+.jade-circuit-node {
+  fill: var(--aciss-jade-glow);
+  filter: drop-shadow(0 0 6px rgba(199, 217, 210, 0.65));
+}
+.circuit-dot {
+  background: var(--aciss-jade-glow);
+  box-shadow: 0 0 8px rgba(199, 217, 210, 0.55), 0 0 18px rgba(20, 91, 75, 0.8);
+}
+
+/* ── Gold strand ornament defaults ─────────────────────────────────────── */
+.strand-ornament { pointer-events: none; position: absolute; }
+.strand-ornament svg { display: block; height: auto; }
+
+/* ── Ambient silk motion (transform/opacity only) ──────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .flourish-item--sway { animation: strandSway 12s ease-in-out infinite alternate; }
+  .flourish-item--sway-slow { animation: strandSway 17s ease-in-out infinite alternate-reverse; }
+  .circuit-dot { animation: circuitPulse 3.2s ease-in-out infinite; }
+  /* Hidden initial state lives on .reveal-block (pre-reveal) so the path
+     never flashes fully drawn before the animation starts; reduced-motion
+     users skip this block entirely and get the static drawn path. */
+  .reveal-block .jade-circuit-draw,
+  .reveal-block .strand-draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  .reveal-block.is-visible .jade-circuit-draw {
+    animation: circuitDraw 1.6s cubic-bezier(0.6, 0, 0.2, 1) 0.15s forwards;
+  }
+  .reveal-block.is-visible .strand-draw {
+    animation: circuitDraw 1.4s cubic-bezier(0.6, 0, 0.2, 1) 0.3s forwards;
+  }
+}
+@keyframes strandSway {
+  from { transform: rotate(var(--strand-rotate, 0deg)) translateY(0); }
+  to { transform: rotate(calc(var(--strand-rotate, 0deg) + 2.5deg)) translateY(-7px); }
+}
+@keyframes circuitPulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+@keyframes circuitDraw { to { stroke-dashoffset: 0; } }

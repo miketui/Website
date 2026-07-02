@@ -1,7 +1,5 @@
-:root {
-  --font-display: "Cormorant Garamond";
-  --font-body: "Inter";
-}
+/* --font-display / --font-body are set on <html> by next/font/local
+   (app/fonts.ts) — self-hosted Cormorant Garamond & Inter variable fonts. */
 
 .editorial-kicker {
   letter-spacing: 0.22em;
@@ -19,3 +17,20 @@
   color: transparent;
 }
 .hero-display { letter-spacing: -0.015em; text-wrap: balance; }
+
+/* ── Lush editorial accents (added) ────────────────────────────────────── */
+/* Italic serif accent inside display headlines — the concept-film treatment
+   where one or two words turn to gold italics mid-sentence. */
+.accent-italic {
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+/* Result line on cards: pain point above, outcome below in gold serif. */
+.result-line {
+  color: var(--aciss-dawn-gold);
+  font-family: var(--font-display), Georgia, serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}

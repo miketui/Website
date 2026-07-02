@@ -1,5 +1,6 @@
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { PullQuote } from "@/components/design/PullQuote";
+import { CornerStrand } from "@/components/design/Flourish";
 
 /**
  * Real-proof band. Every figure is verifiable from the manuscript itself:
@@ -30,7 +31,8 @@ export function ProofBand() {
               ))}
             </dl>
           </div>
-          <div className="editorial-panel--warm rounded-[2rem] p-7 md:p-9">
+          <div className="glass-panel glass-panel--warm relative rounded-[2rem] p-7 md:p-9">
+            <CornerStrand className="opacity-70" />
             <PullQuote quote="The creative spirit stirs when the life you have built no longer feels large enough for the vision growing inside you." />
             <p className="mt-5 text-sm tracking-wide text-whitegold/65">— from the Preface</p>
           </div>

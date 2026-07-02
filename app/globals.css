@@ -2,6 +2,7 @@
 @import "../styles/typography.css";
 @import "../styles/motion.css";
 @import "../styles/page-experiences.css";
+@import "../styles/flourish.css";
 @import "../styles/gateway.css";
 @import "../styles/journey.css";
 @tailwind base;
