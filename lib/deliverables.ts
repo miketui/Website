@@ -3,7 +3,6 @@
  * (lib/downloads.ts). Never add a server-only import to this file. */
 export const deliverables = {
   epub: { slug: "epub", label: "EPUB", path: "books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub" },
-  pdf: { slug: "pdf", label: "PDF", path: "books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf" },
   card_deck: { slug: "card_deck", label: "Affirmation Card Deck (PDF)", path: "cards/Affirmation-Deck-v1.pdf" }
 } as const;
 

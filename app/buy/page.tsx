@@ -17,7 +17,7 @@ export default function Page() {
       <PageHero
         eyebrow="Purchase paths"
         title="Choose the format that fits how you read."
-        description="The direct digital edition is delivered through your protected account — EPUB and PDF by signed link. Kindle and paperback editions link out to their stores as each goes live."
+        description="The direct digital edition is delivered through your protected account — EPUB by signed link. Kindle and paperback editions link out to their stores as each goes live."
         secondaryHref="/book"
         secondaryLabel="Review the Book"
       >
@@ -35,8 +35,8 @@ export default function Page() {
             ctaLabel={`${launched ? "Buy the Book" : "Preorder"} — $${price.toFixed(2)}`}
             note={
               launched
-                ? "EPUB + PDF, delivered through your protected account the moment payment clears."
-                : `EPUB + PDF through your protected account. $${priceConfig.regularDirect.amount.toFixed(2)} fifteen days after release — the real schedule, the only urgency.`
+                ? "EPUB, delivered through your protected account the moment payment clears."
+                : `EPUB through your protected account. $${priceConfig.regularDirect.amount.toFixed(2)} fifteen days after release — the real schedule, the only urgency.`
             }
             sourcePage="/buy"
           />

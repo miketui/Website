@@ -11,10 +11,6 @@ export const siteConfig = {
   supportEmail: envOrDefault(process.env.SUPPORT_EMAIL, "support@example.com"),
   releaseDate: envOrDefault(process.env.RELEASE_DATE, "2026-07-14"),
   storageBucket: envOrDefault(process.env.SUPABASE_STORAGE_BUCKET, "curls-deliverables"),
-  deliverables: {
-    epub: "books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub",
-    pdf: "books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf"
-  },
   external: {
     kindle: "#kindle-link-pending",
     paperback: "#paperback-link-pending"

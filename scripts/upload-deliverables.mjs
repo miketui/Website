@@ -11,8 +11,10 @@
  *
  * Private files expected inside --private-dir (flat, by filename):
  *   Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub
- *   Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf
  *   Idea-to-Action-Workbook-MDW.pdf
+ *
+ * The v13 POD interior PDF is a print artifact for KDP/third-party POD only —
+ * it is not a site deliverable and does not belong in Supabase Storage.
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
@@ -23,7 +25,6 @@ const FREE_DIR = resolve(process.cwd(), "assets/free-bucket");
 
 const privateTargets = [
   { file: "Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub", path: "books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub", required: true },
-  { file: "Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf", path: "books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf", required: false },
   { file: "Idea-to-Action-Workbook-MDW.pdf", path: "workbooks/Idea-to-Action-Workbook-MDW.pdf", required: false }
 ];
 
@@ -87,7 +88,7 @@ async function uploadAll() {
   }
 
   if (!privateDir) {
-    console.warn("No --private-dir given — skipping private bucket uploads (v13 EPUB/PDF, workbook).");
+    console.warn("No --private-dir given — skipping private bucket uploads (v13 EPUB, workbook).");
   } else {
     for (const target of privateTargets) {
       const local = join(privateDir, target.file);

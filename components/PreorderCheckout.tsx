@@ -11,7 +11,7 @@ export function PreorderCheckout({
   title = "Direct digital edition",
   price = "$17.99",
   ctaLabel = "Preorder — $17.99",
-  note = "EPUB + PDF, delivered through your protected account. $19.99 fifteen days after release — that schedule is real and it is the only urgency on this page.",
+  note = "EPUB, delivered through your protected account. $19.99 fifteen days after release — that schedule is real and it is the only urgency on this page.",
   sourcePage = "/preorder"
 }: {
   title?: string;

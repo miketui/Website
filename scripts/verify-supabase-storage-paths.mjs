@@ -5,8 +5,7 @@ import { isMeaningfulSandboxValue, loadSandboxEnv } from "./check-sandbox-env.mj
 
 export const lockedStorage = {
   bucket: "curls-deliverables",
-  epub: "books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub",
-  pdf: "books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf"
+  epub: "books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub"
 };
 
 function walk(dir) {
@@ -22,16 +21,16 @@ export function verifyLockedPathStrings({ repoRoot = resolve(process.cwd(), "../
   const appFiles = walk(appDir).filter((file) => /\.(?:ts|tsx|js|jsx|mjs|md|json|sql)$/i.test(file));
   const docFiles = walk(resolve(repoRoot, "author-site/docs/website-v4")).filter((file) => /\.(?:md|sql|json)$/i.test(file));
   const files = [...appFiles, ...docFiles];
-  const matches = { epub: [], pdf: [], bucket: [] };
+  const matches = { epub: [], bucket: [] };
   const publicOffenders = [];
 
   for (const file of files) {
     const rel = relative(repoRoot, file);
     const text = readFileSync(file, "utf8");
-    for (const key of ["epub", "pdf", "bucket"]) {
+    for (const key of ["epub", "bucket"]) {
       if (text.includes(lockedStorage[key])) matches[key].push(rel);
     }
-    if (rel.startsWith("author-site/public/") && (text.includes(lockedStorage.epub) || text.includes(lockedStorage.pdf))) {
+    if (rel.startsWith("author-site/public/") && text.includes(lockedStorage.epub)) {
       publicOffenders.push(rel);
     }
   }
@@ -56,7 +55,7 @@ async function optionalSupabaseCheck(env) {
   if (bucketResult.data?.public) return { skipped: false, ok: false, reason: "Bucket is public; curls-deliverables must remain private." };
 
   const objectChecks = await Promise.all(
-    [lockedStorage.epub, lockedStorage.pdf].map(async (path) => {
+    [lockedStorage.epub].map(async (path) => {
       const folder = path.split("/").slice(0, -1).join("/");
       const name = path.split("/").at(-1);
       const { data, error } = await supabase.storage.from(lockedStorage.bucket).list(folder, { search: name, limit: 1 });

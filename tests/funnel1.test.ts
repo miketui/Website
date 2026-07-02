@@ -34,7 +34,6 @@ describe("funnel 1 — order bump entitlements", () => {
   it("maps the card deck to its own purchase slug", () => {
     expect(entitlementSlugFor("card_deck")).toBe("affirmation-deck");
     expect(entitlementSlugFor("epub")).toBe("curls-and-contemplation");
-    expect(entitlementSlugFor("pdf")).toBe("curls-and-contemplation");
   });
 
   it("card deck is a purchasable deliverable kind; workbook stays gated", () => {

@@ -5,7 +5,7 @@ import { getSessionUser } from "@/lib/supabase/server";
 import { analyticsEvents } from "@/lib/analytics";
 import { recordServerEvent } from "@/lib/events/server-analytics";
 
-const schema = z.object({ deliverable: z.enum(["epub", "pdf", "card_deck"]) });
+const schema = z.object({ deliverable: z.enum(["epub", "card_deck"]) });
 
 export async function POST(request: Request) {
   const contentType = request.headers.get("content-type") ?? "";

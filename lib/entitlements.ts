@@ -1,7 +1,7 @@
 import { createServerSupabaseClient, type SessionUser } from "@/lib/supabase/server";
 import { orEquals } from "@/lib/supabase/filters";
 
-export type DeliverableKind = "epub" | "pdf" | "card_deck" | "workbook" | "preorder_bonus";
+export type DeliverableKind = "epub" | "card_deck" | "workbook" | "preorder_bonus";
 export type DownloadDenialReason = "unauthenticated" | "no_purchase" | "refunded" | "revoked" | "download_limit_reached" | "config_missing" | "storage_error";
 export type PurchaseStatus = "active" | "refunded" | "canceled" | "past_due" | "revoked";
 export type EntitlementResult =
@@ -12,7 +12,7 @@ export const DOWNLOAD_CAP = 3;
 export const DOWNLOAD_WINDOW_DAYS = 7;
 
 export function productEntitlements(): Record<DeliverableKind, boolean> {
-  return { epub: true, pdf: true, card_deck: true, workbook: false, preorder_bonus: false };
+  return { epub: true, card_deck: true, workbook: false, preorder_bonus: false };
 }
 
 /** Maps a deliverable kind to the purchases.book_slug that entitles it. */

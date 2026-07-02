@@ -16,7 +16,7 @@ export function PurchaseSummary() {
         </div>
         <div className="flex items-baseline justify-between gap-4">
           <dt className="text-whitegold/75">Format</dt>
-          <dd className="text-whitegold">EPUB + PDF, in your account</dd>
+          <dd className="text-whitegold">EPUB, in your account</dd>
         </div>
       </dl>
       <p className="mt-6 text-sm leading-6 text-whitegold/70">Delivered by private signed link — 3 downloads per file over 7 days, fresh links any time you sign in. Refunds close download access.</p>

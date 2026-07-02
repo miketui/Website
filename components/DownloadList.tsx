@@ -5,7 +5,6 @@ import { deliverables, type DeliverableSlug } from "@/lib/deliverables";
 
 const itemNotes: Record<string, string> = {
   epub: "Private signed URL after entitlement check. 3 downloads / 7 days.",
-  pdf: "Private signed URL after entitlement check. 3 downloads / 7 days.",
   card_deck: "Included with the Affirmation Card Deck order bump. 3 downloads / 7 days."
 };
 

@@ -1,7 +1,7 @@
 # Curls & Contemplation — Launch-Day Runbook
 
 **Launch:** Tuesday, **2026-07-14**. The fulfillment cron (`/api/cron/launch-day`) runs **hourly** (see `vercel.json`); the kill-switch keeps every run a no-op until you flip it, and each run sends at most 50 buyers so the function always finishes inside Vercel's execution limit — a larger backlog drains over the following hours automatically.
-**Owner:** Michael David. **Scope:** getting the v13 EPUB (+ POD PDF when uploaded) to every paid buyer automatically, with a kill-switch between the cron and their inboxes.
+**Owner:** Michael David. **Scope:** getting the v13 EPUB to every paid buyer automatically, with a kill-switch between the cron and their inboxes. (The POD interior PDF is a print artifact for KDP/third-party POD — the site never delivers it.)
 
 ---
 
@@ -17,13 +17,13 @@ The launch-day cron does **nothing** unless `LAUNCH_FULFILLMENT_ENABLED` is exac
 | **2026-07-13 07:30** | Automatic: `/api/cron/pre-launch-check` runs the dry run and emails you a pass/fail report. Subject prefixed `[⚠️ ACTION REQUIRED]` if anything is off. |
 | **2026-07-14 06:30–06:55** | Pre-flip verification (checklist below). |
 | **2026-07-14 ~06:55** | Flip the switch (30+ min before the 07:00 cron): Vercel Dashboard → **Website** project → Settings → Environment Variables → Production → set `LAUNCH_FULFILLMENT_ENABLED=true` → **redeploy** (env changes need a deploy). CLI alternative: `vercel env rm LAUNCH_FULFILLMENT_ENABLED production && echo "true" \| vercel env add LAUNCH_FULFILLMENT_ENABLED production && vercel redeploy` |
-| **2026-07-14 07:00** | Cron fires (next hourly tick after the flip). Paid, unfulfilled buyers get a 30-day signed link (EPUB + PDF when present), 50 per run until the backlog is empty (`remainingAfterBatch` in the response shows what's left). `purchases.launch_email_sent_at` gates re-sends; the hourly cadence also picks up late buyers automatically. |
+| **2026-07-14 07:00** | Cron fires (next hourly tick after the flip). Paid, unfulfilled buyers get a 30-day signed EPUB link, 50 per run until the backlog is empty (`remainingAfterBatch` in the response shows what's left). `purchases.launch_email_sent_at` gates re-sends; the hourly cadence also picks up late buyers automatically. |
 | **2026-07-14 07:15** | Verify (checklist below). If `remainingAfterBatch` was non-zero, re-check after the next hourly run. |
 
 ## Verify BEFORE flipping the switch
 
 1. **Dry run green** — the curl below returns `"ok": true` with empty `warnings`, and the test email landed with a working link.
-2. **Bucket healthy** — `curls-deliverables` (private) contains `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub` (and ideally the v13 POD PDF at the locked path — missing PDF is a warning, not a blocker; the email links EPUB only).
+2. **Bucket healthy** — `curls-deliverables` (private) contains `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`.
 3. **Resend deliverability green** — no bounces/complaints spike on the dashboard; sending domain still verified.
 4. **Counts reconcile** — MailerLite `Customers` group count ≈ Supabase `purchases` rows with `entitlement_status='active'`. A large gap means the pipeline is leaking; investigate before flipping.
 
@@ -78,8 +78,9 @@ Expected: `{ "ok": true, "dry_run": true, "test_email": "...", "url_expires_at":
 Storage objects the launch chain depends on (private bucket `curls-deliverables`):
 
 - `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub` — **required**
-- `books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf` — recommended (email adds a PDF link when present)
 - `workbooks/Idea-to-Action-Workbook-MDW.pdf` — buyer companion, staged for the ascension ladder (not yet surfaced in the dashboard)
+
+The v13 POD interior PDF (`Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`) is a print artifact for KDP/third-party POD only — it is not uploaded to Storage and the launch email never links it.
 
 Free assets (public bucket `curls-free`) are staged in-repo under `assets/free-bucket/` mirroring their bucket paths. Upload everything with:
 
@@ -88,4 +89,4 @@ SUPABASE_SERVICE_ROLE_KEY=... NEXT_PUBLIC_SUPABASE_URL=... \
   node scripts/upload-deliverables.mjs --private-dir /path/to/private-files
 ```
 
-(See `scripts/upload-deliverables.mjs --help`. Free assets upload from the repo automatically; private files are never committed to git, so point `--private-dir` at the folder holding the v13 EPUB/PDF/workbook.)
+(See `scripts/upload-deliverables.mjs --help`. Free assets upload from the repo automatically; private files are never committed to git, so point `--private-dir` at the folder holding the v13 EPUB and workbook.)
