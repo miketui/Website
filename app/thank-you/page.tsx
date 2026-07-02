@@ -62,6 +62,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
               </p>
             </div>
           ) : null}
+          <div className="mt-6 rounded-2xl border border-jade/40 bg-jade/10 p-5 text-sm leading-6 text-whitegold/80">
+            <p className="font-semibold text-white">While Chapter 1 lands: find your blind spot.</p>
+            <p className="mt-2">
+              Two minutes, six questions — the quiz names which of the four business blind spots is quietly costing you the most, and hands you the matching worksheet.{" "}
+              <a className="text-antique underline underline-offset-4" href="/quiz">Take the Blind-Spot Quiz</a>
+            </p>
+          </div>
         </div>
       </div>
     </UtilityShell>

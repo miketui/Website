@@ -1,6 +1,7 @@
 import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/design/PageHero";
 import { Section } from "@/components/design/Section";
+import { CaptureBand } from "@/components/CaptureBand";
 
 export const metadata = pageMetadata("About", "Michael David writes Curls & Contemplation from lived hairstylist practice, not borrowed theory.", { path: "/about" });
 
@@ -23,6 +24,7 @@ export default function Page() {
       <Section eyebrow="Beyond the chair" title="The work that shapes the writing.">
         <p className="max-w-3xl">Outside the book, Michael leads Haus of Basquiat, a ballroom community built on the same principle the book runs on: standards and belonging aren&rsquo;t opposites. Chosen family, competitive craft, and real accountability can share a room. That&rsquo;s the same tension every freelancer navigates alone in their own business — how to hold a standard without losing the people it&rsquo;s for.</p>
       </Section>
+      <CaptureBand source="about" heading="Read the way he writes." copy="One welcome note, then the occasional letter on pricing, craft, and the business nobody taught you. Chapter 1 free when you join. No spam." />
     </main>
   );
 }
