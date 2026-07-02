@@ -1,0 +1,282 @@
+/* ============================================================
+   Curls & Contemplation — "The Book Is the Door" journey (v6)
+   Scroll-scrubbed 3D homepage experience. ACISS locked.
+   Progressive enhancement: everything below is display:none /
+   height:0 until <html data-journey="on"> is set by the client
+   component after hydration. No JS (or reduced motion) = the
+   normal server-rendered document, nothing lost.
+   All motion is transform/opacity driven by one lerped rAF
+   engine in JourneyExperience.tsx. No backdrop-filter inside
+   the scrub (perf); jade surfaces are solid with baked rim.
+   ============================================================ */
+
+:root {
+  --jr-book-track: 200vh;
+  --jr-journey-track: 480vh;
+}
+@media (max-width: 768px) {
+  :root { --jr-book-track: 150vh; --jr-journey-track: 340vh; }
+}
+
+/* Collapsed by default (no JS): the page is the normal document. */
+.jr-viewport, .jr-scrim, .jr-book-scene, .jr-fg, .jr-skip { display: none; }
+.jr-book-track, .jr-journey-track { height: 0; }
+.jr-hero { display: none; }
+
+html[data-journey="on"] .jr-book-track { height: var(--jr-book-track); }
+html[data-journey="on"] .jr-journey-track { height: var(--jr-journey-track); }
+html[data-journey="on"] .jr-hero { display: flex; }
+html[data-journey="on"] .jr-viewport,
+html[data-journey="on"] .jr-scrim,
+html[data-journey="on"] .jr-book-scene { display: block; }
+html[data-journey="on"] .jr-fg { display: block; }
+html[data-journey="on"] .jr-skip { display: inline-flex; }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-journey="on"] .jr-viewport,
+  html[data-journey="on"] .jr-scrim,
+  html[data-journey="on"] .jr-book-scene,
+  html[data-journey="on"] .jr-fg,
+  html[data-journey="on"] .jr-skip { display: none; }
+  html[data-journey="on"] .jr-book-track,
+  html[data-journey="on"] .jr-journey-track { height: 0; }
+  html[data-journey="on"] .jr-hero { display: none; }
+}
+
+/* ── The fixed 3D world ────────────────────────────────────── */
+.jr-viewport {
+  position: fixed; inset: 0; z-index: 0; overflow: hidden;
+  perspective: 850px; perspective-origin: 50% 45%;
+  background:
+    radial-gradient(75% 65% at 50% 115%, rgba(20, 91, 75, 0.5), transparent 70%),
+    radial-gradient(40% 40% at 85% 5%, rgba(176, 141, 87, 0.1), transparent 70%),
+    linear-gradient(180deg, #0d1a16, #111111 52%, #0b1b16);
+}
+.jr-world { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
+.jr-station { position: absolute; left: 50%; top: 50%; transform-style: preserve-3d; }
+.jr-floor {
+  position: absolute; left: 50%; top: 62%; width: 150vmin; height: 100vmin;
+  transform: translate(-50%, -50%) rotateX(74deg); border-radius: 10%;
+  background:
+    repeating-linear-gradient(90deg, rgba(199, 217, 210, 0.05) 0 1px, transparent 1px 8.5vmin),
+    repeating-linear-gradient(0deg, rgba(199, 217, 210, 0.05) 0 1px, transparent 1px 8.5vmin),
+    radial-gradient(55% 62% at 50% 42%, rgba(20, 91, 75, 0.75), rgba(17, 17, 17, 0.25) 78%);
+  box-shadow: 0 0 140px rgba(20, 91, 75, 0.4) inset;
+}
+.jr-wpanel {
+  position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%);
+  background: linear-gradient(165deg, rgba(20, 91, 75, 0.5), rgba(17, 17, 17, 0.9));
+  border: 1.5px solid rgba(176, 141, 87, 0.7); border-radius: 14px;
+  padding: 1.8rem 2.4rem; text-align: center;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+}
+.jr-wpanel .jr-kicker {
+  font-size: 0.6rem; letter-spacing: 0.36em; text-transform: uppercase;
+  color: var(--aciss-antique-gold, #B08D57);
+}
+.jr-wpanel h3 {
+  font-family: var(--font-display), Georgia, serif; font-weight: 700;
+  color: var(--aciss-white-gold, #D8D1C5);
+  font-size: clamp(1.3rem, 3.4vw, 2.1rem); margin-top: 0.6rem; white-space: nowrap;
+}
+.jr-curl {
+  position: absolute; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.5));
+  animation: jrSway 8s ease-in-out infinite alternate;
+}
+@keyframes jrSway { from { transform: rotate(-4deg); } to { transform: rotate(5deg); } }
+.jr-mirror {
+  position: absolute; left: 50%; top: 42%; width: 24vmin; height: 40vmin;
+  transform: translate(-50%, -50%);
+  border: 1.5px solid rgba(199, 217, 210, 0.35); border-radius: 12px;
+  background: linear-gradient(170deg, rgba(199, 217, 210, 0.07), rgba(17, 17, 17, 0.3));
+}
+.jr-arch {
+  position: absolute; left: 50%; white-space: nowrap;
+  font-family: var(--font-display), Georgia, serif; font-style: italic;
+  color: rgba(199, 217, 210, 0.55); font-size: clamp(0.9rem, 2vw, 1.25rem);
+}
+.jr-tick {
+  position: absolute; width: 10px; height: 44px; border-radius: 6px;
+  background: linear-gradient(180deg, rgba(176, 141, 87, 0.9), rgba(176, 141, 87, 0.25));
+  box-shadow: 0 0 18px rgba(176, 141, 87, 0.35);
+}
+.jr-trace {
+  position: absolute; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(199, 217, 210, 0.8), transparent);
+  filter: drop-shadow(0 0 7px rgba(20, 91, 75, 0.9));
+  animation: jrPulse 2.8s ease-in-out infinite;
+}
+@keyframes jrPulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+.jr-farbook {
+  position: absolute; left: 50%; top: 40%; width: 90px; aspect-ratio: 2/3;
+  transform: translate(-50%, -50%);
+  border-radius: 3px 6px 6px 3px; border: 1px solid rgba(176, 141, 87, 0.6);
+  background: url("/gateway-cover.jpg") center/cover no-repeat;
+  filter: brightness(0.85) drop-shadow(0 18px 40px rgba(0, 0, 0, 0.7));
+  animation: jrFloat 7s ease-in-out 3.5s infinite alternate;
+}
+@keyframes jrFloat { from { transform: translate(-50%, -50%); } to { transform: translate(-50%, calc(-50% - 8px)); } }
+.jr-dust {
+  position: absolute; width: 3px; height: 3px; border-radius: 50%;
+  background: rgba(216, 209, 197, 0.5); animation: jrDrift linear infinite;
+}
+@keyframes jrDrift { from { transform: translateY(6vh); } to { transform: translateY(-108vh); } }
+.jr-scrim {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(17, 17, 17, 0.6), rgba(17, 17, 17, 0.08) 26%, rgba(17, 17, 17, 0.08) 62%, rgba(17, 17, 17, 0.7));
+}
+
+/* ── The book (landing) ────────────────────────────────────── */
+.jr-book-scene {
+  position: fixed; inset: 0; z-index: 6;
+  perspective: 1600px; will-change: opacity;
+}
+.jr-book-stage {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 1.6rem; padding: 0 1.2rem;
+}
+.jr-book {
+  position: relative; width: min(42vh, 72vw); aspect-ratio: 2 / 3;
+  transform-style: preserve-3d; will-change: transform;
+  filter: drop-shadow(0 60px 90px rgba(0, 0, 0, 0.7));
+  animation: jrSettle 0.9s cubic-bezier(0.19, 1, 0.22, 1) both;
+}
+@keyframes jrSettle { from { transform: scale(0.98); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.jr-backboard {
+  position: absolute; inset: 0; border-radius: 6px 14px 14px 6px;
+  background: linear-gradient(150deg, #161616, #0c0c0c);
+  transform: translateZ(-16px); border: 1px solid rgba(176, 141, 87, 0.35);
+}
+/* The fore-edge: stacked paper strata. No template has a fore-edge. */
+.jr-pageedges {
+  position: absolute; inset: 0; border-radius: 6px 14px 14px 6px;
+  background: repeating-linear-gradient(180deg, rgba(216, 209, 197, 0.92) 0 1.5px, rgba(160, 152, 138, 0.9) 1.5px 3px);
+  transform: translateZ(-13px); border: 1px solid rgba(17, 17, 17, 0.6);
+}
+.jr-titlepage {
+  position: absolute; inset: 0; border-radius: 6px 14px 14px 6px; overflow: hidden;
+  transform: translateZ(-2px);
+  background:
+    radial-gradient(80% 70% at 50% 45%, rgba(17, 17, 17, 0.03), rgba(17, 17, 17, 0.08)),
+    linear-gradient(160deg, #d8d1c5, #c8c0b2);
+  color: #1c1a16; display: flex; flex-direction: column; justify-content: center;
+  align-items: center; text-align: center; padding: 10% 12%;
+}
+.jr-titlepage .jr-tp-eyebrow { font-size: 0.55rem; letter-spacing: 0.4em; text-transform: uppercase; color: #8a6f42; }
+.jr-titlepage h2 {
+  font-family: var(--font-display), Georgia, serif; font-weight: 700;
+  font-size: clamp(1rem, 3.4vh, 1.5rem); color: #1c1a16; margin: 0.9rem 0;
+}
+.jr-titlepage p {
+  font-family: var(--font-display), Georgia, serif; font-style: italic;
+  font-size: clamp(0.7rem, 2vh, 0.9rem); line-height: 1.7; color: #3a352c;
+}
+.jr-titlepage .jr-tp-more { margin-top: 1.4rem; font-size: 0.5rem; letter-spacing: 0.34em; text-transform: uppercase; color: #8a6f42; }
+.jr-cover {
+  position: absolute; inset: 0; transform-style: preserve-3d;
+  transform-origin: left center; will-change: transform; cursor: pointer;
+}
+.jr-coverfront {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  border-radius: 6px 14px 14px 6px; overflow: hidden;
+  background: url("/gateway-cover.jpg") center/cover no-repeat, #111111;
+  border: 1px solid rgba(176, 141, 87, 0.55);
+  box-shadow: inset 14px 0 26px rgba(0, 0, 0, 0.45);
+}
+/* Spine-hinge shadow that deepens as the cover swings (driven by JS var). */
+.jr-coverfront::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, calc(0.25 + var(--jr-hinge, 0) * 0.45)), transparent 18%);
+  pointer-events: none;
+}
+.jr-coverinside {
+  position: absolute; inset: 0; border-radius: 14px 6px 6px 14px;
+  background: linear-gradient(200deg, #145B4B, #0d3a30);
+  border: 1px solid rgba(176, 141, 87, 0.4);
+  transform: rotateY(180deg); backface-visibility: hidden;
+  display: flex; align-items: center; justify-content: center; padding: 8%;
+}
+.jr-coverinside span {
+  font-family: var(--font-display), Georgia, serif; font-style: italic;
+  color: rgba(216, 209, 197, 0.6); font-size: clamp(0.7rem, 2vh, 0.95rem);
+  text-align: center; letter-spacing: 0.06em;
+}
+.jr-landing-copy { text-align: center; max-width: 40ch; }
+.jr-landing-copy .jr-kicker {
+  font-size: 0.62rem; letter-spacing: 0.38em; text-transform: uppercase;
+  color: var(--aciss-antique-gold, #B08D57);
+}
+.jr-landing-copy .jr-line {
+  margin-top: 0.7rem; font-family: var(--font-display), Georgia, serif;
+  color: var(--aciss-white-gold, #D8D1C5); font-size: clamp(1rem, 2.6vh, 1.3rem); line-height: 1.4;
+}
+.jr-open-cue {
+  margin-top: 0.9rem; font-size: 0.52rem; letter-spacing: 0.36em; text-transform: uppercase;
+  color: rgba(199, 217, 210, 0.75); animation: jrCue 2.4s ease-in-out 0.6s infinite;
+}
+@keyframes jrCue { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+
+/* ── Hero (post pass-through) ──────────────────────────────── */
+.jr-hero {
+  position: relative; z-index: 2; height: 100vh; min-height: 100dvh;
+  flex-direction: column; justify-content: center; align-items: center;
+  text-align: center; padding: 0 1.5rem;
+}
+.jr-hero .jr-h {
+  font-family: var(--font-display), Georgia, serif; font-weight: 700;
+  color: var(--aciss-white-gold, #D8D1C5);
+  font-size: clamp(2rem, 6vw, 4.6rem); line-height: 1.1; max-width: 18ch;
+}
+.jr-hero .jr-h em { color: var(--aciss-antique-gold, #B08D57); font-style: italic; }
+.jr-hero .jr-h .jr-w { display: inline-block; will-change: transform, opacity; }
+.jr-hero p { margin-top: 1.3rem; max-width: 46ch; line-height: 1.7; color: rgba(199, 217, 210, 0.85); }
+
+/* ── Journey funnel cards ──────────────────────────────────── */
+.jr-fg { position: fixed; inset: 0; z-index: 3; pointer-events: none; perspective: 1200px; }
+.jr-card {
+  position: absolute; left: 50%; top: 50%; width: min(29rem, 88vw);
+  transform: translate(-50%, -50%); opacity: 0;
+  /* Solid jade with baked rim — no backdrop-filter inside the scrub. */
+  background: linear-gradient(168deg, rgba(24, 104, 86, 0.97), rgba(16, 72, 59, 0.97));
+  border: 1.5px solid rgba(176, 141, 87, 0.65); border-radius: 1.15rem;
+  box-shadow: inset 0 1px 0 rgba(199, 217, 210, 0.28), 0 40px 90px -20px rgba(20, 91, 75, 0.55);
+  padding: 2.2rem 2.1rem; text-align: center; transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+.jr-card::before, .jr-card::after {
+  content: ""; position: absolute; width: 20px; height: 20px;
+  border: 1.5px solid var(--aciss-antique-gold, #B08D57);
+}
+.jr-card::before { top: -6px; left: -6px; border-right: none; border-bottom: none; border-radius: 7px 0 0 0; }
+.jr-card::after { bottom: -6px; right: -6px; border-left: none; border-top: none; border-radius: 0 0 7px 0; }
+.jr-card .jr-kicker {
+  font-size: 0.6rem; letter-spacing: 0.34em; text-transform: uppercase;
+  color: var(--aciss-antique-gold, #B08D57);
+}
+.jr-card h2 {
+  font-family: var(--font-display), Georgia, serif; font-weight: 700;
+  color: var(--aciss-white-gold, #D8D1C5);
+  font-size: clamp(1.35rem, 3.2vw, 1.95rem); margin: 0.8rem 0 0.6rem;
+}
+.jr-card p { font-size: clamp(0.92rem, 2vw, 1.05rem); line-height: 1.6; color: rgba(216, 209, 197, 0.92); }
+.jr-card .jr-cta {
+  display: inline-block; pointer-events: auto; cursor: pointer; margin-top: 1.2rem;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: #111111; background: var(--aciss-antique-gold, #B08D57);
+  padding: 0.72rem 1.5rem; border-radius: 999px; text-decoration: none;
+  transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1), box-shadow 0.3s;
+}
+.jr-card .jr-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(176, 141, 87, 0.45); }
+.jr-card .jr-cta:focus-visible { outline: 2px solid #D8D1C5; outline-offset: 3px; }
+
+/* ── Chrome ────────────────────────────────────────────────── */
+.jr-skip {
+  position: fixed; right: 1.1rem; bottom: 1.1rem; z-index: 25;
+  align-items: center; gap: 0.5rem;
+  border: 1px solid rgba(216, 209, 197, 0.25); border-radius: 999px;
+  background: rgba(17, 17, 17, 0.72); color: rgba(216, 209, 197, 0.8);
+  padding: 0.55rem 1rem; min-height: 40px; font-size: 0.64rem;
+  letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer;
+  transition: color 0.3s, border-color 0.3s;
+}
+.jr-skip:hover, .jr-skip:focus-visible { color: var(--aciss-antique-gold, #B08D57); border-color: rgba(176, 141, 87, 0.5); }

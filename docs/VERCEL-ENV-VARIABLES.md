@@ -15,7 +15,7 @@ so this is now the only place these live.
 |---|---|---|
 | `NEXT_PUBLIC_SITE_URL` | `https://curlscontemplation.beauty` | |
 | `NEXT_PUBLIC_LAUNCH_MODE` | `preorder` | One of `preorder` \| `launched` \| `paused` |
-| `RELEASE_DATE` | `2026-07-14` | Code now defaults to this if unset or blank — but set it explicitly |
+| `RELEASE_DATE` | `2026-11-17` | Code now defaults to this if unset or blank — but set it explicitly |
 | `SUPPORT_EMAIL` | `support@curlscontemplation.beauty` | |
 
 ## Supabase

@@ -7,7 +7,8 @@ const nav = [
   { href: "/chapters", label: "Chapters" },
   { href: "/free-chapter", label: "Free Chapter" },
   { href: "/resources", label: "Resources", memberOnly: true },
-  { href: "/about", label: "About" }
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" }
 ];
 
 export function Header() {

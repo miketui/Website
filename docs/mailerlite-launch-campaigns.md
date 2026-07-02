@@ -11,10 +11,10 @@ Also included: the Post-Purchase email (the API can't edit that automation while
 - **Name:** Launch T-7 — One week until your book arrives
 - **To:** group `Preorders` (189927254041560661)
 - **From:** Michael David · Curls & Contemplation `<info@curlscontemplation.beauty>` · Reply-to `support@curlscontemplation.beauty`
-- **Schedule:** Tuesday **July 7, 2026, 9:00 AM ET**
+- **Schedule:** Tuesday **November 10, 2026, 9:00 AM ET**
 - **Subject:** One week. Your book arrives automatically.
 
-> One week from today — Tuesday, July 14 — the complete digital edition of **Curls & Contemplation** lands in this inbox automatically. You don't need to do anything: the download link arrives launch morning, tied to this email address.
+> One week from today — Tuesday, November 17 — the complete digital edition of **Curls & Contemplation** lands in this inbox automatically. You don't need to do anything: the download link arrives launch morning, tied to this email address.
 >
 > Two useful things while you wait:
 >
@@ -30,12 +30,12 @@ Also included: the Post-Purchase email (the API can't edit that automation while
 - **Name:** Launch T-24h — Tomorrow morning
 - **To:** group `Preorders` (189927254041560661)
 - **From/Reply-to:** same as above
-- **Schedule:** Monday **July 13, 2026, 9:00 AM ET**
+- **Schedule:** Monday **November 16, 2026, 9:00 AM ET**
 - **Subject:** Tomorrow morning, this inbox.
 
 > Tomorrow is launch day.
 >
-> Sometime after 10:00 AM ET on July 14, an email from *delivery@curlscontemplation.beauty* arrives with your download link for the complete digital edition — all sixteen chapters, every worksheet. The link is yours for 30 days, and after that the book stays available any time from your dashboard at curlscontemplation.beauty.
+> Sometime after 10:00 AM ET on November 17, an email from *delivery@curlscontemplation.beauty* arrives with your download link for the complete digital edition — all sixteen chapters, every worksheet. The link is yours for 30 days, and after that the book stays available any time from your dashboard at curlscontemplation.beauty.
 >
 > Nothing to do tonight except maybe clear twenty minutes for tomorrow. Chapter II is where the map starts moving.
 >
@@ -47,7 +47,7 @@ Also included: the Post-Purchase email (the API can't edit that automation while
 
 ## Post-Purchase Onboarding email (for automation 191755296825148903)
 **Steps:** dashboard → Automations → "Customers — Post-Purchase Onboarding (DRAFT)" → toggle **OFF** → edit email 1 → paste below → re-enable.
-- **Subject:** You're in. Here's exactly what happens between now and July 14.
+- **Subject:** You're in. Here's exactly what happens between now and November 17.
 
 > Thank you — genuinely. Preordering a first book from an independent author is a bet on a person, and I don't take it lightly.
 >
@@ -55,7 +55,7 @@ Also included: the Post-Purchase email (the API can't edit that automation while
 >
 > **Now:** your receipt is already in your inbox, and your purchase is locked to your email.
 >
-> **July 14, launch morning:** the full book lands in this inbox automatically — a download link for the complete digital edition. No waiting on me to press send; the system does it the moment launch opens.
+> **November 17, launch morning:** the full book lands in this inbox automatically — a download link for the complete digital edition. No waiting on me to press send; the system does it the moment launch opens.
 >
 > **Between now and then:** I'll send a short note the week before launch so you know it's coming, and one the day before. That's it. No daily hype.
 >
