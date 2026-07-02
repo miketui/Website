@@ -87,7 +87,7 @@ else
 fi
 
 log "Checking release artifacts"
-EPUB_PATH="$ROOT/release/Curls-and-Contemplation-v8-20260610.epub"
+EPUB_PATH="$ROOT/release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub"
 ALT_EPUB_PATH="$ROOT/release/Curls-and-Contemplation-FINAL.epub"
 if [[ -f "$EPUB_PATH" ]]; then
   java -jar "$EPUBCHECK_JAR" "$EPUB_PATH" > "$REPORTS_DIR/epubcheck-v8.txt" 2>&1 || true

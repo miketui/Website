@@ -9,8 +9,8 @@ import { lockedStorage, runSupabaseStorageCheck } from "../scripts/verify-supaba
 
 const appDir = process.cwd();
 const repoRoot = join(appDir, "../..");
-const lockedEpubPath = "books/curls-and-contemplation/epub/Curls-and-Contemplation-v8-20260610.epub";
-const lockedPdfPath = "books/curls-and-contemplation/pdf/CurlsAndContemplation-POD-Royal-v8-20260610.pdf";
+const lockedEpubPath = "books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub";
+const lockedPdfPath = "books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf";
 
 describe("Prompt 6 sandbox integration readiness", () => {
   it("ships a sandbox env template without real-looking secrets", () => {

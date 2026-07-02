@@ -168,8 +168,8 @@ marketing/website/BUNDLE_PRE_MORTEM.md
 marketing/website/PUSH_TO_REPO.md
 marketing/website/claims-evidence.md
 release/BUILD-MANIFEST.md
-release/Curls-and-Contemplation-v8-20260610.epub
-release/CurlsAndContemplation-POD-Royal-v8-20260610.pdf
+release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub
+release/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf
 release/epubcheck-v8.txt
 release/page-map.json
 setup.sh
@@ -179,8 +179,8 @@ setup.sh
 
 ```text
 release/BUILD-MANIFEST.md
-release/Curls-and-Contemplation-v8-20260610.epub
-release/CurlsAndContemplation-POD-Royal-v8-20260610.pdf
+release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub
+release/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf
 release/epubcheck-v8.txt
 release/page-map.json
 ```
@@ -276,8 +276,8 @@ Other marketing/spec files present but not required for this audit include email
 | Release file | Purpose / note |
 |---|---|
 | `release/BUILD-MANIFEST.md` | Current release manifest. It first documents older `FINAL` deliverables, then explicitly supersedes them with the v8 build. |
-| `release/Curls-and-Contemplation-v8-20260610.epub` | Current versioned v8 EPUB release artifact. |
-| `release/CurlsAndContemplation-POD-Royal-v8-20260610.pdf` | Current versioned v8 KDP Royal POD interior PDF release artifact. |
+| `release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub` | Current versioned v8 EPUB release artifact. |
+| `release/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf` | Current versioned v8 KDP Royal POD interior PDF release artifact. |
 | `release/epubcheck-v8.txt` | EPUBCheck report for v8. Manifest states official EPUBCheck 0 fatals / 0 errors / 0 warnings / 0 infos. |
 | `release/page-map.json` | Spine file to first page number map for the v8 PDF. |
 
@@ -286,8 +286,8 @@ Checksums computed during audit:
 ```text
 122b0756db3132a00dee1d01df68deaf7d8c78d010f68a8726d2622f5780586b  BUILD-MANIFEST.md
 1b871a801b1773626c473f38741caef8c98ef34b42c5b60ec1c5109e2bdec171  epubcheck-v8.txt
-26cc3c406cade47f45c106d5fc17b5f8b462e46c7696aed2f0aba06246bb3a0f  CurlsAndContemplation-POD-Royal-v8-20260610.pdf
-89718a0cd94e965d97c8ff6f4e13e1949b4ec7ea7b7404d8897ab5e2ba9544e3  Curls-and-Contemplation-v8-20260610.epub
+26cc3c406cade47f45c106d5fc17b5f8b462e46c7696aed2f0aba06246bb3a0f  Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf
+89718a0cd94e965d97c8ff6f4e13e1949b4ec7ea7b7404d8897ab5e2ba9544e3  Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub
 b3757bff89e2d31fa8fae55fa5ab67566335acdb2d8fb2f48e58e9ff5d79c6db  page-map.json
 ```
 
@@ -297,20 +297,20 @@ b3757bff89e2d31fa8fae55fa5ab67566335acdb2d8fb2f48e58e9ff5d79c6db  page-map.json
 
 EPUB found:
 
-- `release/Curls-and-Contemplation-v8-20260610.epub`
+- `release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`
 
 PDF found:
 
-- `release/CurlsAndContemplation-POD-Royal-v8-20260610.pdf`
+- `release/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`
 
 ---
 
-## 8. Whether `/release/Curls-and-Contemplation-v8-20260610.epub` exists
+## 8. Whether `/release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub` exists
 
 Yes. The requested V8 EPUB exists at:
 
 ```text
-release/Curls-and-Contemplation-v8-20260610.epub
+release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub
 ```
 
 Because the V8 EPUB exists, no fallback EPUB is needed.
@@ -319,13 +319,13 @@ Because the V8 EPUB exists, no fallback EPUB is needed.
 
 ## 9. Newest confirmed EPUB from release manifest and mismatch status
 
-The release manifest contains an update section titled `v8-20260610 build (supersedes FINAL above)` and lists `Curls-and-Contemplation-v8-20260610.epub` as the current EPUB deliverable.
+The release manifest contains an update section titled `v8-20260610 build (supersedes FINAL above)` and lists `Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub` as the current EPUB deliverable.
 
 Mismatch status:
 
 - **No mismatch found.**
 - The requested V8 path exists in `release/`.
-- The newest confirmed EPUB from `release/BUILD-MANIFEST.md` is `Curls-and-Contemplation-v8-20260610.epub`.
+- The newest confirmed EPUB from `release/BUILD-MANIFEST.md` is `Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`.
 - The audit should treat older `FINAL` names in the first part of the manifest as superseded historical entries, not as the active website deliverable.
 
 ---

@@ -18,12 +18,12 @@ The site remains intentionally production locked: no production deploy was run, 
 - Folder consolidation target is `author-site/`.
 - `author-site/package.json`, `author-site/app/`, `author-site/docs/website-v4/`, `author-site/setup/`, and sandbox scripts exist.
 - Local release artifacts remain outside website public assets:
-  - `release/Curls-and-Contemplation-v8-20260610.epub`
-  - `release/CurlsAndContemplation-POD-Royal-v8-20260610.pdf`
+  - `release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`
+  - `release/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`
 - Locked private Supabase bucket remains `curls-deliverables`.
 - Locked private object paths remain:
-  - `books/curls-and-contemplation/epub/Curls-and-Contemplation-v8-20260610.epub`
-  - `books/curls-and-contemplation/pdf/CurlsAndContemplation-POD-Royal-v8-20260610.pdf`
+  - `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`
+  - `books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`
 
 ### What remains blocked
 
@@ -138,8 +138,8 @@ author-site/
 - [ ] Apply `author-site/supabase/migrations/0001_author_commerce.sql`.
 - [ ] Verify RLS policies.
 - [ ] Create private bucket `curls-deliverables` with public access disabled.
-- [ ] Upload EPUB to `books/curls-and-contemplation/epub/Curls-and-Contemplation-v8-20260610.epub`.
-- [ ] Upload PDF to `books/curls-and-contemplation/pdf/CurlsAndContemplation-POD-Royal-v8-20260610.pdf`.
+- [ ] Upload EPUB to `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`.
+- [ ] Upload PDF to `books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`.
 - [ ] Confirm unauthorized download is denied.
 - [ ] Confirm valid entitlement creates a short-lived signed URL.
 - [ ] Confirm refund/revocation denies future access.

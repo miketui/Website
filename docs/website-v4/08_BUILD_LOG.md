@@ -29,8 +29,8 @@ Create the full v4 planning/spec package under `author-site/docs/website-v4/` on
 - Subscription-ready schema is planned without activating a subscription offer.
 
 ## Release artifact names confirmed
-- EPUB: `release/Curls-and-Contemplation-v8-20260610.epub`.
-- PDF: `release/CurlsAndContemplation-POD-Royal-v8-20260610.pdf`.
+- EPUB: `release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`.
+- PDF: `release/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`.
 - These are production source artifacts for later upload to Supabase private Storage, not web-public files.
 
 ## Pricing normalization
@@ -228,7 +228,7 @@ Prompt 4 should harden the immersive design/motion pass: convert `middleware.ts`
 
 ### Download entitlement improvements
 - Downloads deny by default, require a session, check active purchase by user ID or email, deny refunded/revoked/canceled/past_due purchases, enforce a 3 downloads / 7 days cap scaffold, use a 24-hour signed URL TTL, and never return local `release/` or app `public/` paths.
-- Locked private target paths are `books/curls-and-contemplation/epub/Curls-and-Contemplation-v8-20260610.epub` and `books/curls-and-contemplation/pdf/CurlsAndContemplation-POD-Royal-v8-20260610.pdf` in bucket `curls-deliverables`.
+- Locked private target paths are `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub` and `books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf` in bucket `curls-deliverables`.
 
 ### MailerLite/Resend improvements
 - MailerLite has typed group mapping for Subscribers, Free Chapter, Preorders, Customers, Abandoned Checkout, Bonus Claim Started, Bonus Claim Completed, Refunded, Blog Readers, and VIP / Early Readers.
@@ -298,7 +298,7 @@ Prompt 6 should connect sandbox credentials only: create a Supabase sandbox proj
 - Library audit confirmed existing modules for environment parsing, Supabase server/client setup, Stripe checkout metadata/price selection, protected downloads, entitlements, Resend, MailerLite, analytics, server analytics, route/security policy, schema, SEO, and subscription placeholders.
 - Supabase audit confirmed `author-site/supabase/migrations/0001_author_commerce.sql` exists with product/price/order/purchase/download/subscriber/analytics/admin/membership tables and RLS intent.
 - Tests audit confirmed Prompt 5 tests already covered analytics, entitlements, launch mode, motion static checks, price config, backend wrappers, route protection, security static checks, and Stripe webhook behavior.
-- Release artifact audit confirmed the locked local artifacts remain under `release/`: `Curls-and-Contemplation-v8-20260610.epub` and `CurlsAndContemplation-POD-Royal-v8-20260610.pdf`.
+- Release artifact audit confirmed the locked local artifacts remain under `release/`: `Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub` and `Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`.
 - `.env.example` contains variable names only; no real secrets were present.
 - README already documented private Storage, Stripe server-side price selection, webhook signature verification, secure downloads, and production activation gates, but needed a full Prompt 6 sandbox integration section.
 - Sandbox credentials were not present in this Codex environment during Prompt 6, so remote provider checks were safely skipped and documented instead of treated as failures.

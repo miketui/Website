@@ -44,7 +44,10 @@ const serverEnvSchema = publicEnvSchema.extend({
   SENTRY_ORG: z.string().optional(),
   SENTRY_PROJECT: z.string().optional(),
   SENTRY_AUTH_TOKEN: z.string().optional(),
-  CRON_SECRET: z.string().optional()
+  CRON_SECRET: z.string().optional(),
+  LAUNCH_FULFILLMENT_ENABLED: z.string().optional(),
+  LAUNCH_DRYRUN_TEST_EMAIL: z.string().email().optional(),
+  LAUNCH_OWNER_EMAIL: z.string().email().optional()
 });
 
 export type LaunchMode = z.infer<typeof launchModeSchema>;

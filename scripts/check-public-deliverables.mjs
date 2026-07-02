@@ -2,8 +2,8 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 
-const epubPath = "books/curls-and-contemplation/epub/Curls-and-Contemplation-v8-20260610.epub";
-const pdfPath = "books/curls-and-contemplation/pdf/CurlsAndContemplation-POD-Royal-v8-20260610.pdf";
+const epubPath = "books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub";
+const pdfPath = "books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf";
 const forbiddenPublicUrlPatterns = [
   /public\/[A-Za-z0-9/_-]+\.(?:epub|pdf)\b/i,
   /href=["'][^"']*release\/[^"']*\.(?:epub|pdf)["']/i,
