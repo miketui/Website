@@ -40,7 +40,7 @@ export function JourneyExperience() {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     document.documentElement.removeAttribute("data-cc-gateway");
     if (reduce) return;
     document.documentElement.setAttribute("data-journey", "on");
@@ -61,7 +61,10 @@ export function JourneyExperience() {
     const cards = [...root.querySelectorAll<HTMLDivElement>(".jr-card")];
     if (!world || !bookScene || !book || !cover || !bookTrack || !journeyTrack || !hero || !heroLine) return;
 
-    /* Split the hero line into words client-side only (copy stays intact in HTML). */
+    /* Split the hero line into words client-side only (copy stays intact in the
+       server HTML for crawlers/no-JS). Mutating here is React-safe: this subtree
+       is static JSX with no state or props, so React never reconciles it after
+       mount, and the dataset guard makes the split idempotent across remounts. */
     let words: HTMLElement[] = [];
     if (!heroLine.dataset.split) {
       heroLine.dataset.split = "1";
@@ -107,21 +110,32 @@ export function JourneyExperience() {
     let tiltX = 0;
     let tiltY = 0;
     const onPointer = (e: PointerEvent) => {
-      tiltY = (e.clientX / innerWidth - 0.5) * 6;
-      tiltX = -(e.clientY / innerHeight - 0.5) * 4;
+      tiltY = (e.clientX / window.innerWidth - 0.5) * 6;
+      tiltX = -(e.clientY / window.innerHeight - 0.5) * 4;
     };
-    addEventListener("pointermove", onPointer, { passive: true });
+    window.addEventListener("pointermove", onPointer, { passive: true });
 
-    let target = scrollY;
-    let current = scrollY;
+    let target = window.scrollY;
+    let current = window.scrollY;
     let raf = 0;
     let running = false;
 
+    /* Layout metrics are read once per resize, never inside the rAF loop —
+       offsetTop/offsetHeight reads per frame would force layout thrashing. */
+    const metrics = { vh: 1, bMax: 1, heroTop: 0, tTop: 0, tMax: 1 };
+    const measure = () => {
+      metrics.vh = window.innerHeight;
+      metrics.bMax = Math.max(1, bookTrack.offsetHeight - metrics.vh * 0.2);
+      metrics.heroTop = bookTrack.offsetTop + bookTrack.offsetHeight;
+      metrics.tTop = journeyTrack.offsetTop;
+      metrics.tMax = Math.max(1, journeyTrack.offsetHeight - metrics.vh);
+    };
+    measure();
+
     const render = (y: number) => {
-      const vh = innerHeight;
+      const { vh, bMax, heroTop, tTop, tMax } = metrics;
 
       /* Act I — the cover opens; the camera walks into the pages. */
-      const bMax = Math.max(1, bookTrack.offsetHeight - vh * 0.2);
       const bp = clamp(y / bMax, 0, 1);
       if (bp < 1) {
         bookScene.style.display = "block";
@@ -138,7 +152,6 @@ export function JourneyExperience() {
       }
 
       /* Act II — arrival line floats in, then fully exits before World 1. */
-      const heroTop = bookTrack.offsetTop + bookTrack.offsetHeight;
       words.forEach((w, i) => {
         const inP = clamp((y - (heroTop - vh * 0.92) - i * 26) / (vh * 0.45), 0, 1);
         const outP = clamp((y - heroTop - i * 30) / (vh * 0.7), 0, 1);
@@ -147,8 +160,6 @@ export function JourneyExperience() {
       });
 
       /* Act III — the four worlds. Camera translateZ through the stations. */
-      const tTop = journeyTrack.offsetTop;
-      const tMax = Math.max(1, journeyTrack.offsetHeight - vh);
       const wp = clamp((y - tTop) / tMax, 0, 1);
       world.style.transform = `translateZ(${wp * DEPTH}px)`;
       stations.forEach((s, i) => {
@@ -197,33 +208,37 @@ export function JourneyExperience() {
       if (running) raf = requestAnimationFrame(tick);
     };
     const onScroll = () => {
-      target = scrollY;
+      target = window.scrollY;
       if (!running) {
         running = true;
         raf = requestAnimationFrame(tick);
       }
     };
-    addEventListener("scroll", onScroll, { passive: true });
-    addEventListener("resize", onScroll, { passive: true });
+    const onResize = () => {
+      measure();
+      onScroll();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
     render(current);
 
-    const onCoverClick = () => scrollTo({ top: bookTrack.offsetHeight * 0.95, behavior: "smooth" });
-    cover.addEventListener("click", onCoverClick);
-
     return () => {
-      removeEventListener("scroll", onScroll);
-      removeEventListener("resize", onScroll);
-      removeEventListener("pointermove", onPointer);
-      cover.removeEventListener("click", onCoverClick);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("pointermove", onPointer);
       cancelAnimationFrame(raf);
       document.documentElement.removeAttribute("data-journey");
     };
   }, []);
 
+  const openBook = () => {
+    const track = rootRef.current?.querySelector<HTMLDivElement>(".jr-book-track");
+    if (track) window.scrollTo({ top: track.offsetHeight * 0.95, behavior: "smooth" });
+  };
+
   const skipJourney = () => {
-    const root = rootRef.current;
-    const track = root?.querySelector<HTMLDivElement>(".jr-journey-track");
-    if (track) scrollTo({ top: track.offsetTop + track.offsetHeight, behavior: "smooth" });
+    const track = rootRef.current?.querySelector<HTMLDivElement>(".jr-journey-track");
+    if (track) window.scrollTo({ top: track.offsetTop + track.offsetHeight, behavior: "smooth" });
   };
 
   return (
@@ -280,7 +295,20 @@ export function JourneyExperience() {
               <p>A freelance hairstylist&rsquo;s guide to creative excellence. Sixteen chapters. A guided worksheet in every one. One practice.</p>
               <div className="jr-tp-more">Keep scrolling &middot; the journey begins</div>
             </div>
-            <div className="jr-cover" title="Scroll or click to open the book">
+            <div
+              className="jr-cover"
+              role="button"
+              tabIndex={0}
+              aria-label="Open the book"
+              title="Scroll or click to open the book"
+              onClick={openBook}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  openBook();
+                }
+              }}
+            >
               <div className="jr-coverfront" />
               <div className="jr-coverinside"><span>for every stylist building the business nobody taught them</span></div>
             </div>

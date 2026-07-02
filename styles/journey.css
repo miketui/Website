@@ -176,6 +176,10 @@ html[data-journey="on"] .jr-skip { display: inline-flex; }
   position: absolute; inset: 0; transform-style: preserve-3d;
   transform-origin: left center; will-change: transform; cursor: pointer;
 }
+.jr-cover:focus-visible {
+  outline: 2px solid var(--aciss-antique-gold, #B08D57);
+  outline-offset: 4px; border-radius: 8px;
+}
 .jr-coverfront {
   position: absolute; inset: 0; backface-visibility: hidden;
   border-radius: 6px 14px 14px 6px; overflow: hidden;
