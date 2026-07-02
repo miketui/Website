@@ -25,7 +25,7 @@ be missing since they were only ever in the removed file:
 
 - `NEXT_PUBLIC_GA4_MEASUREMENT_ID` = `G-58RVYKGCE9` — the GA4 component
   I built silently does nothing without this.
-- `RELEASE_DATE` = `2026-07-14` — the code now defaults to this correctly
+- `RELEASE_DATE` = `2026-11-17` — the code now defaults to this correctly
   even if unset, but setting it explicitly avoids relying on a fallback.
 
 ## 🟡 Supabase Storage — files that need to exist

@@ -3,6 +3,7 @@
 @import "../styles/motion.css";
 @import "../styles/page-experiences.css";
 @import "../styles/gateway.css";
+@import "../styles/journey.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -1,4 +1,4 @@
-import { BookGateway } from "@/components/gateway/BookGateway";
+import { JourneyExperience } from "@/components/journey/JourneyExperience";
 import { BookHero } from "@/components/BookHero";
 import { ProofBand } from "@/components/design/ProofBand";
 import { Section } from "@/components/design/Section";
@@ -36,7 +36,7 @@ const pathwayRows = [
 export default function HomePage() {
   return (
     <main>
-      <BookGateway />
+      <JourneyExperience />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(bookJsonLd()) }} />
       <BookHero />
       <ProofBand />
@@ -87,7 +87,7 @@ export default function HomePage() {
         <section className="sunrise-surface relative overflow-hidden">
           <div aria-hidden="true" className="dawn-bloom pointer-events-none absolute inset-x-0 -top-8 mx-auto h-64 w-[40rem] max-w-full rounded-full" />
           <div className="relative z-10 mx-auto max-w-4xl px-5 py-20 text-center md:px-6 md:py-28">
-            <p className="editorial-kicker mb-5">Launching July 14</p>
+            <p className="editorial-kicker mb-5">Launching November 17</p>
             <h2 className="hero-display font-display text-4xl leading-[0.95] text-white md:text-6xl">
               Stop learning the business the <span className="text-dawn">expensive way.</span>
             </h2>
