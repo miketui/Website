@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { UtilityShell } from "@/components/design/UtilityShell";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 import { pageMetadata } from "@/lib/seo";
@@ -66,7 +67,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
             <p className="font-semibold text-white">While Chapter 1 lands: find your blind spot.</p>
             <p className="mt-2">
               Two minutes, six questions — the quiz names which of the four business blind spots is quietly costing you the most, and hands you the matching worksheet.{" "}
-              <a className="text-antique underline underline-offset-4" href="/quiz">Take the Blind-Spot Quiz</a>
+              <Link className="text-antique underline underline-offset-4" href="/quiz">Take the Blind-Spot Quiz</Link>
             </p>
           </div>
         </div>

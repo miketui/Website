@@ -6,6 +6,12 @@ import Script from "next/script";
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 const SUBSCRIBED_KEY = "curls-subscribed";
 
+/* Module-scope so useSyncExternalStore never re-subscribes across renders.
+   localStorage has no change events we care about here — the value is read
+   once per render via the snapshot. */
+const noopSubscribe = () => () => {};
+const serverSnapshot = () => false;
+
 /** utm_* params from the current URL, captured at submit time for attribution. */
 function currentUtmParams(): Record<string, string> {
   try {
@@ -49,7 +55,7 @@ export function NewsletterForm({
   /* Hydration-safe localStorage read: server snapshot is always false, the
      client snapshot flips post-hydration without a mismatch warning. */
   const alreadySubscribed = useSyncExternalStore(
-    () => () => {},
+    noopSubscribe,
     () => {
       if (!hideWhenSubscribed) return false;
       try {
@@ -58,7 +64,7 @@ export function NewsletterForm({
         return false;
       }
     },
-    () => false
+    serverSnapshot
   );
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
