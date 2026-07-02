@@ -9,6 +9,7 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { SiteCurlTrail } from "@/components/SiteCurlTrail";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { ReducedMotionProvider } from "@/components/motion/ReducedMotionProvider";
+import { displayFont, bodyFont } from "@/app/fonts";
 import { siteConfig } from "@/content/site";
 import { personJsonLd } from "@/lib/schema";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -43,5 +44,5 @@ const gatewayCurtainScript = `try{var seen=false;try{seen=sessionStorage.getItem
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   /* suppressHydrationWarning: the gateway curtain script (below) sets a
      data attribute on <html> before hydration by design. */
-  return <html lang="en" suppressHydrationWarning><body><script dangerouslySetInnerHTML={{ __html: gatewayCurtainScript }} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><Header /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><GoogleAnalytics /><SiteCurlTrail /></ReducedMotionProvider><SpeedInsights /></body></html>;
+  return <html lang="en" suppressHydrationWarning className={`${displayFont.variable} ${bodyFont.variable}`}><body><script dangerouslySetInnerHTML={{ __html: gatewayCurtainScript }} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><Header /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><GoogleAnalytics /><SiteCurlTrail /></ReducedMotionProvider><SpeedInsights /></body></html>;
 }
