@@ -21,11 +21,13 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { createRequire } from "node:module";
+import { pathToFileURL } from "node:url";
 
 const require = createRequire(import.meta.url);
 const args = process.argv.slice(2);
 const epubDirIndex = args.indexOf("--epub-dir");
-const EPUB_DIR = epubDirIndex >= 0 ? resolve(args[epubDirIndex + 1] ?? "") : null;
+const epubDirValue = epubDirIndex >= 0 ? args[epubDirIndex + 1] : undefined;
+const EPUB_DIR = epubDirValue && !epubDirValue.startsWith("--") ? resolve(epubDirValue) : null;
 if (!EPUB_DIR) {
   console.error("Usage: node scripts/generate-free-assets.mjs --epub-dir /path/to/extracted-epub");
   process.exit(1);
@@ -334,7 +336,7 @@ async function main() {
   async function renderFile(htmlPath, outRel, pdfOptions) {
     const out = join(OUT_DIR, outRel);
     mkdirSync(join(out, ".."), { recursive: true });
-    await page.goto(`file://${htmlPath}`, { waitUntil: "networkidle" });
+    await page.goto(pathToFileURL(htmlPath).href, { waitUntil: "networkidle" });
     await page.pdf({ path: out, printBackground: true, ...pdfOptions });
     console.log(`✓ ${outRel}`);
   }

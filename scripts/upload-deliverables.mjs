@@ -34,7 +34,12 @@ if (args.includes("--help")) {
 }
 const dryRun = args.includes("--dry-run");
 const privateDirIndex = args.indexOf("--private-dir");
-const privateDir = privateDirIndex >= 0 ? resolve(args[privateDirIndex + 1] ?? "") : null;
+const privateDirValue = privateDirIndex >= 0 ? args[privateDirIndex + 1] : undefined;
+if (privateDirIndex >= 0 && (!privateDirValue || privateDirValue.startsWith("--"))) {
+  console.error("--private-dir requires a directory path.");
+  process.exit(1);
+}
+const privateDir = privateDirValue ? resolve(privateDirValue) : null;
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

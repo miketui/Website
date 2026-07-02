@@ -103,13 +103,23 @@ export async function deliverLaunchCopy(
   return { email: buyer.email, sent: true, epubUrlExpiresAt: expiresAt };
 }
 
+/**
+ * Cap per cron invocation so the function always finishes inside Vercel's
+ * execution limit (~50 sends × ~0.9s each ≈ 45s < 60s maxDuration). The cron
+ * runs hourly post-launch, so a backlog larger than one batch drains within
+ * hours, not days.
+ */
+export const LAUNCH_SEND_BATCH_LIMIT = 50;
+
 /** Paid-not-yet-fulfilled buyers, per the existing schema (no invented tables). */
-export async function eligibleLaunchBuyers(supabase: SupabaseServer) {
+export async function eligibleLaunchBuyers(supabase: SupabaseServer, limit = LAUNCH_SEND_BATCH_LIMIT) {
   return supabase
     .from("purchases")
-    .select("id, email, user_id")
+    .select("id, email, user_id", { count: "exact" })
     .eq("book_slug", BOOK_SLUG)
     .eq("entitlement_status", "active")
     .is("launch_email_sent_at", null)
-    .not("email", "is", null);
+    .not("email", "is", null)
+    .order("created_at", { ascending: true })
+    .limit(limit);
 }

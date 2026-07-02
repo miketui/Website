@@ -11,6 +11,9 @@ import {
   verifyLaunchPreconditions
 } from "@/lib/launch-fulfillment";
 
+/** Keep every batched send comfortably inside the function limit (Hobby-safe). */
+export const maxDuration = 60;
+
 export function hasLaunchArrived(): boolean {
   const release = new Date(`${siteConfig.releaseDate}T00:00:00Z`);
   const now = new Date();
@@ -79,10 +82,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: { code: "guard_failed", failed: guard.failed } }, { status: 500 });
   }
 
-  const { data: pending, error } = await eligibleLaunchBuyers(supabase);
+  const { data: pending, error, count } = await eligibleLaunchBuyers(supabase);
   if (error) {
     return NextResponse.json({ ok: false, error: { code: "storage_error", message: error.message } }, { status: 500 });
   }
+  const remainingAfterBatch = Math.max(0, (count ?? pending?.length ?? 0) - (pending?.length ?? 0));
 
   if ((pending?.length ?? 0) === 0) {
     if (isLaunchDayWindow()) {
@@ -116,7 +120,7 @@ export async function GET(request: Request) {
   await recordServerEvent({
     eventName: analyticsEvents.launchFulfillmentSent,
     route: "/api/cron/launch-day",
-    metadata: { launchDayCron: true, recipientCount: results.length, sentCount: results.filter((r) => r.sent).length, warnings: guard.warnings },
+    metadata: { launchDayCron: true, recipientCount: results.length, sentCount: results.filter((r) => r.sent).length, remainingAfterBatch, warnings: guard.warnings },
     operational: true
   });
 
@@ -126,6 +130,7 @@ export async function GET(request: Request) {
     releaseDate: siteConfig.releaseDate,
     processed: results.length,
     sent: results.filter((r) => r.sent).length,
+    remainingAfterBatch,
     failures: results.filter((r) => !r.sent),
     warnings: guard.warnings
   });

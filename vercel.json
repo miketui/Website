@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/launch-day",
-      "schedule": "0 14 * * *"
+      "schedule": "0 * * * *"
     },
     {
       "path": "/api/cron/pre-launch-check",
