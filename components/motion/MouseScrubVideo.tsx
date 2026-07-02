@@ -35,6 +35,17 @@ export function MouseScrubVideo({ src, webmSrc, poster, className, children }: {
     let target = 0;
     let displayed = -1;
 
+    /* Document-space metrics cached on mount/resize — reading layout inside
+       pointermove would force a synchronous reflow between the rAF writes. */
+    let rectLeft = 0;
+    let rectWidth = 1;
+
+    const measure = () => {
+      const rect = section.getBoundingClientRect();
+      rectLeft = rect.left + window.scrollX;
+      rectWidth = rect.width || 1;
+    };
+
     const tick = () => {
       raf = 0;
       if (!duration) return;
@@ -48,8 +59,7 @@ export function MouseScrubVideo({ src, webmSrc, poster, className, children }: {
     const onMeta = () => { duration = video.duration || 0; };
     const onMove = (event: PointerEvent) => {
       if (!duration) return;
-      const rect = section.getBoundingClientRect();
-      const ratio = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
+      const ratio = Math.min(1, Math.max(0, (event.pageX - rectLeft) / rectWidth));
       target = ratio * duration;
       wake();
     };
@@ -57,10 +67,13 @@ export function MouseScrubVideo({ src, webmSrc, poster, className, children }: {
     video.pause();
     if (video.readyState >= 1) onMeta();
     else video.addEventListener("loadedmetadata", onMeta);
+    measure();
     section.addEventListener("pointermove", onMove);
+    window.addEventListener("resize", measure);
     return () => {
       video.removeEventListener("loadedmetadata", onMeta);
       section.removeEventListener("pointermove", onMove);
+      window.removeEventListener("resize", measure);
       if (raf) cancelAnimationFrame(raf);
     };
   }, [quiet]);

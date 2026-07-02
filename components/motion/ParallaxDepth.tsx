@@ -7,8 +7,9 @@ import { isDecorativeMotionExcludedRoute } from "@/lib/route-policy";
 
 /**
  * Scroll-linked 2.5D depth. Children drift relative to natural scroll at
- * `speed` (positive = recedes like a background layer, negative = floats
- * toward the viewer). Layout metrics are cached on resize; the scroll loop
+ * `speed` (positive = crosses the viewport faster than the page, floating
+ * toward the viewer; negative = lags behind it, receding like a background
+ * layer). Layout metrics are cached on resize; the scroll loop
  * touches transform only (compositor-friendly), runs solely while the layer
  * is near the viewport, and lerps toward the target so motion stays silky.
  * Renders static under reduced motion or on decorative-motion-excluded routes.

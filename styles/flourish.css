@@ -100,14 +100,18 @@
   .flourish-item--sway { animation: strandSway 12s ease-in-out infinite alternate; }
   .flourish-item--sway-slow { animation: strandSway 17s ease-in-out infinite alternate-reverse; }
   .circuit-dot { animation: circuitPulse 3.2s ease-in-out infinite; }
-  .reveal-block.is-visible .jade-circuit-draw {
+  /* Hidden initial state lives on .reveal-block (pre-reveal) so the path
+     never flashes fully drawn before the animation starts; reduced-motion
+     users skip this block entirely and get the static drawn path. */
+  .reveal-block .jade-circuit-draw,
+  .reveal-block .strand-draw {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
+  }
+  .reveal-block.is-visible .jade-circuit-draw {
     animation: circuitDraw 1.6s cubic-bezier(0.6, 0, 0.2, 1) 0.15s forwards;
   }
   .reveal-block.is-visible .strand-draw {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
     animation: circuitDraw 1.4s cubic-bezier(0.6, 0, 0.2, 1) 0.3s forwards;
   }
 }

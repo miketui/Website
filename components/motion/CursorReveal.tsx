@@ -39,6 +39,19 @@ export function CursorReveal({ frontSrc, revealSrc, alt = "", className, childre
     let radius = 0;
     let targetRadius = 0;
 
+    /* Document-space metrics cached on mount/resize — reading layout inside
+       pointermove would force a synchronous reflow between the rAF writes. */
+    let rectLeft = 0;
+    let rectTop = 0;
+    let rectWidth = 0;
+
+    const measure = () => {
+      const rect = section.getBoundingClientRect();
+      rectLeft = rect.left + window.scrollX;
+      rectTop = rect.top + window.scrollY;
+      rectWidth = rect.width;
+    };
+
     const paint = () => {
       raf = 0;
       radius += (targetRadius - radius) * 0.16;
@@ -51,19 +64,21 @@ export function CursorReveal({ frontSrc, revealSrc, alt = "", className, childre
     const wake = () => { if (!raf) raf = requestAnimationFrame(paint); };
 
     const onMove = (event: PointerEvent) => {
-      const rect = section.getBoundingClientRect();
-      x = event.clientX - rect.left;
-      y = event.clientY - rect.top;
-      targetRadius = Math.min(rect.width, 900) * 0.28;
+      x = event.pageX - rectLeft;
+      y = event.pageY - rectTop;
+      targetRadius = Math.min(rectWidth, 900) * 0.28;
       wake();
     };
     const onLeave = () => { targetRadius = 0; wake(); };
 
+    measure();
     section.addEventListener("pointermove", onMove);
     section.addEventListener("pointerleave", onLeave);
+    window.addEventListener("resize", measure);
     return () => {
       section.removeEventListener("pointermove", onMove);
       section.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("resize", measure);
       if (raf) cancelAnimationFrame(raf);
     };
   }, [quiet]);
@@ -71,9 +86,10 @@ export function CursorReveal({ frontSrc, revealSrc, alt = "", className, childre
   const mask = "radial-gradient(circle var(--reveal-r, 0px) at var(--reveal-x, 50%) var(--reveal-y, 50%), transparent 0%, transparent 62%, black 100%)";
   return (
     <section ref={sectionRef} className={`relative overflow-hidden ${className ?? ""}`}>
-      {/* REVEAL: the lit scene (underneath) */}
+      {/* REVEAL: the lit scene (underneath). Only aria-hidden when no alt is
+          given — aria-hidden would silence the role="img" description. */}
       <div
-        aria-hidden="true"
+        aria-hidden={alt ? undefined : "true"}
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${revealSrc})` }}
         role={alt ? "img" : undefined}

@@ -96,7 +96,12 @@ export function ScrollScrubVideo({ src, webmSrc, poster, trackVh = 240, classNam
       <section className={`relative overflow-hidden ${className ?? ""}`}>
         <div aria-hidden="true" className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${poster})` }} />
         <div aria-hidden="true" className="absolute inset-0 bg-obsidian/45" />
-        <div className="relative z-10 flex min-h-[70vh] flex-col items-center justify-center px-5 py-20 text-center">{children}{stages?.[0]}</div>
+        {/* All story beats render stacked so no copy is hidden from
+            reduced-motion or assistive-tech users. */}
+        <div className="relative z-10 flex min-h-[70vh] flex-col items-center justify-center gap-14 px-5 py-20 text-center">
+          {children}
+          {stages}
+        </div>
       </section>
     );
   }
