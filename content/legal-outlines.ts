@@ -29,7 +29,7 @@ export const legalOutlines = {
   ],
   delivery: [
     "Draft pending attorney review. Digital delivery is designed around private Supabase Storage, server-side entitlement checks, and short-lived signed URLs.",
-    "The locked private bucket is curls-deliverables. The locked object paths are the V8 EPUB and POD PDF paths documented in the handoff and sandbox runbook.",
+    "The locked private bucket is curls-deliverables. The locked object path is the v13 EPUB path documented in the handoff and sandbox runbook; the POD interior PDF is a print-only artifact and is not delivered by the site.",
     "Paid EPUB/PDF artifacts must never be copied into public/, linked directly from public pages, committed as website assets, or exposed through static URLs.",
     "Unauthorized users, expired/revoked entitlements, refunded orders, and missing provider configuration should fail closed with a clear support path.",
     "Final delivery timing, download limits, customer support SLA, and replacement-link policy require human/attorney approval before launch."

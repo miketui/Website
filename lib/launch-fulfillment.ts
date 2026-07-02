@@ -42,14 +42,6 @@ export async function verifyLaunchPreconditions(supabase: SupabaseServer): Promi
   if (error) return { ok: false, failed: `bucket_unreachable: ${error.message}`, warnings };
   if (!data?.some((item) => item.name === name)) return { ok: false, failed: `epub_object_missing: ${epubPath}`, warnings };
 
-  const pdfPath = deliverables.pdf.path;
-  const pdfFolder = pdfPath.split("/").slice(0, -1).join("/");
-  const pdfName = pdfPath.split("/").at(-1) ?? "";
-  const pdfCheck = await supabase.storage.from(PRIVATE_BUCKET).list(pdfFolder, { search: pdfName, limit: 1 });
-  if (pdfCheck.error || !pdfCheck.data?.some((item) => item.name === pdfName)) {
-    warnings.push(`pdf_object_missing: ${pdfPath} — launch email will link EPUB only`);
-  }
-
   return { ok: true, warnings };
 }
 
@@ -61,11 +53,12 @@ export type LaunchDeliveryOutcome = {
 };
 
 /**
- * Delivers the book to a single buyer: signs the EPUB (and PDF when present),
- * sends the launch email, writes the audit `download_events` row, and — for
- * real (non-dry-run) sends — stamps `purchases.launch_email_sent_at` so the
- * daily cron never double-sends. Dry runs write a distinct event type and
- * never touch `purchases`.
+ * Delivers the book to a single buyer: signs the EPUB, sends the launch
+ * email, writes the audit `download_events` row, and — for real (non-dry-run)
+ * sends — stamps `purchases.launch_email_sent_at` so the daily cron never
+ * double-sends. Dry runs write a distinct event type and never touch
+ * `purchases`. The print PDF is a POD artifact (KDP paperback), not a site
+ * deliverable — the site delivers the EPUB only.
  */
 export async function deliverLaunchCopy(
   supabase: SupabaseServer,
@@ -76,10 +69,8 @@ export async function deliverLaunchCopy(
   if (epub.error || !epub.data?.signedUrl) {
     return { email: buyer.email, sent: false, reason: `sign_epub_failed: ${epub.error?.message ?? "no url"}` };
   }
-  const pdf = await supabase.storage.from(PRIVATE_BUCKET).createSignedUrl(deliverables.pdf.path, LAUNCH_SIGNED_URL_TTL_SECONDS);
-  const pdfUrl = pdf.error || !pdf.data?.signedUrl ? undefined : pdf.data.signedUrl;
 
-  const result = await sendLaunchDelivery(buyer.email, { epubUrl: epub.data.signedUrl, pdfUrl, expiresDays: LAUNCH_SIGNED_URL_TTL_DAYS });
+  const result = await sendLaunchDelivery(buyer.email, { epubUrl: epub.data.signedUrl, expiresDays: LAUNCH_SIGNED_URL_TTL_DAYS });
   if (!result.ok) {
     return { email: buyer.email, sent: false, reason: "skipped" in result && result.skipped ? "resend_not_configured" : "provider_error" };
   }
@@ -90,7 +81,7 @@ export async function deliverLaunchCopy(
     purchase_id: buyer.purchaseId ?? null,
     deliverable_slug: deliverables.epub.slug,
     event_type: options.dryRun ? "launch_ebook_dryrun" : "launch_ebook_delivery",
-    metadata: { dry_run: options.dryRun, url_expires_at: expiresAt, pdf_included: Boolean(pdfUrl) }
+    metadata: { dry_run: options.dryRun, url_expires_at: expiresAt }
   });
 
   if (!options.dryRun && buyer.purchaseId) {

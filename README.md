@@ -17,7 +17,7 @@ Copy `.env.example` to `.env.local` and fill only development keys. Do not commi
 
 ## Supabase setup
 
-Run `supabase/migrations/0001_author_commerce.sql`. Paid EPUB/PDF files must be uploaded to private Storage bucket `curls-deliverables`, not `public/`.
+Run `supabase/migrations/0001_author_commerce.sql`. Paid deliverable files (EPUB, card deck PDF) must be uploaded to private Storage bucket `curls-deliverables`, not `public/`.
 
 ## Stripe setup
 
@@ -72,7 +72,7 @@ Scaffolded: final Supabase project, live Stripe products, MailerLite automations
 - Apply `supabase/migrations/0001_author_commerce.sql`.
 - Create private bucket `curls-deliverables`.
 - Upload EPUB to `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`.
-- Upload PDF to `books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`.
+- The v13 POD interior PDF is a print artifact for KDP/third-party POD only — it is not a site deliverable and is not uploaded to Storage.
 - Do not add public read policies for paid deliverables.
 
 ### Email and marketing checklist
@@ -121,15 +121,14 @@ supabase db push --include-all
 # or run supabase/migrations/0001_author_commerce.sql in the Supabase SQL editor.
 ```
 
-Create private Storage bucket `curls-deliverables` with public access disabled. Upload the local release artifacts from the repo root to these private object paths only:
+Create private Storage bucket `curls-deliverables` with public access disabled. Upload the local release artifact from the repo root to this private object path only:
 
 - EPUB: `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`
-- PDF: `books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`
 
 Source artifacts remain outside public:
 
 - `release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`
-- `release/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`
+- `release/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf` (POD print interior for KDP/third-party POD only — never uploaded to Storage)
 
 After credentials are present, run:
 

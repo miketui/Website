@@ -10,7 +10,6 @@ import { lockedStorage, runSupabaseStorageCheck } from "../scripts/verify-supaba
 const appDir = process.cwd();
 const repoRoot = join(appDir, "../..");
 const lockedEpubPath = "books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub";
-const lockedPdfPath = "books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf";
 
 describe("Prompt 6 sandbox integration readiness", () => {
   it("ships a sandbox env template without real-looking secrets", () => {
@@ -61,13 +60,13 @@ describe("Prompt 6 sandbox integration readiness", () => {
     expect(isLiveStripeValue("sk_test_1234567890abcdef")).toBe(false);
   });
 
-  it("private object paths match the locked EPUB/PDF targets", () => {
+  it("private object paths match the locked EPUB target", () => {
     expect(lockedStorage.bucket).toBe("curls-deliverables");
     expect(lockedStorage.epub).toBe(lockedEpubPath);
-    expect(lockedStorage.pdf).toBe(lockedPdfPath);
+    expect("pdf" in lockedStorage).toBe(false);
     const deliverables = readFileSync(join(appDir, "lib/deliverables.ts"), "utf8");
     expect(deliverables).toContain(lockedEpubPath);
-    expect(deliverables).toContain(lockedPdfPath);
+    expect(deliverables).not.toContain("POD-RECTO");
     const downloads = readFileSync(join(appDir, "lib/downloads.ts"), "utf8");
     expect(downloads).not.toContain("release/Curls-and-Contemplation");
   });
@@ -75,7 +74,7 @@ describe("Prompt 6 sandbox integration readiness", () => {
   it("public deliverables check rejects EPUB/PDF files in public", () => {
     const tempDir = join(tmpdir(), `curls-public-check-${Date.now()}`);
     mkdirSync(join(tempDir, "public"), { recursive: true });
-    writeFileSync(join(tempDir, "private-paths.md"), `${lockedEpubPath}\n${lockedPdfPath}\n`);
+    writeFileSync(join(tempDir, "private-paths.md"), `${lockedEpubPath}\n`);
     writeFileSync(join(tempDir, "public", "paid.epub"), "placeholder");
     const result = checkPublicDeliverables({ appDir: tempDir });
     rmSync(tempDir, { recursive: true, force: true });

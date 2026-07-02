@@ -25,7 +25,7 @@ export function orderConfirmationTemplate(orderId: string) {
 }
 
 export function downloadAccessTemplate() {
-  return { subject: "Your protected download access", html: "<p>Your EPUB/PDF access is available from your secure dashboard after sign-in.</p>" };
+  return { subject: "Your protected download access", html: "<p>Your digital downloads are available from your secure dashboard after sign-in.</p>" };
 }
 
 /**
@@ -33,18 +33,16 @@ export function downloadAccessTemplate() {
  * email (30-day expiry) with the dashboard as the durable fallback once the
  * link ages out. Plain-text version included for deliverability.
  */
-export function launchDeliveryTemplate(links: { epubUrl: string; pdfUrl?: string; expiresDays: number }) {
+export function launchDeliveryTemplate(links: { epubUrl: string; expiresDays: number }) {
   const dashboardUrl = `${getSiteUrl().replace(/\/$/, "")}/dashboard`;
-  const pdfLine = links.pdfUrl ? `<br/><a href="${links.pdfUrl}">Download the PDF edition</a>` : "";
-  const pdfText = links.pdfUrl ? `\nPDF: ${links.pdfUrl}` : "";
   return {
     subject: "It's here — your copy of Curls & Contemplation",
-    html: `<p>Launch day. Thank you for preordering — your book is ready right now:</p><p><a href="${links.epubUrl}">Download the EPUB edition</a>${pdfLine}</p><p>These links work for ${links.expiresDays} days. After that, your copy stays available any time from <a href="${dashboardUrl}">your dashboard</a> after sign-in.</p><p>Read Chapter 1 tonight. Then send me the sentence that stuck — I read every reply.<br/>— Michael David</p>`,
-    text: `Launch day. Thank you for preordering — your book is ready now.\n\nEPUB: ${links.epubUrl}${pdfText}\n\nLinks work for ${links.expiresDays} days; after that your copy stays available from your dashboard: ${dashboardUrl}\n\n— Michael David`
+    html: `<p>Launch day. Thank you for preordering — your book is ready right now:</p><p><a href="${links.epubUrl}">Download the EPUB edition</a></p><p>This link works for ${links.expiresDays} days. After that, your copy stays available any time from <a href="${dashboardUrl}">your dashboard</a> after sign-in.</p><p>Read Chapter 1 tonight. Then send me the sentence that stuck — I read every reply.<br/>— Michael David</p>`,
+    text: `Launch day. Thank you for preordering — your book is ready now.\n\nEPUB: ${links.epubUrl}\n\nThe link works for ${links.expiresDays} days; after that your copy stays available from your dashboard: ${dashboardUrl}\n\n— Michael David`
   };
 }
 
-export async function sendLaunchDelivery(to: string, links: { epubUrl: string; pdfUrl?: string; expiresDays: number }) {
+export async function sendLaunchDelivery(to: string, links: { epubUrl: string; expiresDays: number }) {
   return sendTransactionalEmail({ to, ...launchDeliveryTemplate(links) });
 }
 

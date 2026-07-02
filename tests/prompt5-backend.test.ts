@@ -30,7 +30,7 @@ describe("Prompt 5 protected downloads", () => {
 
   it("uses private bucket paths, never local release/public paths", () => {
     expect(deliverables.epub.path).toBe("books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub");
-    expect(deliverables.pdf.path).toBe("books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf");
+    expect("pdf" in deliverables).toBe(false);
     expect(Object.values(deliverables).every((item) => isSafePrivateDeliverablePath(item.path))).toBe(true);
     expect(JSON.stringify(deliverables)).not.toContain("release/");
     expect(JSON.stringify(deliverables)).not.toContain("public/");
