@@ -60,7 +60,6 @@ html[data-journey="on"] .jr-skip { display: inline-flex; }
   background:
     radial-gradient(38% 34% at 50% 44%, rgba(20, 91, 75, 0.32), transparent 70%),
     radial-gradient(24% 22% at 62% 30%, rgba(176, 141, 87, 0.1), transparent 70%);
-  filter: blur(6px);
   animation: jrAurora 7.5s ease-in-out infinite alternate;
   pointer-events: none;
 }
@@ -199,8 +198,9 @@ html[data-journey="on"] .jr-skip { display: inline-flex; }
 .jr-bookshadow {
   position: absolute; left: 50%; bottom: -9%; width: 120%; height: 16%;
   transform: translateX(-50%) rotateX(70deg);
-  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.85), transparent 68%);
-  filter: blur(16px);
+  /* Soft edge from gradient stops alone — a blur filter here would cost
+     GPU time on every frame of the landing. */
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.35) 45%, transparent 78%);
   animation: jrShadowLand 1.5s cubic-bezier(0.19, 1, 0.22, 1) 0.12s both;
 }
 @keyframes jrShadowLand {
@@ -290,9 +290,10 @@ html[data-journey="on"] .jr-skip { display: inline-flex; }
   opacity: 0;
   animation: jrKickerIn 1s cubic-bezier(0.19, 1, 0.22, 1) 0.9s forwards;
 }
+/* Opacity-only: animating letter-spacing reflows text every frame. */
 @keyframes jrKickerIn {
-  from { opacity: 0; letter-spacing: 0.66em; }
-  to { opacity: 0.95; letter-spacing: 0.38em; }
+  from { opacity: 0; }
+  to { opacity: 0.95; }
 }
 .jr-landing-copy .jr-lineclip { display: block; overflow: hidden; }
 .jr-landing-copy .jr-line {

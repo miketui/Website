@@ -112,11 +112,26 @@ export function JourneyExperience() {
     let current = window.scrollY;
     let raf = 0;
     let running = false;
+    /* Layout metrics are read once per resize, never inside the rAF loop or
+       the pointer handler — layout reads there would force thrashing. */
+    const metrics = { vh: 1, vw: 1, bMax: 1, heroTop: 0, tTop: 0, tMax: 1 };
+    const measure = () => {
+      metrics.vh = window.innerHeight;
+      metrics.vw = window.innerWidth;
+      metrics.bMax = Math.max(1, bookTrack.offsetHeight - metrics.vh * 0.2);
+      metrics.heroTop = bookTrack.offsetTop + bookTrack.offsetHeight;
+      metrics.tTop = journeyTrack.offsetTop;
+      metrics.tMax = Math.max(1, journeyTrack.offsetHeight - metrics.vh);
+    };
+    measure();
+
     let tiltX = 0;
     let tiltY = 0;
     const onPointer = (e: PointerEvent) => {
-      tiltY = (e.clientX / window.innerWidth - 0.5) * 7;
-      tiltX = -(e.clientY / window.innerHeight - 0.5) * 4.5;
+      /* Mouse only — touch-scroll fires pointermove and would jitter the tilt. */
+      if (e.pointerType !== "mouse") return;
+      tiltY = (e.clientX / metrics.vw - 0.5) * 7;
+      tiltX = -(e.clientY / metrics.vh - 0.5) * 4.5;
       /* The book answers the hand even before the first scroll. */
       if (!running) {
         running = true;
@@ -124,18 +139,6 @@ export function JourneyExperience() {
       }
     };
     window.addEventListener("pointermove", onPointer, { passive: true });
-
-    /* Layout metrics are read once per resize, never inside the rAF loop —
-       offsetTop/offsetHeight reads per frame would force layout thrashing. */
-    const metrics = { vh: 1, bMax: 1, heroTop: 0, tTop: 0, tMax: 1 };
-    const measure = () => {
-      metrics.vh = window.innerHeight;
-      metrics.bMax = Math.max(1, bookTrack.offsetHeight - metrics.vh * 0.2);
-      metrics.heroTop = bookTrack.offsetTop + bookTrack.offsetHeight;
-      metrics.tTop = journeyTrack.offsetTop;
-      metrics.tMax = Math.max(1, journeyTrack.offsetHeight - metrics.vh);
-    };
-    measure();
 
     const render = (y: number) => {
       const { vh, bMax, heroTop, tTop, tMax } = metrics;
@@ -298,7 +301,7 @@ export function JourneyExperience() {
               const t = i / 15;
               const x = 14 + t * 36;
               const y = 74 - t * 32 + Math.sin(t * Math.PI) * -6;
-              return <span key={i} className="jr-chapterdot" style={{ left: `${i % 2 === 0 ? x : 100 - x}%`, top: `${y}%`, transform: `translateZ(${-40 - t * 260}px)`, animationDelay: `${t * 1.6}s` }} />;
+              return <span key={i} className="jr-chapterdot" style={{ left: `${i % 2 === 0 ? x : 100 - x}%`, top: `${y}%`, transform: `translateZ(${-40 - t * 260}px)`, animationDelay: `-${t * 1.6}s` }} />;
             })}
             <div className="jr-plate" style={{ left: "50%", top: "66%", transform: "translate(-50%,0) translateZ(120px)" }}>Sixteen chapters. A worksheet in every one.<small>The whole map</small></div>
             <div className="jr-farbook" />
