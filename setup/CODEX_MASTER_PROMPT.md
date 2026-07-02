@@ -52,7 +52,7 @@ Use these decisions unless repo files show a newer explicit Michael-approved dec
 - Typography: elegant editorial serif for display; clean modern sans for body. Prefer Cormorant Garamond + Inter if licensing/setup is simple and stable.
 - Launch modes: `preorder`, `launched`, `paused`.
 - Domain: not chosen. Use `{{DOMAIN}}` in docs and `NEXT_PUBLIC_SITE_URL` in code.
-- Release artifact: inspect `release/`. The requested V8 path is `/release/Curls-and-Contemplation-v8-20260610.epub`; if missing, report exact mismatch and use the newest confirmed release artifact only as a documented fallback.
+- Release artifact: inspect `release/`. The requested V8 path is `/release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`; if missing, report exact mismatch and use the newest confirmed release artifact only as a documented fallback.
 - Do not use “best-selling” as a factual claim. Use “bestseller-ready” only as an internal quality target.
 - Design experience: use `10_IMMERSIVE_DESIGN_FORMATTING_STYLE_GUIDE.md` as a required source. Reference Textura-style principles only: spaced editorial typography, emotionally staged first sections, immersive 3D/motion, page transitions, and cursor-follow interaction. Do not copy Textura assets/code/copy. Create an original curl/hair-strand cursor trail and magnetic curl CTA system.
 - Backend/analytics/subscription: use `11_BACKEND_ANALYTICS_SUBSCRIPTION_SETUP.md` as a required source. Scaffold analytics, subscriptions readiness, Stripe/MailerLite/Resend/Supabase workflows, and server-side event tracking.

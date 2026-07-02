@@ -120,7 +120,7 @@ No app scaffold, credentials, live payment activation, or release/book/build/arc
 
 - [ ] Apply `author-site/supabase/migrations/0001_author_commerce.sql` to a Supabase sandbox and verify every RLS policy with anon, authenticated customer, admin, and service-role clients.
 - [ ] Create private Supabase Storage bucket `curls-deliverables` with no public read policy.
-- [ ] Upload EPUB to `books/curls-and-contemplation/epub/Curls-and-Contemplation-v8-20260610.epub` and PDF to `books/curls-and-contemplation/pdf/CurlsAndContemplation-POD-Royal-v8-20260610.pdf` in the private bucket.
+- [ ] Upload EPUB to `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub` and PDF to `books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf` in the private bucket.
 - [ ] Confirm `/api/downloads/sign` returns typed denials for unauthenticated, no purchase, refunded, revoked, over-limit, config-missing, and storage-error cases.
 - [ ] Confirm signed download URLs expire after 24 hours and do not reveal local `release/` or app `public/` paths.
 - [ ] Create Stripe test-mode preorder and regular one-time prices; verify checkout ignores client-provided price IDs and chooses server-side env price IDs.

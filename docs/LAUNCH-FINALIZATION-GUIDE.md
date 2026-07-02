@@ -14,8 +14,8 @@ Exact paths the code expects (from `lib/downloads.ts` — these are not suggesti
 
 | File | Exact Supabase Storage path | Bucket |
 |---|---|---|
-| EPUB | `books/curls-and-contemplation/epub/Curls-and-Contemplation-v8-20260610.epub` | `curls-deliverables` (private) |
-| POD PDF | `books/curls-and-contemplation/pdf/CurlsAndContemplation-POD-Royal-v8-20260610.pdf` | `curls-deliverables` (private) |
+| EPUB | `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub` | `curls-deliverables` (private) |
+| POD PDF | `books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf` | `curls-deliverables` (private) |
 | Affirmation Card Deck PDF | `cards/Affirmation-Deck-v1.pdf` | `curls-deliverables` (private) |
 
 **If your actual production files have different version numbers** (e.g., the v11 recto-imposition build from the book-production project instead of v8), update the paths in `lib/downloads.ts` and `content/site.ts` (`deliverables.epub` / `deliverables.pdf`) to match, then re-upload under the new filename — don't silently overwrite `v8` with different content at the same path, since that breaks any signed URL cached in an email a customer already received.

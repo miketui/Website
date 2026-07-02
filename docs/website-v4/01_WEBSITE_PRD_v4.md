@@ -10,8 +10,8 @@ Build a production-ready author-commerce platform for **Curls & Contemplation: A
 
 Controlling repo truth:
 - Audit source: `author-site/docs/website-v4/00_REPO_AUDIT.md`.
-- Current EPUB: `release/Curls-and-Contemplation-v8-20260610.epub`.
-- Current PDF/POD interior: `release/CurlsAndContemplation-POD-Royal-v8-20260610.pdf`.
+- Current EPUB: `release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`.
+- Current PDF/POD interior: `release/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`.
 - The paid EPUB/PDF must later be uploaded to Supabase private Storage bucket `curls-deliverables`; never place paid deliverables under a web `public/` folder.
 
 ## 2. Audience
@@ -128,11 +128,11 @@ Dashboard must not:
 ## 10. Protected download requirements
 - Paid files are private in Supabase Storage bucket `curls-deliverables`.
 - File references:
-  - EPUB source artifact: `release/Curls-and-Contemplation-v8-20260610.epub`.
-  - PDF source artifact: `release/CurlsAndContemplation-POD-Royal-v8-20260610.pdf`.
+  - EPUB source artifact: `release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`.
+  - PDF source artifact: `release/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`.
 - Production object paths should use stable private keys, for example:
-  - `books/curls-and-contemplation/v8/Curls-and-Contemplation-v8-20260610.epub`
-  - `books/curls-and-contemplation/v8/CurlsAndContemplation-POD-Royal-v8-20260610.pdf`
+  - `books/curls-and-contemplation/v8/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`
+  - `books/curls-and-contemplation/v8/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`
 - Signed URLs should expire within 24 hours or less.
 - Enforce download policy: default 3 attempts / 7 days unless support extends.
 - Record every signed URL request and download event.

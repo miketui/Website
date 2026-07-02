@@ -12,8 +12,8 @@ export const siteConfig = {
   releaseDate: envOrDefault(process.env.RELEASE_DATE, "2026-07-14"),
   storageBucket: envOrDefault(process.env.SUPABASE_STORAGE_BUCKET, "curls-deliverables"),
   deliverables: {
-    epub: "books/curls-and-contemplation/epub/Curls-and-Contemplation-v8-20260610.epub",
-    pdf: "books/curls-and-contemplation/pdf/CurlsAndContemplation-POD-Royal-v8-20260610.pdf"
+    epub: "books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub",
+    pdf: "books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf"
   },
   external: {
     kindle: "#kindle-link-pending",

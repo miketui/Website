@@ -33,6 +33,10 @@ export const analyticsEvents = {
   chapterPathwayInteraction: "chapter_pathway_interaction",
   quizStarted: "quiz_started",
   quizCompleted: "quiz_completed",
+  launchFulfillmentBlocked: "launch_fulfillment_blocked_by_killswitch",
+  launchFulfillmentGuardFailed: "launch_fulfillment_guard_failed",
+  launchFulfillmentSent: "launch_fulfillment_sent",
+  launchFulfillmentDryRun: "launch_fulfillment_dryrun_completed",
   curlCursorEnabled: "curl_cursor_enabled",
   reducedMotionDetected: "reduced_motion_detected",
   // Backward-compatible aliases for Prompt 4 components/tests; values remain in the approved event map.
