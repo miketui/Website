@@ -2,6 +2,7 @@
 **Date:** 2026-07-02 · **Repo:** `miketui/Website@main` (`8c…` shallow head) · **Auditor pass:** impeccable / integrity-audit / noosphere topology-first
 
 ## Verification evidence (all run this session)
+
 | Gate | Result |
 |---|---|
 | `pnpm typecheck` | exit 0 — zero errors |
@@ -13,6 +14,7 @@
 | Client fetch targets (`/api/checkout`, `/api/free-chapter`, `/api/quiz`, `/api/subscribe`, `/api/downloads/sign`) | all five API routes exist with zod validation + env guards |
 
 ## Funnel wiring status
+
 | Funnel | Wire | Status |
 |---|---|---|
 | F1 Free Chapter Tripwire | `/free-chapter` form → `POST /api/free-chapter` → MailerLite | ✅ wired |
