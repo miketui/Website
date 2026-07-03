@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  gates:
+    name: Static gates (typecheck · lint · unit · build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+      - name: Persist production build for e2e
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: .next/
+          retention-days: 1
+
+  e2e-scroll:
+    name: Scroll choreography (real-input Playwright)
+    needs: gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: .next/
+      - run: pnpm exec playwright install chromium --with-deps
+      # Real wheel input only — synthetic scrollTo reads stale under headless
+      # rAF throttling (docs/AUDIT-2026-07-02-ERROR-DOC.md addendum).
+      - run: pnpm test:e2e
+      - name: Upload playwright traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
