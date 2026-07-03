@@ -25,7 +25,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: next-build
-          path: .next/
+          # .next is a dot-directory: upload-artifact v4.4+ skips hidden files
+          # by default and then "succeeds" having uploaded nothing.
+          include-hidden-files: true
+          if-no-files-found: error
+          path: |
+            .next/
+            !.next/cache/**
           retention-days: 1
 
   e2e-scroll:

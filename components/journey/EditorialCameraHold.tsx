@@ -80,7 +80,7 @@ function Scene({ progress, index, count, scene }: { progress: MotionValue<number
 }
 
 export function EditorialCameraHold() {
-  const trackRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLElement | null>(null);
   const quiet = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end end"] });
 
