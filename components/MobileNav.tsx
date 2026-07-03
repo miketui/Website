@@ -3,19 +3,22 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { AnimatePresence, motion } from "motion/react";
+import { primaryNav, isActiveRoute } from "@/lib/navigation";
+import { useReducedMotion } from "@/components/motion/ReducedMotionProvider";
 
-const links = [
-  { href: "/book", label: "The Book" },
-  { href: "/chapters", label: "Chapters" },
-  { href: "/free-chapter", label: "Free Chapter" },
-  { href: "/resources", label: "Resources" },
-  { href: "/about", label: "About" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/contact", label: "Contact" }
-];
-
+/**
+ * Mobile navigation panel. Consumes lib/navigation (same list as desktop —
+ * the drift between the two hand-maintained lists is what this replaces).
+ * Staggered entrance via motion/react; Escape closes; scroll locks while
+ * open; portal keeps it above the journey layers. Reduced motion: panel
+ * appears/disappears instantly.
+ */
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname() ?? "/";
+  const quiet = useReducedMotion();
 
   // Close on Escape; lock scroll while open. Links close on click below.
   useEffect(() => {
@@ -28,6 +31,15 @@ export function MobileNav() {
       document.documentElement.style.overflow = "";
     };
   }, [open]);
+
+  // Route change (e.g. back button) should never strand an open panel.
+  // Render-phase adjustment (React-sanctioned derived-state pattern) rather
+  // than an effect, so no cascading render.
+  const [lastPath, setLastPath] = useState(pathname);
+  if (lastPath !== pathname) {
+    setLastPath(pathname);
+    setOpen(false);
+  }
 
   return (
     <div className="md:hidden">
@@ -47,29 +59,47 @@ export function MobileNav() {
           )}
         </svg>
       </button>
-      {open
+      {typeof document !== "undefined"
         ? createPortal(
-            <div id="mobile-menu" className="fixed inset-0 top-[64px] z-40 flex flex-col overflow-y-auto bg-obsidian px-6 py-8 md:hidden">
-          <nav aria-label="Mobile navigation" className="flex flex-col">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className="border-b border-whitegold/10 py-4 font-display text-3xl text-white transition hover:text-antique focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-          <Link
-            href="/preorder"
-            onClick={() => setOpen(false)}
-            className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-antique px-6 py-3 font-semibold text-obsidian"
-          >
-            Preorder — $17.99
-          </Link>
-            </div>,
+            <AnimatePresence>
+              {open ? (
+                <motion.div
+                  id="mobile-menu"
+                  initial={quiet ? false : { opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={quiet ? undefined : { opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="fixed inset-0 top-[72px] z-40 flex flex-col overflow-y-auto bg-obsidian px-6 py-8 md:hidden"
+                >
+                  <nav aria-label="Mobile navigation" className="flex flex-col">
+                    {primaryNav.map((link, i) => {
+                      const active = isActiveRoute(pathname, link.href);
+                      return (
+                        <motion.div
+                          key={link.href}
+                          initial={quiet ? false : { opacity: 0, y: 14 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.35, delay: quiet ? 0 : 0.05 * i, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                          <Link
+                            href={link.href}
+                            onClick={() => setOpen(false)}
+                            aria-current={active ? "page" : undefined}
+                            className={[
+                              "block border-b border-whitegold/10 py-4 font-display text-3xl transition hover:text-antique focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique",
+                              active ? "text-antique" : "text-white"
+                            ].join(" ")}
+                          >
+                            {link.label}
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
+                  </nav>
+                  <p className="mt-8 text-xs uppercase tracking-[0.3em] text-whitegold/45">Curls &amp; Contemplation</p>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>,
             document.body
           )
         : null}

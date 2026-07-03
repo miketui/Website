@@ -13,7 +13,8 @@
     "check:deliverables": "node scripts/check-public-deliverables.mjs",
     "check:supabase-storage": "node scripts/verify-supabase-storage-paths.mjs",
     "check:stripe-test": "node scripts/stripe-test-mode-check.mjs",
-    "check:sandbox": "pnpm check:sandbox-env && pnpm check:deliverables && pnpm check:supabase-storage && pnpm check:stripe-test"
+    "check:sandbox": "pnpm check:sandbox-env && pnpm check:deliverables && pnpm check:supabase-storage && pnpm check:stripe-test",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.62.0",
@@ -22,6 +23,7 @@
     "@supabase/supabase-js": "latest",
     "@vercel/speed-insights": "^2.0.0",
     "clsx": "latest",
+    "motion": "^12.42.2",
     "next": "latest",
     "posthog-js": "^1.396.3",
     "react": "latest",
@@ -31,6 +33,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.61.1",
     "@testing-library/react": "latest",
     "@types/node": "latest",
     "@types/react": "latest",
@@ -40,7 +43,7 @@
     "eslint": "^9.39.1",
     "eslint-config-next": "latest",
     "jsdom": "latest",
-    "playwright": "^1.60.0",
+    "playwright": "^1.61.1",
     "postcss": "latest",
     "tailwindcss": "^3.4.17",
     "typescript": "latest",

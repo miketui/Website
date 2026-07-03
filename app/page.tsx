@@ -1,4 +1,5 @@
 import { JourneyExperience } from "@/components/journey/JourneyExperience";
+import { EditorialCameraHold } from "@/components/journey/EditorialCameraHold";
 import { BookHero } from "@/components/BookHero";
 import { ProofBand } from "@/components/design/ProofBand";
 import { Section } from "@/components/design/Section";
@@ -51,6 +52,7 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(bookJsonLd()) }} />
       <BookHero />
       <ProofBand />
+      <EditorialCameraHold />
 
       <div className="flourish-field veil-surface relative overflow-hidden">
         <div aria-hidden="true" className="flourish-layer">
