@@ -40,9 +40,9 @@ export function BookHero() {
       <ParallaxDepth depth={-1} className="pointer-events-none absolute inset-0 overflow-hidden">
         <CurlCluster side="right" className="flourish-item--sway-slow [--strand-rotate:45deg] opacity-45" />
       </ParallaxDepth>
-      <ParallexDepth depth={0} className="pointer-events-none absolute inset-0 overflow-hidden">
+      <ParallaxDepth depth={0} className="pointer-events-none absolute inset-0 overflow-hidden">
         <CurlCluster side="left" className="flourish-item--sway [--strand-rotate:-15deg] opacity-35" />
-      </ParallexDepth>
+      </ParallaxDepth>
       <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-[1.05fr_0.95fr]">
         <div className="relative z-10">
           {launch.heroBadge ? (
