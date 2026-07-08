@@ -5,8 +5,7 @@ import { getLaunchStateCopy } from "@/config/launchState";
 import { BookTilt } from "@/components/motion/BookTilt";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 import { ParallaxDepth } from "@/components/motion/ParallaxDepth";
-import { CurlCluster } from "@/components/CurlCluster";
-import { GoldStrand } from "@/components/design/GoldStrand";
+import { CurlCluster, GoldStrand } from "@/components/design/Flourish";
 
 const heroResults = [
   "Pricing that reflects the standard you set",
