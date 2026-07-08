@@ -1,109 +1,114 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
-import { usePathname } from "next/navigation";
-import { useReducedMotion } from "@/components/motion/ReducedMotionProvider";
-import { isDecorativeMotionExcludedRoute } from "@/lib/route-policy";
+import { useEffect, useRef } from "react";
+import Image from "next/image";
 
-/**
- * Cursor image-reveal band (Atoms guide, skill 01). Two stacked layers: the
- * FRONT image (the scene asleep — darkened) sits over the REVEAL image (the
- * same curls alive with gold light). A radial mask on FRONT follows the
- * cursor via CSS variables written in a requestAnimationFrame throttle, so
- * moving the pointer brings the light through the dark. CSS mask only — no
- * WebGL. On pointerleave the mask closes and FRONT is whole again.
- *
- * Fallbacks: touch-only devices, reduced motion, and excluded routes get the
- * REVEAL image static (the lush frame, no interaction) — a deliberate
- * brand-side deviation from the guide's "static FRONT" so the band never
- * reads as a black hole on phones.
- */
-export function CursorReveal({ frontSrc, revealSrc, alt = "", className, children }: { frontSrc: string; revealSrc: string; alt?: string; className?: string; children?: ReactNode }) {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const frontRef = useRef<HTMLDivElement | null>(null);
-  const pathname = usePathname() ?? "/";
-  const quiet = useReducedMotion() || isDecorativeMotionExcludedRoute(pathname);
+interface CursorRevealProps {
+  frontSrc: string;
+  revealSrc: string;
+  alt?: string;
+  className?: string;
+  children?: React.ReactNode;
+}
+
+export function CursorReveal({ frontSrc, revealSrc, alt = "", className, children }: CursorRevealProps) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const revealImgRef = useRef<HTMLImageElement>(null);
+  const frontImgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
-    const front = frontRef.current;
-    if (!section || !front) return undefined;
-    if (quiet || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-      front.style.opacity = "0";
-      return () => { front.style.opacity = ""; };
-    }
+    const canvas = canvasRef.current;
+    const revealImg = revealImgRef.current;
+    const frontImg = frontImgRef.current;
 
-    let raf = 0;
+    if (!section || !canvas || !revealImg || !frontImg) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
     let x = 0;
     let y = 0;
-    let radius = 0;
     let targetRadius = 0;
+    let currentRadius = 0;
+    let raf: number | null = null;
 
-    /* Document-space metrics cached on mount/resize — reading layout inside
-       pointermove would force a synchronous reflow between the rAF writes. */
     let rectLeft = 0;
     let rectTop = 0;
     let rectWidth = 0;
+    let rectHeight = 0;
 
     const measure = () => {
       const rect = section.getBoundingClientRect();
       rectLeft = rect.left + window.scrollX;
       rectTop = rect.top + window.scrollY;
       rectWidth = rect.width;
+      rectHeight = rect.height;
     };
 
     const paint = () => {
-      raf = 0;
-      radius += (targetRadius - radius) * 0.16;
-      if (Math.abs(targetRadius - radius) < 0.5) radius = targetRadius;
-      front.style.setProperty("--reveal-x", `${x.toFixed(1)}px`);
-      front.style.setProperty("--reveal-y", `${y.toFixed(1)}px`);
-      front.style.setProperty("--reveal-r", `${radius.toFixed(1)}px`);
-      if (radius !== targetRadius) raf = requestAnimationFrame(paint);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      currentRadius = currentRadius * 0.92 + targetRadius * 0.08;
+      if (currentRadius > 1) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x - rectLeft, y - rectTop, currentRadius, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(revealImg, 0, 0);
+        ctx.restore();
+      }
     };
-    const wake = () => { if (!raf) raf = requestAnimationFrame(paint); };
+    const wake = () => { if (!raf) raf = requestAnimationFrame(update); };
+    const update = () => {
+      paint();
+      raf = requestAnimationFrame(update);
+    };
+    const onMove = (e: PointerEvent) => { x = e.pageX; y = e.pageY; targetRadius = Math.min(rectWidth, 900) * 0.42; wake(); };
+    const onLeave = () => { targetRadius = 0; wake(); };
 
-    const onMove = (event: PointerEvent) => {
-      x = event.pageX - rectLeft;
-      y = event.pageY - rectTop;
-      targetRadius = Math.min(rectWidth, 900) * 0.28;
+    /* Keyboard path (2026-07 audit, unanimous item): tabbing into the band
+       opens the light from its center — keyboard users get the same waking
+       moment pointer users do. Focus leaving closes it again. */
+    const onFocusIn = () => {
+      x = rectWidth / 2;
+      y = rectHeight / 2;
+      targetRadius = Math.min(rectWidth, 900) * 0.42;
       wake();
     };
-    const onLeave = () => { targetRadius = 0; wake(); };
 
     measure();
     section.addEventListener("pointermove", onMove);
     section.addEventListener("pointerleave", onLeave);
+    section.addEventListener("focusin", onFocusIn);
+    section.addEventListener("focusout", onLeave);
     window.addEventListener("resize", measure);
     return () => {
       section.removeEventListener("pointermove", onMove);
       section.removeEventListener("pointerleave", onLeave);
+      section.removeEventListener("focusin", onFocusIn);
+      section.removeEventListener("focusout", onLeave);
       window.removeEventListener("resize", measure);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [quiet]);
+  }, []);
 
-  const mask = "radial-gradient(circle var(--reveal-r, 0px) at var(--reveal-x, 50%) var(--reveal-y, 50%), transparent 0%, transparent 62%, black 100%)";
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const section = sectionRef.current;
+    if (!canvas || !section) return;
+    canvas.width = section.offsetWidth;
+    canvas.height = section.offsetHeight;
+  }, []);
+
   return (
-    <section ref={sectionRef} className={`relative overflow-hidden ${className ?? ""}`}>
-      {/* REVEAL: the lit scene (underneath). Only aria-hidden when no alt is
-          given — aria-hidden would silence the role="img" description. */}
-      <div
-        aria-hidden={alt ? undefined : "true"}
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${revealSrc})` }}
-        role={alt ? "img" : undefined}
-        aria-label={alt || undefined}
-      />
-      {/* FRONT: the scene asleep — masked open around the cursor.
-          object-fit/background-size: cover (use `contain` to letterbox instead). */}
-      <div
-        ref={frontRef}
-        aria-hidden="true"
-        className="absolute inset-0 bg-cover bg-center transition-opacity duration-700"
-        style={{ backgroundImage: `url(${frontSrc})`, maskImage: mask, WebkitMaskImage: mask }}
-      />
-      <div className="relative z-10">{children}</div>
-    </section>
+    <div ref={sectionRef} className={className}>
+      <div className="relative">
+        <Image ref={frontImgRef} src={frontSrc} alt={alt} width={800} height={600} className="block w-full" />
+        <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 block" />
+        <img ref={revealImgRef} src={revealSrc} alt="" className="absolute inset-0 h-full w-full object-cover" style={{ display: "none" }} />
+      </div>
+      {children}
+    </div>
   );
 }

@@ -1,41 +1,120 @@
+/* ── Motion tokens (PRD v2 §7.1) ─────────────────────────────────────────
+   Single named system: the whole site moves like one organism. Nothing may
+   move farther or faster than these values. */
+:root {
+  --ease-threshold: cubic-bezier(0.22, 1, 0.36, 1); /* entrances: decisive arrival, soft landing */
+  --ease-breath: cubic-bezier(0.45, 0, 0.55, 1);    /* loops: portal pulse, book float */
+  --dur-reveal: 600ms;
+  --dur-word: 90ms;
+  --dur-breath: 5000ms;
+  --dur-shimmer: 1200ms;
+  --dur-micro: 180ms;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translate3d(0, 8px, 0); }
   to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.001ms !important;
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translate3d(-24px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translate3d(24px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translate3d(0, 32px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, 12px, 0); }
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes shimmer-move {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes sway {
+  0%, 100% { transform: translate3d(-4px, 0, 0) rotate(0deg); }
+  50% { transform: translate3d(4px, 0, 0) rotate(0.5deg); }
+}
+
+@keyframes sway-slow {
+  0%, 100% { transform: translate3d(0, -6px, 0) rotate(-0.5deg); }
+  50% { transform: translate3d(0, 6px, 0) rotate(0.5deg); }
+}
+
+@supports (animation-timeline: view()) {
+  @keyframes revealOnScroll {
+    from { opacity: 0; transform: translate3d(0, 32px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
   }
 }
 
-.curl-cursor-trail,
-.curl-trail-mark {
+
+/* ── Portal ring (PRD v2 §6.1) — pure CSS, zero WebGL ────────────────────
+   A breathing ring of antique-gold light behind the hero book and around
+   final CTAs. Opacity/transform only (GPU-composited); dies gracefully under
+   reduced motion via the global kill-switch above. */
+.portal-ring {
+  position: absolute;
+  border-radius: 9999px;
   pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--aciss-antique-gold) 55%, transparent);
+  box-shadow:
+    0 0 60px 8px color-mix(in srgb, var(--aciss-antique-gold) 22%, transparent),
+    inset 0 0 60px 4px color-mix(in srgb, var(--aciss-antique-gold) 14%, transparent);
+  animation: portalBreath var(--dur-breath) var(--ease-breath) infinite;
 }
 
-.curl-trail-mark {
-  filter: drop-shadow(0 0 10px rgba(176, 141, 87, 0.18));
-  will-change: transform, opacity;
+.portal-ring--tight {
+  animation-duration: calc(var(--dur-breath) * 0.72);
+  border-color: color-mix(in srgb, var(--aciss-antique-gold) 78%, transparent);
 }
 
-.reveal-block {
-  opacity: 1;
-  transform: none;
+@keyframes portalBreath {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.035); }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .reveal-block {
-    opacity: 0;
-    transform: translate3d(0, 20px, 0);
-    transition: opacity 520ms ease, transform 520ms ease;
-  }
+/* Gold badge chip — launch-state hero badge. `--pulse` is the LAUNCH /
+   final-countdown treatment. */
+.state-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--aciss-antique-gold) 60%, transparent);
+  background: color-mix(in srgb, var(--aciss-antique-gold) 12%, transparent);
+  color: var(--aciss-white-gold);
+  border-radius: 9999px;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
 
-  .reveal-block.is-visible {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
+.state-chip--pulse {
+  animation: chipPulse calc(var(--dur-breath) * 0.6) var(--ease-breath) infinite;
+}
+
+@keyframes chipPulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--aciss-antique-gold) 34%, transparent); }
+  50% { box-shadow: 0 0 18px 2px color-mix(in srgb, var(--aciss-antique-gold) 34%, transparent); }
 }
