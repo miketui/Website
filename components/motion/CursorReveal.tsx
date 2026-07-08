@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 
 interface CursorRevealProps {
@@ -106,7 +106,7 @@ export function CursorReveal({ frontSrc, revealSrc, alt = "", className, childre
       <div className="relative">
         <Image ref={frontImgRef} src={frontSrc} alt={alt} width={800} height={600} className="block w-full" />
         <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 block" />
-        <img ref={revealImgRef} src={revealSrc} alt="" className="absolute inset-0 h-full w-full object-cover" style={{ display: "none" }} />
+        <Image ref={revealImgRef} src={revealSrc} alt="" width={800} height={600} className="absolute inset-0 h-full w-full object-cover" style={{ display: "none" }} />
       </div>
       {children}
     </div>
