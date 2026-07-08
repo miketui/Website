@@ -15,9 +15,10 @@ import { isDecorativeMotionExcludedRoute } from "@/lib/route-policy";
  * Renders static under reduced motion or on decorative-motion-excluded routes.
  */
 export function ParallaxDepth({ speed, depth, maxShift = 90, className, children }: { speed?: number; depth?: number; maxShift?: number; className?: string; children: ReactNode }) {
-  // `depth` is a z-layer shorthand: each integer step maps to a speed unit.
-  // Negative depth = background (recedes); positive = foreground (floats).
-  const resolvedSpeed = speed ?? (depth !== undefined ? depth * 0.07 : 0.14);
+  // Each depth unit maps to this fraction of viewport height as parallax speed.
+  // E.g. depth=-2 recedes gently; depth=1 floats toward the viewer.
+  const DEPTH_SPEED_UNIT = 0.07;
+  const resolvedSpeed = speed ?? (depth !== undefined ? depth * DEPTH_SPEED_UNIT : 0.14);
   const ref = useRef<HTMLDivElement | null>(null);
   const pathname = usePathname() ?? "/";
   const quiet = useReducedMotion() || isDecorativeMotionExcludedRoute(pathname);
