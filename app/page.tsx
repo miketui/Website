@@ -4,7 +4,7 @@ import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { ParallaxDepth } from "@/components/motion/ParallaxDepth";
 import { CurlCluster } from "@/components/CurlCluster";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
-import { PageGrid } from "@/components/design/PageGrid";
+import { EditorialGrid } from "@/components/design/EditorialGrid";
 import { CaptureBand } from "@/components/CaptureBand";
 import { Testimonials, AuthorNote } from "@/components/SocialProof";
 import { bookJsonLd } from "@/lib/schema";
@@ -58,7 +58,7 @@ export default function HomePage() {
           </h2>
           <p className="mt-4 max-w-2xl text-lg leading-8 text-whitegold/80">The book walks through pricing, the client experience, operating rhythm, and the quiet space you need to stay sharp.</p>
         </div>
-        <PageGrid>
+        <EditorialGrid>
           {pathwayRows.map((row, index) => (
             <article key={row.href} className="flex flex-col rounded-lg border border-whitegold/10 bg-night/60 backdrop-blur-sm transition-all duration-300 hover:border-antique/30 hover:bg-night/80">
               <a href={row.href} className="flex flex-1 flex-col gap-6 p-7 text-left hover:no-underline">
@@ -71,7 +71,7 @@ export default function HomePage() {
               </a>
             </article>
           ))}
-        </PageGrid>
+        </EditorialGrid>
       </section>
       <section className="relative overflow-hidden bg-gradient-to-b from-night via-night to-obsidian px-5 py-20 md:px-6 md:py-28">
         <div className="mx-auto max-w-5xl">
@@ -93,7 +93,7 @@ export default function HomePage() {
               Your gift is asking <span className="accent-italic text-dawn">for more.</span>
             </h2>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-whitegold/85">
-              {launch.finalCtaLine} {launch.priceCopy} &mdash; {launch.deliveryCopy.toLowerCase()}.
+              {launch.finalCtaLine} {launch.priceCopy} — {launch.deliveryCopy.toLowerCase()}.
             </p>
             <div className="relative mx-auto mt-8 flex w-fit flex-col items-center justify-center gap-4 sm:flex-row">
               <span aria-hidden="true" className="portal-ring portal-ring--tight inset-x-[-12%] inset-y-[-40%] hidden sm:block" />
