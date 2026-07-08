@@ -14,7 +14,10 @@ import { isDecorativeMotionExcludedRoute } from "@/lib/route-policy";
  * is near the viewport, and lerps toward the target so motion stays silky.
  * Renders static under reduced motion or on decorative-motion-excluded routes.
  */
-export function ParallaxDepth({ speed = 0.14, maxShift = 90, className, children }: { speed?: number; maxShift?: number; className?: string; children: ReactNode }) {
+export function ParallaxDepth({ speed, depth, maxShift = 90, className, children }: { speed?: number; depth?: number; maxShift?: number; className?: string; children: ReactNode }) {
+  // `depth` is a z-layer shorthand: each integer step maps to a speed unit.
+  // Negative depth = background (recedes); positive = foreground (floats).
+  const resolvedSpeed = speed ?? (depth !== undefined ? depth * 0.07 : 0.14);
   const ref = useRef<HTMLDivElement | null>(null);
   const pathname = usePathname() ?? "/";
   const quiet = useReducedMotion() || isDecorativeMotionExcludedRoute(pathname);
@@ -39,7 +42,7 @@ export function ParallaxDepth({ speed = 0.14, maxShift = 90, className, children
     };
 
     const retarget = () => {
-      const delta = (baseCenter - (window.scrollY + viewportHalf)) * speed;
+      const delta = (baseCenter - (window.scrollY + viewportHalf)) * resolvedSpeed;
       target = Math.max(-maxShift, Math.min(maxShift, delta));
     };
 
@@ -75,7 +78,7 @@ export function ParallaxDepth({ speed = 0.14, maxShift = 90, className, children
       if (raf) cancelAnimationFrame(raf);
       node.style.transform = "";
     };
-  }, [quiet, speed, maxShift]);
+  }, [quiet, resolvedSpeed, maxShift]);
 
   return <div ref={ref} className={className}>{children}</div>;
 }

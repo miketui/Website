@@ -1,8 +1,8 @@
-import { JourneyExperience } from "@/components/JourneyExperience";
+import { JourneyExperience } from "@/components/journey/JourneyExperience";
 import { BookHero } from "@/components/BookHero";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { ParallaxDepth } from "@/components/motion/ParallaxDepth";
-import { CurlCluster } from "@/components/CurlCluster";
+import { CurlCluster } from "@/components/design/Flourish";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 import { EditorialGrid } from "@/components/design/EditorialGrid";
 import { CaptureBand } from "@/components/CaptureBand";
