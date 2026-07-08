@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { getLaunchStateCopy } from "@/config/launchState";
 
 /**
  * "The Book Is the Door" — scroll-scrubbed homepage journey (treatment v6).
@@ -38,6 +39,8 @@ function ramp(p: number, stops: number[], values: number[]) {
 
 export function JourneyExperience() {
   const rootRef = useRef<HTMLDivElement>(null);
+  /* One gold ask at the threshold — label/href flip with the launch state. */
+  const journeyCta = getLaunchStateCopy().heroCta;
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -202,13 +205,12 @@ export function JourneyExperience() {
         c.style.opacity = String(op);
         c.style.visibility = op === 0 ? "hidden" : "visible";
         c.style.transform = `translate(-50%,-50%) translateY(${yy}px) rotateX(${rx}deg) scale(${sc})`;
-        const cta = c.querySelector<HTMLElement>(".jr-cta");
-        if (cta) {
+        c.querySelectorAll<HTMLElement>(".jr-cta").forEach((cta) => {
           /* Hidden cards leave the tab order too — anchors stay focusable
              unless explicitly removed. */
           cta.style.pointerEvents = op > 0.6 ? "auto" : "none";
           cta.tabIndex = op > 0.6 ? 0 : -1;
-        }
+        });
       });
     };
 
@@ -358,32 +360,33 @@ export function JourneyExperience() {
         <p>Walk the four rooms of the book. Scroll back any time and you leave the way you came in, cover and all.</p>
       </header>
 
-      {/* Act III — the four worlds; one honest ask per world */}
+      {/* Act III — the four worlds. PRD v2 / audit consensus: the journey is
+          narrative until the threshold — worlds 01–03 make the reader feel the
+          path; only the Bloom asks, once, with the one gold state-driven CTA
+          (free chapter rides along as the quiet secondary). No four-door maze. */}
       <div className="jr-journey-track">
         <div className="jr-fg">
           <div className="jr-card">
             <p className="jr-kicker">01 &middot; The Craft</p>
             <h2>The craft was never the problem.</h2>
-            <p>Chapter 1 is free. Read it tonight, before you decide anything.</p>
-            <Link className="jr-cta" href="/free-chapter">Read Chapter 1 Free</Link>
+            <p>Your hands already know. It&rsquo;s everything after the chair that got learned alone, the expensive way.</p>
           </div>
           <div className="jr-card">
             <p className="jr-kicker">02 &middot; The Mirror</p>
             <h2>You&rsquo;re not behind. You were never given the map.</h2>
-            <p>Two minutes. Six questions. Your blind spot, named.</p>
-            <Link className="jr-cta" href="/quiz">Find My Blind Spot</Link>
+            <p>The underpriced. The invisible. The booked-and-burned-out. The almost-CEO. One of these is a mirror.</p>
           </div>
           <div className="jr-card">
             <p className="jr-kicker">03 &middot; The Practice</p>
-            <h2>Five days. Price. Pitch. Protect.</h2>
-            <p>One small move a day, on real clients, in the real world.</p>
-            <Link className="jr-cta" href="/challenge">Start the 5-Day Challenge</Link>
+            <h2>Price. Pitch. Protect.</h2>
+            <p>One small move a day, on real clients, in the real world &mdash; until the business fits the artist.</p>
           </div>
           <div className="jr-card">
             <p className="jr-kicker">04 &middot; The Bloom</p>
             <h2>That stylist is sixteen chapters away.</h2>
             <p>The whole map, with a worksheet at every step.</p>
-            <Link className="jr-cta" href="/preorder">Preorder &mdash; $17.99</Link>
+            <Link className="jr-cta" href={journeyCta.href}>{journeyCta.label}</Link>
+            <Link className="jr-cta jr-cta--ghost" href="/free-chapter">or read Chapter 1 free</Link>
           </div>
         </div>
       </div>

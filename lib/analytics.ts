@@ -33,6 +33,7 @@ export const analyticsEvents = {
   chapterPathwayInteraction: "chapter_pathway_interaction",
   quizStarted: "quiz_started",
   quizCompleted: "quiz_completed",
+  contactSubmitted: "contact_submitted",
   launchFulfillmentBlocked: "launch_fulfillment_blocked_by_killswitch",
   launchFulfillmentGuardFailed: "launch_fulfillment_guard_failed",
   launchFulfillmentSent: "launch_fulfillment_sent",

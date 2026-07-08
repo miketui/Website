@@ -1,39 +1,31 @@
-import Link from "next/link";
 import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/design/PageHero";
-import { Section } from "@/components/design/Section";
-import { StagedNotice } from "@/components/StagedNotice";
-import { quizArchetypes, quizQuestions } from "@/content/funnels";
+import { QuizFlow } from "@/components/QuizFlow";
 
-export const metadata = pageMetadata("The Stylist Blind-Spot Quiz", "Your craft isn't the problem. Find your blind spot in 90 seconds.", { path: "/quiz", noIndex: true });
+/**
+ * Funnel 2 — the Stylist Blind-Spot Quiz (LIVE, PRD v2 §4.7).
+ * Segmentation engine: 6 questions → email gate → /quiz/results/[archetype].
+ * Reached by CTA/campaign traffic only — never linked from primary nav.
+ * Indexed: funnel pages are legitimate landing targets (PRD §3.2); the four
+ * result pages stay noindex so the personalized variants don't compete.
+ */
+export const metadata = pageMetadata(
+  "The Stylist Blind-Spot Quiz",
+  "Every artist has one blind spot holding the whole vision back. Find yours in six questions — 90 seconds, one honest diagnosis, one free worksheet.",
+  { path: "/quiz", image: "/gateway-cover.jpg" }
+);
 
 export default function Page() {
   return (
     <main>
-      <StagedNotice funnel="The Blind-Spot Quiz (Funnel 2)" />
       <PageHero
-        eyebrow="Coming next"
-        title="Your craft isn't the problem. Find your blind spot in 90 seconds."
-        description="Six questions. One honest diagnosis, mapped to the part of the book that fixes it — with a free worksheet to start on tonight."
+        eyebrow="90 seconds · free"
+        title="Every artist has one blind spot holding the whole vision back."
+        description="Six questions, no right answers — only the one that sounds most like you right now. At the end: your blind spot named, the part of the book that addresses it, and a free worksheet to start on tonight."
       />
-      <Section eyebrow="The six questions" title="What the quiz will ask.">
-        <ol className="max-w-3xl list-decimal space-y-3 pl-6 text-whitegold/80">
-          {quizQuestions.map((q) => (
-            <li key={q}>{q}</li>
-          ))}
-        </ol>
-      </Section>
-      <Section eyebrow="The four blind spots" title="Every result maps to a part of the book.">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {quizArchetypes.map((a) => (
-            <Link key={a.slug} href={`/quiz/results/${a.slug}`} className="editorial-panel block rounded-[1.5rem] p-6 transition hover:border-antique/60">
-              <p className="editorial-kicker">{a.bookPart}</p>
-              <h3 className="mt-2 font-display text-3xl text-white">{a.name}</h3>
-              <p className="mt-3 text-sm leading-6 text-whitegold/70">{a.diagnosis}</p>
-            </Link>
-          ))}
-        </div>
-      </Section>
+      <section className="mx-auto w-full max-w-4xl px-5 pb-20 md:px-6 md:pb-28">
+        <QuizFlow />
+      </section>
     </main>
   );
 }

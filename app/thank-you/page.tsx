@@ -4,6 +4,7 @@ import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 import { pageMetadata } from "@/lib/seo";
 import { freeChapterLinks } from "@/lib/free-assets";
 import { publicEnv } from "@/lib/env";
+import { getLaunchStateCopy } from "@/config/launchState";
 
 export const metadata = pageMetadata("Thank You", "Chapter 1 is on its way — and here's what comes next.", { path: "/thank-you", noIndex: true });
 
@@ -12,6 +13,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
   const links = freeChapterLinks();
   const videoId = publicEnv.NEXT_PUBLIC_THANKYOU_VIDEO_ID;
   const emailSent = delivery !== "pending";
+  const launch = getLaunchStateCopy();
 
   return (
     <UtilityShell
@@ -51,7 +53,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
             The direct edition is <strong className="text-white">$17.99</strong>{" "}right now. Fifteen days after release it becomes $19.99 — permanently. That schedule is real — it&rsquo;s in the preorder policy — and it is the only urgency you&rsquo;ll ever get from me. No timers. No &ldquo;only 3 left&rdquo; of a digital file.
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-            <MagneticCurlButton href="/preorder">Preorder — $17.99</MagneticCurlButton>
+            <MagneticCurlButton href={launch.heroCta.href}>{launch.heroCta.label}</MagneticCurlButton>
             <MagneticCurlButton href="/chapters" variant="secondary">Preview the Chapters</MagneticCurlButton>
           </div>
           {links.configured ? (

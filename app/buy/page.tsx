@@ -5,8 +5,9 @@ import { PurchaseSummary } from "@/components/PurchaseSummary";
 import { PreorderCheckout } from "@/components/PreorderCheckout";
 import { priceConfig } from "@/content/book";
 import { getLaunchMode } from "@/lib/env";
+import { productJsonLd, breadcrumbJsonLd } from "@/lib/schema";
 
-export const metadata = pageMetadata("Buy", "Choose the format that fits how you read — direct digital, Kindle, or paperback.", { path: "/buy" });
+export const metadata = pageMetadata("Buy", "Choose the format that fits how you read — direct digital, Kindle, or paperback.", { path: "/buy", image: "/gateway-cover.jpg" });
 
 export default function Page() {
   // The charge follows launch mode server-side; the label must tell the same story.
@@ -14,6 +15,7 @@ export default function Page() {
   const price = launched ? priceConfig.regularDirect.amount : priceConfig.preorderDirect.amount;
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([productJsonLd(), breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Buy", path: "/buy" }])]) }} />
       <PageHero
         eyebrow="Purchase paths"
         title="Choose the format that fits how you read."

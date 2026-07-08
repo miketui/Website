@@ -38,7 +38,7 @@ const SCENES = [
   {
     src: "/gateway-cover.jpg",
     alt: "Curls & Contemplation book cover",
-    kicker: "July 14 · direct from the author",
+    kicker: "Direct from the author",
     line: "Here is the map.",
     detail: "Preorder the EPUB edition — delivered to your account, protected, yours."
   }

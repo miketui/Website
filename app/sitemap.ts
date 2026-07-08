@@ -7,7 +7,9 @@ import { siteConfig } from "@/content/site";
 // intentionally excluded below — search engines should not index
 // members-only content. Blog stays public: it's the organic-search
 // acquisition surface.
-const publicRoutes = ["/", "/book", "/preorder", "/buy", "/free-chapter", "/chapters", "/blog", "/worksheets", "/about", "/media-kit", "/faq", "/contact"];
+// Funnel entries (/quiz, /challenge, /free-chapter) are indexed landing
+// targets per PRD v2 §3.2 — present here, absent from primary nav.
+const publicRoutes = ["/", "/book", "/order", "/preorder", "/buy", "/free-chapter", "/quiz", "/challenge", "/chapters", "/blog", "/worksheets", "/about", "/media-kit", "/faq", "/contact"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

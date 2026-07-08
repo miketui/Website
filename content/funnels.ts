@@ -1,10 +1,12 @@
 /**
- * Funnels 2–4 scaffold data (per CURLS_FOUR_FUNNELS v2).
- * STAGED — NOT LIVE: no email capture, no checkout, no automation runs from
- * these structures until the owner's activation gates. Funnel 1 is the live spine.
+ * Funnels 2–4 data (per CURLS_FOUR_FUNNELS v2 / PRD v2 §4.7–4.8).
+ * Funnels 2 (/quiz) and 3 (/challenge) are LIVE and wired: quiz capture posts
+ * to /api/quiz (MailerLite group MAILERLITE_GROUP_QUIZ), challenge signups
+ * post to /api/subscribe with source="challenge". Funnel 4 (ascension ladder)
+ * remains proposal-only until the owner's activation gate.
  */
 
-export const FUNNELS_STAGED = true as const;
+export const FUNNELS_STAGED = false as const;
 
 export type QuizArchetype = {
   slug: string;

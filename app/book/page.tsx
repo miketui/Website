@@ -7,6 +7,7 @@ import { ChapterPathway } from "@/components/motion/ChapterPathway";
 import { ScrollScrubVideo } from "@/components/motion/ScrollScrubVideo";
 import Image from "next/image";
 import { priceConfig } from "@/content/book";
+import { getLaunchStateCopy } from "@/config/launchState";
 
 /* The hair story, told by scroll: the camera moves through the dark toward
    the light the way the book moves a stylist through the business. */
@@ -19,7 +20,8 @@ const scrubStages = [
 export const metadata = pageMetadata("Book", "Pricing, chapters, and the protected delivery path for Curls & Contemplation.", { path: "/book", image: "/gateway-cover.jpg" });
 
 export default function Page() {
-  return <main><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([bookJsonLd(), productJsonLd()]) }} /><PageHero eyebrow="Book" title="A map for the parts of this job nobody photographs." description="Creative identity, client experience, business rhythm, and the sustainability to keep doing this for years — without the fake promises or the countdown-timer urgency." primaryHref="/preorder" primaryLabel={`Preorder — $${priceConfig.preorderDirect.amount.toFixed(2)}`} secondaryHref="/free-chapter" secondaryLabel="Read Chapter 1 Free"><Image src="/gateway-cover.jpg" alt="Curls & Contemplation — cover" width={800} height={1200} className="mx-auto w-full max-w-xs rounded-lg shadow-gold" /></PageHero><ScrollScrubVideo src="/curl-scrub.mp4" webmSrc="/curl-scrub.webm" poster="/curl-poster.jpg" trackVh={260} stages={scrubStages.map(({ kicker, line, detail }) => (
+  const launch = getLaunchStateCopy();
+  return <main><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([bookJsonLd(), productJsonLd()]) }} /><PageHero eyebrow="Book" title="A map for the parts of this job nobody photographs." description="Creative identity, client experience, business rhythm, and the sustainability to keep doing this for years — without the fake promises or the countdown-timer urgency." primaryHref={launch.heroCta.href} primaryLabel={launch.heroCta.label} secondaryHref="/free-chapter" secondaryLabel="Read Chapter 1 Free"><Image src="/gateway-cover.jpg" alt="Curls & Contemplation — cover" width={800} height={1200} className="mx-auto w-full max-w-xs rounded-lg shadow-gold" /></PageHero><ScrollScrubVideo src="/curl-scrub.mp4" webmSrc="/curl-scrub.webm" poster="/curl-poster.jpg" trackVh={260} stages={scrubStages.map(({ kicker, line, detail }) => (
     <div key={line} className="max-w-3xl">
       <p className="editorial-kicker mb-4">{kicker}</p>
       <p className="hero-display font-display text-4xl leading-tight text-white md:text-6xl">{line}</p>

@@ -362,6 +362,15 @@ html[data-journey="on"] .jr-skip { display: inline-flex; }
 }
 .jr-card .jr-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(176, 141, 87, 0.45); }
 .jr-card .jr-cta:focus-visible { outline: 2px solid #D8D1C5; outline-offset: 3px; }
+/* Quiet secondary beside the one gold ask — text-level, never competing. */
+.jr-card .jr-cta--ghost {
+  background: transparent; color: rgba(216, 209, 197, 0.75);
+  padding: 0.72rem 0.9rem; margin-left: 0.35rem; font-weight: 600;
+  text-transform: none; letter-spacing: 0.04em; font-size: 0.8rem;
+  text-decoration: underline; text-decoration-color: rgba(176, 141, 87, 0.6);
+  text-underline-offset: 4px;
+}
+.jr-card .jr-cta--ghost:hover { box-shadow: none; color: #D8D1C5; transform: none; }
 
 /* ── Chrome ────────────────────────────────────────────────── */
 .jr-skip {

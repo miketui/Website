@@ -5,12 +5,14 @@ import Link from "next/link";
 import Script from "next/script";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 import { quizItems, scoreQuiz, type QuizArchetype } from "@/content/funnels";
+import { getLaunchStateCopy } from "@/config/launchState";
 
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 type Phase = { kind: "intro" } | { kind: "question"; index: number } | { kind: "result"; archetype: QuizArchetype };
 
 export function QuizFlow() {
+  const launch = getLaunchStateCopy();
   const [phase, setPhase] = useState<Phase>({ kind: "intro" });
   const [answers, setAnswers] = useState<string[]>([]);
   const [captureStatus, setCaptureStatus] = useState<"idle" | "submitting" | "done" | "error">("idle");
@@ -125,7 +127,7 @@ export function QuizFlow() {
           <p className="mt-2 text-whitegold/80">Your worksheet is on its way. While you wait, the chapter that addresses this is already public.</p>
           <div className="mt-5 flex flex-col gap-4 sm:flex-row">
             <MagneticCurlButton href={`/chapter/${archetype.chapterSlug}`} variant="secondary">Preview the chapter</MagneticCurlButton>
-            <MagneticCurlButton href="/preorder">Preorder — $17.99</MagneticCurlButton>
+            <MagneticCurlButton href={launch.heroCta.href}>{launch.heroCta.label}</MagneticCurlButton>
           </div>
         </div>
       ) : (
