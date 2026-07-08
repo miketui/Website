@@ -5,6 +5,7 @@
 @import "../styles/flourish.css";
 @import "../styles/gateway.css";
 @import "../styles/journey.css";
+@import "../styles/cinematic.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

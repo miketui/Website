@@ -1,0 +1,125 @@
+/* ── /journey — cinematic scroll experience (animated-website pipeline) ──
+   ACISS-bound: obsidian ground, antique gold at moments of elevation,
+   white gold for text, jade only to distinguish. Namespace: .cj-*
+   Fail-closed: all cinema chrome is display:none until the client engine
+   sets data-cinema="on" on the root — no-JS and reduced-motion visitors
+   read the ordinary document (.cj-static). */
+
+.cj-root { background: var(--aciss-obsidian, #111111); }
+
+/* Static fallback: visible by default, hidden once the engine takes over. */
+.cj-root[data-cinema="on"] .cj-static { display: none; }
+
+.cj-stage, .cj-track, .cj-overlay, .cj-markers, .cj-grain, .cj-vignette, .cj-particles, .cj-loader { display: none; }
+.cj-root[data-cinema="on"] .cj-stage,
+.cj-root[data-cinema="on"] .cj-track { display: block; }
+.cj-root[data-cinema="on"] .cj-overlay { display: flex; }
+.cj-root[data-cinema="on"] .cj-markers { display: flex; }
+.cj-root[data-cinema="on"] .cj-grain,
+.cj-root[data-cinema="on"] .cj-vignette,
+.cj-root[data-cinema="on"] .cj-particles,
+.cj-root[data-cinema="on"] .cj-loader { display: block; }
+
+/* Scroll track: its height is the runway; the stage stays pinned. */
+.cj-track { position: relative; height: 500vh; }
+.cj-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; }
+.cj-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* Readability gradients over the frame, under the copy. */
+.cj-shade-left { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(17,17,17,0.72) 0%, rgba(17,17,17,0.25) 42%, transparent 68%); pointer-events: none; }
+.cj-shade-bottom { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(17,17,17,0.8) 0%, transparent 34%); pointer-events: none; }
+
+/* Ambient layers */
+.cj-vignette { position: fixed; inset: 0; z-index: 40; pointer-events: none; background: radial-gradient(ellipse at center, transparent 52%, rgba(14,13,12,0.42) 100%); }
+.cj-grain { position: fixed; inset: 0; z-index: 41; pointer-events: none; opacity: 0.035; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 256px 256px; }
+.cj-particles { position: fixed; inset: 0; z-index: 15; pointer-events: none; opacity: 0.4; }
+
+/* Overlay copy sections — fixed, toggled by scroll progress. */
+.cj-overlay {
+  position: fixed; inset: 0; z-index: 20; pointer-events: none;
+  flex-direction: column; justify-content: center;
+  padding: 0 6vw; max-width: 620px;
+  opacity: 0; visibility: hidden;
+  transform: translateX(-20px); filter: blur(6px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), filter 0.7s;
+}
+.cj-overlay.cj-visible { opacity: 1; visibility: visible; transform: translateX(0); filter: blur(0); pointer-events: auto; }
+.cj-overlay--center { left: 0; right: 0; margin: 0 auto; max-width: 760px; align-items: center; text-align: center; padding: 0 5vw; }
+
+.cj-kicker { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.32em; text-transform: uppercase; color: var(--aciss-antique-gold, #B08D57); }
+.cj-title { font-family: var(--font-display), Georgia, serif; font-weight: 500; color: #ffffff; font-size: clamp(2rem, 5.2vw, 4.2rem); line-height: 1.02; margin-top: 0.9rem; }
+.cj-title em { font-style: italic; color: var(--aciss-antique-gold, #B08D57); }
+.cj-body { margin-top: 1.1rem; font-size: clamp(0.95rem, 1.6vw, 1.1rem); line-height: 1.7; color: rgba(216, 209, 197, 0.88); max-width: 34rem; }
+.cj-rule { display: block; width: 3.5rem; height: 1px; background: rgba(176, 141, 87, 0.7); margin-top: 1.4rem; }
+
+/* Split-letter hero animation */
+.cj-split span { display: inline-block; opacity: 0; transform: translateY(0.5em); transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1); transition-delay: calc(var(--i) * 34ms); }
+.cj-overlay.cj-visible .cj-split span { opacity: 1; transform: translateY(0); }
+
+/* Glass list rows (The Promise) */
+.cj-rows { margin-top: 1.6rem; display: grid; gap: 0.6rem; }
+.cj-row {
+  display: flex; align-items: baseline; gap: 0.9rem;
+  padding: 0.85rem 1.1rem; border-radius: 1rem;
+  background: rgba(244, 240, 234, 0.03); border: 1px solid rgba(216, 209, 197, 0.08);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  color: rgba(216, 209, 197, 0.9); font-size: 0.95rem; line-height: 1.5;
+}
+.cj-row b { font-family: var(--font-display), Georgia, serif; font-weight: 600; color: var(--aciss-white-gold, #D8D1C5); font-size: 1.05rem; white-space: nowrap; }
+
+/* CTA block */
+.cj-cta-gold {
+  display: inline-block; margin-top: 1.8rem; pointer-events: auto; cursor: pointer;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: #111111; background: var(--aciss-antique-gold, #B08D57);
+  padding: 0.95rem 2rem; border-radius: 999px; text-decoration: none;
+  transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1), box-shadow 0.3s;
+}
+.cj-cta-gold:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(176, 141, 87, 0.45); }
+.cj-cta-gold:focus-visible { outline: 2px solid #D8D1C5; outline-offset: 3px; }
+.cj-cta-ghost { display: inline-block; margin-top: 0.9rem; pointer-events: auto; color: rgba(216, 209, 197, 0.75); font-size: 0.85rem; text-decoration: underline; text-decoration-color: rgba(176, 141, 87, 0.6); text-underline-offset: 4px; }
+.cj-cta-ghost:hover { color: #D8D1C5; }
+.cj-portal { position: absolute; inset: -18% -30%; z-index: -1; border-radius: 999px; pointer-events: none; background: radial-gradient(ellipse at center, rgba(176,141,87,0.16) 0%, transparent 62%); animation: cj-breath 5s cubic-bezier(0.45,0,0.55,1) infinite; }
+@keyframes cj-breath { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+
+/* Chapter markers */
+.cj-markers { position: fixed; right: 1.2rem; top: 50%; transform: translateY(-50%); z-index: 50; flex-direction: column; gap: 0.85rem; }
+.cj-marker { width: 7px; height: 7px; border-radius: 999px; background: rgba(216, 209, 197, 0.25); transition: background 0.4s, box-shadow 0.4s; }
+.cj-marker.cj-active { background: var(--aciss-antique-gold, #B08D57); box-shadow: 0 0 10px rgba(176, 141, 87, 0.8); }
+
+/* Loader */
+.cj-loader { position: fixed; inset: 0; z-index: 60; background: var(--aciss-obsidian, #111111); transition: opacity 0.7s, filter 0.7s; }
+.cj-loader.cj-done { opacity: 0; filter: blur(8px); pointer-events: none; }
+.cj-loader-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; }
+.cj-loader-mark { font-family: var(--font-display), Georgia, serif; font-size: 0.85rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--aciss-white-gold, #D8D1C5); }
+.cj-loader-bar { width: 140px; height: 2px; background: rgba(216, 209, 197, 0.15); border-radius: 999px; overflow: hidden; }
+.cj-loader-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--aciss-antique-gold, #B08D57), var(--aciss-soft-jade-mist, #C7D9D2)); transition: width 0.25s; }
+.cj-loader-pct { font-size: 0.62rem; letter-spacing: 0.3em; color: rgba(216, 209, 197, 0.5); }
+
+/* Skip control */
+.cj-skip {
+  position: fixed; right: 1.1rem; bottom: 1.1rem; z-index: 55; display: none;
+  border: 1px solid rgba(216, 209, 197, 0.25); border-radius: 999px;
+  background: rgba(17, 17, 17, 0.72); color: rgba(216, 209, 197, 0.8);
+  padding: 0.55rem 1rem; min-height: 40px; font-size: 0.64rem;
+  letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer;
+  transition: color 0.3s, border-color 0.3s;
+}
+.cj-root[data-cinema="on"] .cj-skip { display: inline-flex; }
+.cj-skip:hover, .cj-skip:focus-visible { color: var(--aciss-antique-gold, #B08D57); border-color: rgba(176, 141, 87, 0.5); }
+
+/* Static fallback layout */
+.cj-static { max-width: 64rem; margin: 0 auto; padding: 5rem 1.25rem 6rem; }
+.cj-static figure { margin: 2.5rem 0; border-radius: 2rem; overflow: hidden; border: 1px solid rgba(216, 209, 197, 0.1); }
+.cj-static section { margin-top: 3.5rem; }
+
+@media (max-width: 768px) {
+  .cj-overlay { padding: 0 7vw; justify-content: flex-end; padding-bottom: 14vh; }
+  .cj-markers { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cj-split span { transition: none; opacity: 1; transform: none; }
+  .cj-portal { animation: none; }
+  .cj-overlay { transition: opacity 0.3s; transform: none; filter: none; }
+}

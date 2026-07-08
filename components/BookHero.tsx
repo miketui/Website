@@ -99,6 +99,7 @@ export function BookHero() {
             </div>
           </div>
           <Link href="/book" className="mx-auto mt-8 block max-w-xs text-center text-sm text-whitegold/70 underline decoration-antique underline-offset-4">Enter the world of the book</Link>
+          <Link href="/journey" className="mx-auto mt-3 block max-w-xs text-center text-xs uppercase tracking-[0.22em] text-whitegold/50 transition hover:text-antique">Experience the cinematic journey &rarr;</Link>
         </div>
       </div>
     </section>
