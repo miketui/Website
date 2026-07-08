@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import Image from "next/image";
 
 interface CursorRevealProps {
@@ -8,7 +8,7 @@ interface CursorRevealProps {
   revealSrc: string;
   alt?: string;
   className?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export function CursorReveal({ frontSrc, revealSrc, alt = "", className, children }: CursorRevealProps) {
