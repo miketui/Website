@@ -13,6 +13,7 @@ function normalizeSiteUrl(value: string | undefined, fallback: string): string {
 export const siteConfig = {
   name: "Curls & Contemplation",
   author: "Michael David",
+  legalAuthor: "Michael David Warren Jr.",
   tagline: "For the freelance hairstylist who wants to lead.",
   subtitle: "A Freelance Hairstylist's Guide to Creative Excellence",
   description:

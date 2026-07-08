@@ -1,8 +1,8 @@
-import { JourneyExperience } from "@/components/JourneyExperience";
+import { JourneyExperience } from "@/components/journey/JourneyExperience";
 import { BookHero } from "@/components/BookHero";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { ParallaxDepth } from "@/components/motion/ParallaxDepth";
-import { CurlCluster } from "@/components/CurlCluster";
+import { CurlCluster } from "@/components/design/Flourish";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 import { EditorialGrid } from "@/components/design/EditorialGrid";
 import { CaptureBand } from "@/components/CaptureBand";
@@ -76,7 +76,7 @@ export default function HomePage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-night via-night to-obsidian px-5 py-20 md:px-6 md:py-28">
         <div className="mx-auto max-w-5xl">
           <div className="relative">
-            <ParallaxDepth depth={-1} className="pointer-events-none absolute inset-0 overflow-hidden">
+            <ParallaxDepth speed={-0.12} className="pointer-events-none absolute inset-0 overflow-hidden">
               <CurlCluster side="left" className="flourish-item--sway [--strand-rotate:-42deg] opacity-50" />
               <CurlCluster side="right" className="flourish-item--sway-slow [--strand-rotate:38deg] opacity-55" />
             </ParallaxDepth>

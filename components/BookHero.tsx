@@ -5,8 +5,7 @@ import { getLaunchStateCopy } from "@/config/launchState";
 import { BookTilt } from "@/components/motion/BookTilt";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 import { ParallaxDepth } from "@/components/motion/ParallaxDepth";
-import { CurlCluster } from "@/components/CurlCluster";
-import { GoldStrand } from "@/components/design/GoldStrand";
+import { CurlCluster, GoldStrand } from "@/components/design/Flourish";
 
 const heroResults = [
   "Pricing that reflects the standard you set",
@@ -34,13 +33,13 @@ export function BookHero() {
   return (
     <section className="sunrise-surface flourish-field relative overflow-hidden px-5 py-20 md:px-6 md:py-28">
       <div aria-hidden="true" className="dawn-bloom pointer-events-none absolute inset-x-0 -top-10 mx-auto h-72 w-[42rem] max-w-full rounded-full" />
-      <ParallaxDepth depth={-2} className="pointer-events-none absolute inset-0 overflow-hidden">
+      <ParallaxDepth speed={-0.18} className="pointer-events-none absolute inset-0 overflow-hidden">
         <CurlCluster side="left" className="flourish-item--sway [--strand-rotate:-28deg] opacity-40" />
       </ParallaxDepth>
-      <ParallaxDepth depth={-1} className="pointer-events-none absolute inset-0 overflow-hidden">
+      <ParallaxDepth speed={-0.12} className="pointer-events-none absolute inset-0 overflow-hidden">
         <CurlCluster side="right" className="flourish-item--sway-slow [--strand-rotate:45deg] opacity-45" />
       </ParallaxDepth>
-      <ParallaxDepth depth={0} className="pointer-events-none absolute inset-0 overflow-hidden">
+      <ParallaxDepth speed={0.08} className="pointer-events-none absolute inset-0 overflow-hidden">
         <CurlCluster side="left" className="flourish-item--sway [--strand-rotate:-15deg] opacity-35" />
       </ParallaxDepth>
       <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-[1.05fr_0.95fr]">
