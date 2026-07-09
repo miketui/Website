@@ -9,7 +9,6 @@ export function personJsonLd() {
     "@context": "https://schema.org",
     "@type": "Person",
     name: siteConfig.author,
-    alternateName: siteConfig.legalAuthor,
     url: absoluteUrl("/about")
   };
 }

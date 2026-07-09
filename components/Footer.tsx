@@ -45,7 +45,7 @@ export function Footer() {
         </nav>
       </div>
       <div className="mx-auto mt-10 max-w-6xl border-t border-whitegold/10 pt-6 text-xs text-whitegold/70">
-        <p>© {new Date().getFullYear()} {siteConfig.legalAuthor}, writing as {siteConfig.author}. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} {siteConfig.author}. All rights reserved.</p>
       </div>
     </footer>
   );
