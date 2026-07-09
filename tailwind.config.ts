@@ -13,6 +13,7 @@ const config: Config = {
       },
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],
+        accent: ["var(--font-accent)", "Georgia", "serif"],
         body: ["var(--font-body)", "Inter", "system-ui", "sans-serif"]
       },
       boxShadow: {

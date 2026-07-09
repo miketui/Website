@@ -59,6 +59,7 @@ export function MotionAsset({
   className,
   priority = false,
   playOnEvent,
+  fill = false,
   children
 }: {
   id: string;
@@ -66,6 +67,10 @@ export function MotionAsset({
   priority?: boolean;
   /** Window CustomEvent name that plays an "event-once" asset (e.g. "purchase-success"). */
   playOnEvent?: string;
+  /** Fill the positioned parent (absolute inset-0) instead of reserving an aspect
+   *  box — for full-bleed section backgrounds. The PARENT must reserve height
+   *  (e.g. min-h-screen) so CLS stays 0. Default false keeps the aspect-box form. */
+  fill?: boolean;
   /** Optional overlay content (headline / caption) rendered above the media. */
   children?: ReactNode;
 }) {
@@ -146,8 +151,8 @@ export function MotionAsset({
   return (
     <div
       ref={containerRef}
-      className={["relative isolate overflow-hidden", className ?? ""].join(" ").trim()}
-      style={{ aspectRatio: ratio, background: placeholderGradient(id) }}
+      className={[fill ? "absolute inset-0 isolate overflow-hidden" : "relative isolate overflow-hidden", className ?? ""].join(" ").trim()}
+      style={fill ? { background: placeholderGradient(id) } : { aspectRatio: ratio, background: placeholderGradient(id) }}
       role="img"
       aria-label={asset.name}
     >

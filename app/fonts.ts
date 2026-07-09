@@ -1,17 +1,30 @@
 import localFont from "next/font/local";
+import { Libre_Baskerville } from "next/font/google";
 
 /**
- * Self-hosted variable fonts (latin subsets, SIL OFL). The design system
- * declared Cormorant Garamond / Inter from day one but nothing ever loaded
- * them — every serif on the site was silently falling back to Georgia.
- * These exports feed the existing --font-display / --font-body variables.
+ * Type system for the immersive redesign (ACISS).
+ *   --font-display : Libre Baskerville  (headings; Cinzel retired)
+ *   --font-accent  : Cormorant Garamond (italic accents — the gold "&", pull lines)
+ *   --font-body    : Inter               (UI / body)
+ *
+ * Libre Baskerville is fetched + self-hosted by next/font/google at build time
+ * (no runtime request → CSP-safe). Cormorant & Inter stay self-hosted locally.
  */
-export const displayFont = localFont({
+export const displayFont = Libre_Baskerville({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  style: ["normal"],
+  variable: "--font-display",
+  display: "swap",
+  fallback: ["Georgia", "serif"]
+});
+
+export const accentFont = localFont({
   src: [
     { path: "./fonts/CormorantGaramond-var.woff2", style: "normal", weight: "300 700" },
     { path: "./fonts/CormorantGaramond-var-italic.woff2", style: "italic", weight: "300 700" }
   ],
-  variable: "--font-display",
+  variable: "--font-accent",
   display: "swap",
   fallback: ["Georgia", "serif"]
 });
