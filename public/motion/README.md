@@ -24,11 +24,17 @@ video source is missing or `prefers-reduced-motion: reduce` is set, so the pages
 build and render without the binaries — they just show posters until the zip is
 placed here.
 
-## Placeholder posters (committed)
+## Binaries — now present
 
-The `*-poster.webp` files currently in this folder are **placeholders** — tiny
-ACISS-gradient stand-ins (each < 1 KB) written by `scripts/gen-motion-posters.mjs`
-so every DELIVERED/DEFERRED `poster` path resolves and no broken-image icon ever
-appears before the real footage lands. When you drop the `cc-motion-library.zip`
-contents here, the real `-poster.webp` files overwrite these in place. Re-run
-`node scripts/gen-motion-posters.mjs` any time you need to regenerate them.
+The real Higgsfield binaries from `cc-motion-library.zip` are committed here for
+the six DELIVERED assets: `hero-door`, `unfurling`, `room`, `chapter-peek`,
+`burst`, `crown` — each as `.webm` (primary) + `.mp4` (fallback) + real
+`-poster.webp`. Shipped `.webm` payload ≈ 4.5 MB (budget 12 MB). `MotionAsset`
+resolves them straight from `motion-manifest.json` with no code change.
+
+Still placeholders (real footage required, poster-only by design): `portrait`
+(asset C) and `hands` (asset K) — tiny ACISS-gradient stand-ins from
+`scripts/gen-motion-posters.mjs`. When that footage lands, drop the real
+`portrait.*` / `hands.*` here and flip their manifest `status` to `DELIVERED`.
+Re-run `node scripts/gen-motion-posters.mjs` any time you need to regenerate the
+remaining placeholders.
