@@ -69,7 +69,7 @@ export function PreorderCountdown({ className }: { className?: string }) {
           <span className="font-display text-3xl leading-none tabular-nums text-white sm:text-4xl">
             {values === null ? "--" : String(values[i]).padStart(2, "0")}
           </span>
-          <span className="mt-2 text-[0.6rem] uppercase tracking-[0.28em] text-whitegold/55">{label}</span>
+          <span className="mt-2 text-[0.6rem] uppercase tracking-[0.28em] text-whitegold/70">{label}</span>
         </div>
       ))}
     </div>

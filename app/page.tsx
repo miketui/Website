@@ -114,11 +114,11 @@ export default function HomePage() {
             <p className="hero-display font-display text-4xl leading-snug text-white md:text-6xl">
               There is a moment when your gift starts <span className="accent-italic text-dawn">asking for more.</span>
             </p>
-            <p className="mt-5 hidden text-[0.65rem] uppercase tracking-[0.3em] text-whitegold/50 md:block">Move your cursor &mdash; bring it to light</p>
+            <p className="mt-5 hidden text-[0.65rem] uppercase tracking-[0.3em] text-whitegold/70 md:block">Move your cursor &mdash; bring it to light</p>
             <div className="mt-12 grid gap-4 text-left sm:grid-cols-3">
               {transformations.map(([from, to]) => (
                 <div key={to} className="glass-panel rounded-[1.75rem] p-5">
-                  <p className="text-sm leading-6 text-whitegold/55">{from}</p>
+                  <p className="text-sm leading-6 text-whitegold/70">{from}</p>
                   <p aria-hidden="true" className="my-2 font-display text-xl leading-none text-antique">&darr;</p>
                   <p className="result-line">{to}</p>
                 </div>

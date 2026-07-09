@@ -37,7 +37,7 @@ export default function Page() {
             <KineticHeadline text="The crown is earned, then worn." className="text-2xl md:text-4xl" accentFrom={3} />
           </MotionAsset>
           <div className="mt-8">
-            <p className="mb-4 text-center text-xs uppercase tracking-[0.3em] text-whitegold/55">
+            <p className="mb-4 text-center text-xs uppercase tracking-[0.3em] text-whitegold/70">
               Releasing {releaseDateLabel()}
             </p>
             <PreorderCountdown />
