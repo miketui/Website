@@ -59,7 +59,7 @@ Design system "ACISS", palette `#111111 / #B08D57 / #D8D1C5 / #145B4B / #C7D9D2`
 | `POST /api/contact` | `app/api/contact/route.ts:36` | Contact form → Resend to support inbox | shippable |
 | `POST /api/downloads/sign` | `app/api/downloads/sign/route.ts:10` | Signed download URL, auth + rate-limit gated | shippable |
 | `POST /api/track` | `app/api/track/route.ts:17` | Consent-gated client analytics ingest | shippable |
-| `GET /api/health` | `app/api/health/route.ts:2` | Health check — **hardcodes** `paymentsLive:false, subscriptionsLive:false` | shippable but stale/static values |
+| `GET /api/health` | `app/api/health/route.ts:2` | Health check — reports live config-derived `paymentsLive`/`subscriptionsLive` (updated in Phase 5; was previously hardcoded `false`) | shippable |
 | `GET/POST /api/cron/launch-day` | `app/api/cron/launch-day/route.ts:1` | Vercel cron launch-day fulfillment (kill-switch gated) | shippable |
 | `/api/cron/launch-day/dry-run` | `app/api/cron/launch-day/dry-run/route.ts` | Dry-run harness for the above | shippable |
 | `/api/cron/pre-launch-check` | `app/api/cron/pre-launch-check/route.ts` | Pre-launch readiness cron (scheduled `30 15 16 11 *`, `vercel.json`) | shippable |
@@ -297,7 +297,8 @@ matched by the `.ts/.tsx/.css/.js/.mjs` grep, and is a declarative guard, not a 
 1. Every integration fails safe on missing config (`RuntimeConfigResult` pattern, `lib/env.ts`),
    so absent env → graceful skip, never a crash. This is why prod symptoms are 502/degraded, not
    500s.
-2. `/api/health` returns hardcoded `paymentsLive:false` (`app/api/health/route.ts:2`) — a static
-   value, not a live probe; misleading as a readiness signal.
+2. `/api/health` now derives `paymentsLive`/`subscriptionsLive` from config presence
+   (`app/api/health/route.ts`, updated in Phase 5) — a real readiness signal. (At the time of the
+   original Phase 1 scan it returned hardcoded `false`.)
 3. Two live-schema generations coexist in Supabase per `docs/WIRING-AUDIT.md:62-83` (10 legacy
    tables, 0 refs; 9 live tables incl. `magnet_leads`). Code table list: `lib/supabase/server.ts:7-23`.
