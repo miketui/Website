@@ -12,12 +12,14 @@ export const DOWNLOAD_CAP = 3;
 export const DOWNLOAD_WINDOW_DAYS = 7;
 
 export function productEntitlements(): Record<DeliverableKind, boolean> {
-  return { epub: true, card_deck: true, workbook: false, preorder_bonus: false };
+  return { epub: true, card_deck: true, workbook: true, preorder_bonus: false };
 }
 
 /** Maps a deliverable kind to the purchases.book_slug that entitles it. */
 export function entitlementSlugFor(deliverable: DeliverableKind): string {
-  return deliverable === "card_deck" ? "affirmation-deck" : "curls-and-contemplation";
+  if (deliverable === "card_deck") return "affirmation-deck";
+  if (deliverable === "workbook") return "companion-workbook";
+  return "curls-and-contemplation";
 }
 
 export async function checkDownloadEntitlement(user: SessionUser | string | null, deliverable: DeliverableKind | string): Promise<EntitlementResult> {

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { CoverReveal } from "@/components/intro/CoverReveal";
 import { MotionAsset } from "@/components/motion/MotionAsset";
 import { KineticHeadline } from "@/components/motion/KineticHeadline";
+import { ScrollReveal } from "@/components/motion/ScrollReveal";
+import { CurlDraw } from "@/components/motion/CurlDraw";
 import { PreorderCountdown } from "@/components/PreorderCountdown";
 import { FreeChapterForm } from "@/components/FreeChapterForm";
 import { bookJsonLd } from "@/lib/schema";
@@ -11,7 +13,7 @@ import { priceConfig } from "@/content/book";
 
 export const metadata = pageMetadata(
   "A Stylist's Interactive Journey",
-  "Curls & Contemplation by Michael David — an immersive book for hairstylists on craft, confidence, and the business of beauty. Preorder the direct digital edition.",
+  "Curls & Contemplation by Michael David — the business playbook for working stylists. Beauty school taught you hair. Nobody taught you the money. Preorder the direct digital edition.",
   { path: "/", image: "/gateway-cover.jpg" }
 );
 
@@ -26,6 +28,14 @@ const pillars = [
   ["iii.", "Build a life", "Turn a chair into a career you actually want — one you can sustain for the long haul."]
 ] as const;
 
+/**
+ * Home — one story, one job: sell the book.
+ * Scroll arc: the door (hero) → the ache (verbatim Ch. I) → the book →
+ * the threshold → the promise → the claim → the free taste → the author.
+ * Every quoted line is verbatim from the approved Chapter I manuscript —
+ * site-book consistency rule. Motion assets keep their established roles
+ * (A hero-door, B unfurling, D room, L crown, F chapter-peek).
+ */
 export default function HomePage() {
   const launch = getLaunchStateCopy();
   const regular = priceConfig.regularDirect.amount;
@@ -37,16 +47,17 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(bookJsonLd()) }} />
 
       <main id="top">
-        {/* HERO — asset A (hero-door) full-bleed, kinetic display headline. */}
+        {/* ACT I — THE DOOR. Asset A (hero-door), kinetic headline. */}
         <section className="relative flex min-h-[100svh] items-center overflow-hidden">
           <MotionAsset id="A" fill priority />
           <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-obsidian/90 via-obsidian/60 to-obsidian/25" />
           <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-28 md:py-32">
-            <p className="editorial-kicker mb-5">A book for the chair &amp; the soul</p>
+            <p className="editorial-kicker mb-5">Beauty school taught you hair. Nobody taught you the money.</p>
             <KineticHeadline text="Curls & Contemplation" as="h1" className="text-5xl text-white md:text-7xl" accentFrom={1} />
             <p className="mt-4 font-accent text-2xl italic text-mist md:text-3xl">A Stylist&rsquo;s Interactive Journey</p>
             <p className="mt-6 max-w-[46ch] leading-8 text-whitegold/85">
-              Craft, confidence, and the business of beauty — an immersive companion for the stylist who wants to build a life, not just a clientele.
+              Sixteen chapters and every worksheet on the part of this career nobody teaches: pricing, pitching, protecting
+              yourself — and staying whole while you do it.
             </p>
             <div className="mt-9 flex flex-wrap gap-4">
               <Link href={launch.heroCta.href} className={btnGold}>{launch.heroCta.label}</Link>
@@ -55,16 +66,46 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* THE BOOK — asset B (unfurling) mediacard. */}
+        {/* ACT II — THE ACHE. Quiet interlude; every quoted line verbatim Ch. I. */}
+        <section id="ache" aria-label="From Chapter One" className="mx-auto max-w-3xl px-6 py-[clamp(4.5rem,12vw,9rem)] text-center">
+          <ScrollReveal>
+            <p className="editorial-kicker mb-6">From Chapter One</p>
+            <p className="mx-auto max-w-[54ch] text-left leading-9 text-whitegold/85 md:text-lg">
+              If you have ever felt reduced to appointments, formulas, and the pressure to keep producing without losing
+              yourself — this book speaks directly to that ache.
+            </p>
+            <blockquote className="mt-12">
+              <p className="font-display text-3xl leading-tight text-white md:text-5xl">
+                &ldquo;I forgot she was <span className="accent-italic text-antique">still in there</span>.&rdquo;
+              </p>
+              <footer className="mx-auto mt-8 max-w-[52ch] text-left leading-8 text-whitegold/75">
+                A house call the morning before a wedding. A client who hadn&rsquo;t left her apartment in weeks. By the last
+                pin, the woman in the mirror barely resembled the one who answered the door — she touched her reflection and
+                said those five words. <span className="text-whitegold/90">&ldquo;My hands weren&rsquo;t just creating hairstyles; they were helping
+                rebuild bridges between people and their forgotten selves. This wasn&rsquo;t just a job. It was sacred
+                work.&rdquo;</span>
+              </footer>
+            </blockquote>
+            <CurlDraw className="mx-auto mt-10 h-16 w-full max-w-xs" />
+            <p className="mx-auto mt-8 max-w-[54ch] text-left leading-8 text-whitegold/85">
+              That&rsquo;s the craft. The gap between doing that work and getting <em>paid</em> like it matters — that&rsquo;s the
+              book.
+            </p>
+          </ScrollReveal>
+        </section>
+
+        {/* ACT III — THE BOOK. Asset B (unfurling). */}
         <section id="book" className="mx-auto max-w-6xl px-6 py-[clamp(4.5rem,12vw,9rem)]">
           <div className="grid items-center gap-14 md:grid-cols-2">
             <div>
               <p className="editorial-kicker mb-4">The Book</p>
               <h2 className="font-display text-4xl text-white md:text-5xl">
-                A journey you can <span className="accent-italic text-antique">hold</span>
+                A book you <span className="accent-italic text-antique">do</span>, not just read
               </h2>
               <p className="mt-5 max-w-[52ch] leading-8 text-whitegold/82">
-                An interactive journey — prompts, reflections, and real talk on pricing, protecting your energy, and pitching your worth. Written for the working stylist.
+                Prompts, reflections, and real talk on pricing, protecting your energy, and pitching your worth — with a
+                guided worksheet in every chapter. You finish it with a plan in your handwriting, not highlights in someone
+                else&rsquo;s ideas.
               </p>
               <div className="mt-8">
                 <Link href="/book" className={btnGhost}>See what&rsquo;s inside</Link>
@@ -74,7 +115,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* THE JOURNEY — asset D (room) cinematic → /journey. */}
+        {/* ACT IV — THE THRESHOLD. Asset D (room). */}
         <section id="journey" className="relative grid min-h-[86svh] place-items-center overflow-hidden text-center">
           <MotionAsset id="D" fill />
           <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(90%_90%_at_50%_50%,rgba(0,0,0,0.25),rgba(0,0,0,0.8))]" />
@@ -90,13 +131,13 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* FOR STYLISTS — three pillars (replaces the old four-part block). */}
+        {/* ACT V — THE PROMISE. Three pillars. */}
         <section id="stylists" className="mx-auto max-w-6xl px-6 py-[clamp(4.5rem,12vw,9rem)]">
           <p className="editorial-kicker mb-4">For Stylists</p>
           <h2 className="font-display text-4xl text-white md:text-5xl">What you&rsquo;ll walk away with</h2>
           <div className="mt-10 grid gap-7 md:grid-cols-3">
             {pillars.map(([num, title, copy]) => (
-              <div key={title} className="rounded-md border border-antique/20 p-7">
+              <div key={title} className="cc-glow-card rounded-md border border-antique/20 p-7">
                 <p className="font-accent text-2xl italic text-antique">{num}</p>
                 <h3 className="mt-2 font-display text-xl text-white">{title}</h3>
                 <p className="mt-3 leading-7 text-whitegold/72">{copy}</p>
@@ -105,7 +146,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* PREORDER — asset L (crown) cinematic, launch-state price/date. */}
+        {/* ACT VI — THE CLAIM. Asset L (crown), launch-state price/date. */}
         <section id="preorder" className="relative grid min-h-[86svh] place-items-center overflow-hidden text-center">
           <MotionAsset id="L" fill />
           <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(90%_90%_at_50%_50%,rgba(0,0,0,0.25),rgba(0,0,0,0.82))]" />
@@ -114,7 +155,7 @@ export default function HomePage() {
               <p className={["state-chip mb-5", launch.heroBadge.pulse ? "state-chip--pulse" : ""].join(" ").trim()}>{launch.heroBadge.label}</p>
             ) : null}
             <p className="editorial-kicker mb-4">Preorder</p>
-            <h2 className="font-display text-4xl text-white md:text-6xl">Claim your copy</h2>
+            <h2 className="font-display text-4xl text-white md:text-6xl">Stop being the best-kept secret in your city</h2>
             <p className="mt-6 font-display text-4xl text-white">
               ${preorderPrice.toFixed(2)}{" "}
               {launch.state === "PREORDER" ? (
@@ -132,7 +173,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* FREE CHAPTER — asset F (chapter-peek) + capture form → /api/free-chapter. */}
+        {/* ACT VII — THE FREE TASTE. Asset F (chapter-peek) + capture. */}
         <section id="chapter" className="mx-auto max-w-6xl px-6 py-[clamp(4.5rem,12vw,9rem)]">
           <div className="grid items-center gap-14 md:grid-cols-2">
             <MotionAsset id="F" className="rounded-md border border-antique/20" />
@@ -151,7 +192,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* AUTHOR — slim bio, pen name only. */}
+        {/* ACT VIII — THE AUTHOR. Slim bio, pen name only. */}
         <section id="author" className="mx-auto max-w-6xl px-6 pb-[clamp(4.5rem,12vw,9rem)]">
           <div className="grid items-center gap-12 md:grid-cols-[0.8fr_1.2fr]">
             <div
@@ -164,7 +205,8 @@ export default function HomePage() {
               <p className="editorial-kicker mb-4">The Author</p>
               <h2 className="font-display text-4xl text-white md:text-5xl">Michael David</h2>
               <p className="mt-5 max-w-[54ch] leading-8 text-whitegold/82">
-                A stylist writing for stylists — on the craft that fills the chair and the contemplation that sustains a career. He writes, prices, and delivers this book directly, so the whole of it stays honest.
+                A stylist writing for stylists — on the craft that fills the chair and the contemplation that sustains a
+                career. He writes, prices, and delivers this book directly, so the whole of it stays honest.
               </p>
               <div className="mt-7">
                 <Link href="/about" className={btnGhost}>More about Michael</Link>

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
+import { CartProvider } from "@/lib/cart";
+import { Toaster } from "@/components/ui/Toast";
+import "@/styles/uiverse.css";
 import { SiteNav } from "@/components/nav/SiteNav";
 import { Footer } from "@/components/Footer";
 import { ConsentBanner } from "@/components/ConsentBanner";
@@ -48,5 +51,5 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   const preorder = { href: launch.heroCta.href, label: launch.navOrderLabel };
   /* suppressHydrationWarning: the cover curtain script (below) sets a
      data attribute on <html> before hydration by design. */
-  return <html lang="en" suppressHydrationWarning className={`${displayFont.variable} ${accentFont.variable} ${bodyFont.variable}`}><body><script dangerouslySetInnerHTML={{ __html: coverCurtainScript }} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><SiteNav preorder={preorder} /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><GoogleAnalytics /><SiteCurlTrail /></ReducedMotionProvider><SpeedInsights /></body></html>;
+  return <html lang="en" suppressHydrationWarning className={`${displayFont.variable} ${accentFont.variable} ${bodyFont.variable}`}><body><script dangerouslySetInnerHTML={{ __html: coverCurtainScript }} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><CartProvider><SiteNav preorder={preorder} /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><GoogleAnalytics /><SiteCurlTrail /><Toaster /></CartProvider></ReducedMotionProvider><SpeedInsights /></body></html>;
 }

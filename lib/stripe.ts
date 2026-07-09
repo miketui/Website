@@ -30,12 +30,21 @@ export function resolveCardDeckPriceId(): string | undefined {
   return config.ok ? config.value.cardDeckPriceId : undefined;
 }
 
+/** $19.99 Idea-to-Action Workbook — buyer companion, cart-only product. */
+export function resolveWorkbookPriceId(): string | undefined {
+  // Read directly: the workbook is optional and must not make the base
+  // config gate stricter (book checkout keeps working if it's unset).
+  return process.env.STRIPE_PRICE_ID_WORKBOOK || undefined;
+}
+
 export function buildCheckoutMetadata(input: {
   product: CheckoutProduct;
   sourcePage?: string;
   utm?: Partial<Record<"utm_source" | "utm_medium" | "utm_campaign", string>>;
   customerEmail?: string;
   cardDeck?: boolean;
+  workbook?: boolean;
+  bookIncluded?: boolean;
 }) {
   const launchMode = getLaunchMode();
   return {
@@ -44,6 +53,8 @@ export function buildCheckoutMetadata(input: {
     price_tier: launchMode === "launched" ? "regular" : "preorder",
     product: input.product,
     card_deck: input.cardDeck ? "true" : "false",
+    workbook: input.workbook ? "true" : "false",
+    book_included: input.bookIncluded === false ? "false" : "true",
     source_page: input.sourcePage ?? "unknown",
     utm_source: input.utm?.utm_source ?? "",
     utm_medium: input.utm?.utm_medium ?? "",

@@ -1,0 +1,47 @@
+/* uiverse.io-inspired effects (https://uiverse.io) — pattern family: shimmer
+   sweep buttons + soft glow cards, rebuilt on ACISS chrome tokens. Pure CSS,
+   respects prefers-reduced-motion. */
+
+.cc-shimmer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.cc-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(115deg, transparent 25%, rgba(255, 255, 255, 0.35) 50%, transparent 75%);
+  transform: translateX(-120%);
+  transition: none;
+  pointer-events: none;
+}
+.cc-shimmer:hover::after,
+.cc-shimmer:focus-visible::after {
+  animation: cc-shimmer-sweep 0.9s ease forwards;
+}
+@keyframes cc-shimmer-sweep {
+  to {
+    transform: translateX(120%);
+  }
+}
+
+.cc-glow-card {
+  transition: box-shadow 0.4s ease, transform 0.4s ease;
+}
+.cc-glow-card:hover {
+  box-shadow: 0 0 0 1px rgba(176, 141, 87, 0.45), 0 12px 40px rgba(176, 141, 87, 0.14);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-shimmer::after {
+    display: none;
+  }
+  .cc-glow-card,
+  .cc-glow-card:hover {
+    transform: none;
+    transition: none;
+  }
+}
