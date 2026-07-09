@@ -19,7 +19,7 @@ const links = [
   { href: "/journey", label: "The Journey" },
   { href: "/#stylists", label: "For Stylists" },
   { href: "/free-chapter", label: "Free Chapter" }
-];
+] as const;
 
 export function SiteNav({ preorder }: { preorder: { href: string; label: string } }) {
   const quiet = useReducedMotion();
@@ -100,7 +100,7 @@ export function SiteNav({ preorder }: { preorder: { href: string; label: string 
           >
             {preorder.label}
           </Link>
-          <MobileNav />
+          <MobileNav items={[...links, preorder]} />
         </div>
       </div>
     </header>
