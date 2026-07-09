@@ -80,13 +80,25 @@ const targets = manifest.assets.filter(
   (a) => a.poster && (a.status === "DELIVERED" || a.status === "DEFERRED")
 );
 
+// Safety: by default, never overwrite a poster that already exists — the real
+// -poster.webp files from cc-motion-library.zip live at these same paths, so a
+// blind re-run would clobber real footage with placeholders. Pass --force to
+// regenerate every placeholder intentionally (e.g. after deleting stale ones).
+const force = process.argv.includes("--force");
+
 const sharp = loadSharp();
 const mode = sharp ? "sharp gradient" : "copy fallback";
-console.log(`[gen-motion-posters] mode: ${mode} — ${targets.length} posters`);
+console.log(`[gen-motion-posters] mode: ${mode} — ${targets.length} candidates${force ? " (--force: overwrite)" : " (skip existing)"}`);
 
 let done = 0;
+let skipped = 0;
 for (const asset of targets) {
   const out = path.join(root, "public", asset.poster.replace(/^\//, ""));
+  if (!force && existsSync(out)) {
+    console.log(`  – ${asset.id.padEnd(2)} ${asset.poster}  (exists, kept)`);
+    skipped += 1;
+    continue;
+  }
   if (sharp) {
     const { width, height } = dims(asset.aspect);
     await sharp(Buffer.from(svg(asset.id, width, height)))
