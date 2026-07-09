@@ -28,7 +28,7 @@ export default function Page() {
           <p className="hero-display font-display text-3xl leading-tight text-white md:text-5xl">
             The quiet is where the <span className="accent-italic text-dawn">judgment sharpens.</span>
           </p>
-          <p className="mt-5 hidden text-[0.65rem] uppercase tracking-[0.3em] text-whitegold/55 md:block">Move your cursor &mdash; carry the light through the strands</p>
+          <p className="mt-5 hidden text-[0.65rem] uppercase tracking-[0.3em] text-whitegold/70 md:block">Move your cursor &mdash; carry the light through the strands</p>
         </div>
       </MouseScrubVideo>
       <Section eyebrow="Beyond the chair" title="The work that shapes the writing.">

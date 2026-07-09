@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { z } from "zod";
 import { getLaunchMode } from "@/lib/env";
 import { analyticsEvents } from "@/lib/analytics";
@@ -50,7 +51,26 @@ export async function POST(request: Request) {
     });
     await recordServerEvent({ eventName: analyticsEvents.checkoutStarted, route: "/api/checkout", metadata: { product: parsed.data.product, launchMode: mode, priceTier: resolved.tier, cardDeck: Boolean(cardDeckPriceId) }, operational: true });
     return NextResponse.json({ ok: true, url: session.url });
-  } catch {
+  } catch (err) {
+    // The prod 502 was invisible because this catch swallowed the Stripe error
+    // with no logging. We now surface the real cause WITHOUT leaking secrets/PII:
+    // Stripe SDK errors expose `type`/`code`/`statusCode` (e.g. bad key →
+    // authentication_error, bad price → resource_missing). The client contract
+    // (502 + stripe_error) is unchanged.
+    const stripeErr = err as { type?: string; code?: string; statusCode?: number; message?: string };
+    console.error("[checkout] stripe.checkout.sessions.create failed", {
+      type: stripeErr.type,
+      code: stripeErr.code,
+      statusCode: stripeErr.statusCode,
+      message: stripeErr.message
+    });
+    try {
+      // Guarded: if Sentry is uninitialised (no DSN), this must never throw and
+      // take down the checkout response with it.
+      Sentry.captureException(err);
+    } catch {
+      // no-op — diagnostics are best-effort
+    }
     return NextResponse.json({ ok: false, error: { code: "stripe_error", message: "Unable to start checkout." } }, { status: 502 });
   }
 }
