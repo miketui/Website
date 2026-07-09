@@ -23,7 +23,11 @@ describe("static security checks", () => {
 
   it("does not use deprecated hex colors in app source", () => {
     const deprecatedValues = ["0E0D0B", "B89968", "1F6F6B", "2B9999", "C9A961"].map((value) => `#${value}`);
-    const files = walk(process.cwd()).filter((file) => /\.(ts|tsx|css|md|mjs|json)$/.test(file));
+    // Scan only files where a color is actually *applied* — TS/TSX/CSS/MJS. Markdown
+    // docs and JSON manifests (e.g. the motion manifest's `bannedTokens` field) legitimately
+    // list these hexes precisely to forbid them; scanning them flags the guard's own
+    // reference data as a violation. Applied styling can only live in the scanned types.
+    const files = walk(process.cwd()).filter((file) => /\.(ts|tsx|css|mjs)$/.test(file));
     const offenders = files.filter((file) => deprecatedValues.some((value) => readFileSync(file, "utf8").includes(value)));
     expect(offenders).toEqual([]);
   });
