@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { UtilityShell } from "@/components/design/UtilityShell";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
+import { PurchaseBurst } from "@/components/motion/PurchaseBurst";
 import { pageMetadata } from "@/lib/seo";
 import { freeChapterLinks } from "@/lib/free-assets";
 import { publicEnv } from "@/lib/env";
@@ -25,6 +26,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
           : "Your address is saved and Chapter 1 will reach you the moment delivery goes live — no need to sign up twice. Meanwhile, sixty seconds on what this book is actually for."
       }
     >
+      <PurchaseBurst className="mb-8" />
       <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
         <div className="editorial-panel overflow-hidden rounded-[2rem]">
           {videoId ? (

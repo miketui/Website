@@ -46,7 +46,8 @@ export function KineticHeadline({
     return () => observer.disconnect();
   }, [reduced]);
 
-  const words = text.split(" ");
+  // Collapse any run of whitespace so no empty <span> gets a transition/delay.
+  const words = text.trim().split(/\s+/);
   const shown = visible || reduced;
 
   return (

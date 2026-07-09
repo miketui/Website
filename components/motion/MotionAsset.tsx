@@ -74,6 +74,14 @@ export function MotionAsset({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [posterOk, setPosterOk] = useState(true);
+  // Reset poster state when the asset id changes, so a prior poster's 404 can't
+  // suppress the new asset's working poster. This is React's sanctioned
+  // "store info from previous renders" pattern — preferred over an effect.
+  const [prevId, setPrevId] = useState(id);
+  if (id !== prevId) {
+    setPrevId(id);
+    setPosterOk(true);
+  }
 
   const status = asset?.status ?? "PENDING";
   const delivered = status === "DELIVERED";
@@ -160,6 +168,7 @@ export function MotionAsset({
 
       {showVideo ? (
         <video
+          key={id}
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
           muted
