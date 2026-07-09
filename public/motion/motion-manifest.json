@@ -1,0 +1,142 @@
+{
+  "project": "curlscontemplation.beauty",
+  "phase": "3.5 Motion Library",
+  "generated": "2026-07-08",
+  "runtime": "Cowork + Higgsfield (kling3_0_turbo image-to-video from gpt_image_2 stills)",
+  "palette": {
+    "obsidian": "#111111",
+    "antiqueGold": "#B08D57",
+    "whiteGold": "#D8D1C5",
+    "deepJade": "#145B4B",
+    "softJadeMist": "#C7D9D2",
+    "bannedTokens": [
+      "#2B9999",
+      "#C9A961"
+    ]
+  },
+  "delivery": {
+    "format": "WebM (primary) + MP4 (fallback) + WebP poster per asset",
+    "upscaled": false,
+    "upscaleNote": "Native 720p compressed to hit weight caps; upscaling would blow the 0.4-2MB caps, so it was skipped by design.",
+    "wiring": "IntersectionObserver-gated playback; honor prefers-reduced-motion by showing the poster (no video); no <audio>.",
+    "budgetKB": 12000,
+    "deliveredWebmTotalKB": 4522
+  },
+  "assets": [
+    {
+      "id": "A",
+      "name": "Hero — The Book Is The Door",
+      "status": "DELIVERED",
+      "note": "The real Curls & Contemplation cover as a 3D book — gold spiral glowing, white-gold light blooming behind it like a doorway opening (FELT hero). Portrait, book centered, title legible.",
+      "file": "/motion/hero-door.webm",
+      "mp4": "/motion/hero-door.mp4",
+      "poster": "/motion/hero-door-poster.webp",
+      "placement": "home ATF",
+      "capKB": 4000,
+      "weightKB": 1350,
+      "aspect": "9:16",
+      "reducedMotion": "poster"
+    },
+    {
+      "id": "B",
+      "name": "The Unfurling",
+      "status": "DELIVERED",
+      "file": "/motion/unfurling.webm",
+      "mp4": "/motion/unfurling.mp4",
+      "poster": "/motion/unfurling-poster.webp",
+      "placement": "home mid-scroll",
+      "capKB": 1500,
+      "weightKB": 862,
+      "aspect": "9:16",
+      "reducedMotion": "poster"
+    },
+    {
+      "id": "C",
+      "name": "Michael breathing portrait",
+      "status": "DEFERRED",
+      "reason": "Real-footage only per lock (no photorealistic face generation). Needs a real portrait of Michael + motion_control.",
+      "file": "/motion/portrait.webm",
+      "mp4": "/motion/portrait.mp4",
+      "poster": "/motion/portrait-poster.webp",
+      "placement": "about hero",
+      "capKB": 1500,
+      "reducedMotion": "poster",
+      "source": "real-footage-required"
+    },
+    {
+      "id": "D",
+      "name": "The Salon — threshold to outside",
+      "status": "DELIVERED",
+      "note": "Reconceived per direction: on-set/on-location salon opening onto a sunlit terrace — the world outside the salon, matching the book's premise.",
+      "file": "/motion/room.webm",
+      "mp4": "/motion/room.mp4",
+      "poster": "/motion/room-poster.webp",
+      "placement": "book to about transition",
+      "capKB": 1500,
+      "weightKB": 836,
+      "aspect": "16:9",
+      "reducedMotion": "poster"
+    },
+    {
+      "id": "F",
+      "name": "Free-chapter peek",
+      "status": "DELIVERED",
+      "file": "/motion/chapter-peek.webm",
+      "mp4": "/motion/chapter-peek.mp4",
+      "poster": "/motion/chapter-peek-poster.webp",
+      "placement": "/free-chapter CTA",
+      "capKB": 400,
+      "weightKB": 262,
+      "aspect": "4:3",
+      "aspectNote": "true 4:3 (960x720), re-rendered on seedance_2_0.",
+      "reducedMotion": "poster",
+      "trigger": "scroll-once"
+    },
+    {
+      "id": "I",
+      "name": "Gold particle burst",
+      "status": "DELIVERED",
+      "file": "/motion/burst.webm",
+      "mp4": "/motion/burst.mp4",
+      "poster": "/motion/burst-poster.webp",
+      "placement": "post-purchase overlay",
+      "capKB": 400,
+      "weightKB": 237,
+      "aspect": "1:1",
+      "reducedMotion": "static-gold-dot",
+      "trigger": "event-once"
+    },
+    {
+      "id": "K",
+      "name": "The Hands",
+      "status": "DEFERRED",
+      "reason": "Real-footage preferred per lock (no hair-as-subject generation). Needs Michael's hands footage; see playbook Part C recipe.",
+      "file": "/motion/hands.webm",
+      "mp4": "/motion/hands.mp4",
+      "poster": "/motion/hands-poster.webp",
+      "placement": "about + preorder emotional beat",
+      "capKB": 1500,
+      "reducedMotion": "poster",
+      "source": "real-footage-preferred"
+    },
+    {
+      "id": "L",
+      "name": "The Crown",
+      "status": "DELIVERED",
+      "file": "/motion/crown.webm",
+      "mp4": "/motion/crown.mp4",
+      "poster": "/motion/crown-poster.webp",
+      "placement": "/preorder hero",
+      "capKB": 2000,
+      "weightKB": 975,
+      "aspect": "16:9",
+      "reducedMotion": "poster"
+    },
+    {
+      "id": "J",
+      "name": "Kinetic type",
+      "status": "IN-CODE",
+      "reason": "Built in Phase 4 as Cormorant Garamond SVG/CSS, not Higgsfield."
+    }
+  ]
+}
