@@ -3,7 +3,6 @@ import { PageHero } from "@/components/design/PageHero";
 import { Section } from "@/components/design/Section";
 import { FreeChapterForm } from "@/components/FreeChapterForm";
 import { MotionAsset } from "@/components/motion/MotionAsset";
-import { ScrollReveal } from "@/components/motion/ScrollReveal";
 
 export const metadata = pageMetadata("Free Chapter", "Read Chapter 1 of Curls & Contemplation free — plus the Pricing Confidence Checklist, delivered instantly.", { path: "/free-chapter", image: "/gateway-cover.jpg" });
 
@@ -27,11 +26,9 @@ export default function Page() {
                 scroll-once): plays once on first view, then holds the last
                 frame. Poster-only under prefers-reduced-motion; reserved
                 aspect keeps CLS at 0. */}
-            <ScrollReveal>
-              <MotionAsset id="F" className="rounded-3xl border border-whitegold/10">
-                <p className="text-xs uppercase tracking-[0.28em] text-whitegold/80">A look inside Chapter 1</p>
-              </MotionAsset>
-            </ScrollReveal>
+            <MotionAsset id="F" className="rounded-3xl border border-whitegold/10">
+              <p className="text-xs uppercase tracking-[0.28em] text-whitegold/80">A look inside Chapter 1</p>
+            </MotionAsset>
             <div className="editorial-panel rounded-3xl p-6">
             <p className="text-whitegold/80">What arrives, instantly:</p>
             <ul className="mt-4 space-y-3 text-whitegold/70">
