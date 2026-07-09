@@ -1,0 +1,212 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACISS DESIGN TOKENS — curlscontemplation.beauty
+   ---------------------------------------------------------------------------
+   Single source of truth for the design primitives an engineer needs to build
+   any surface "from blind": color, type, space, radius, shadow, motion.
+
+   HARD RULES (do not break):
+   • There are exactly FIVE locked colors. Every color token below is either one
+     of those five or a color-mix() DERIVED from them. No new hues, ever.
+   • Two legacy teal/champagne hexes are BANNED and must never appear anywhere
+     (see tests/ guard). Only the five locked colors and mixes of them are allowed.
+   • This is a TOKEN LAYER ONLY. It declares CSS custom properties under :root.
+     It does NOT define Tailwind utilities or component classes.
+
+   RELATIONSHIP TO OTHER FILES:
+   • styles/aciss-tokens.css already defines the 5 locked colors plus the warm
+     "sunny" derived set (--aciss-dawn-gold, --aciss-gold-glow, --aciss-warm-veil).
+     We @import it so this file is self-contained, then ALIAS those names into a
+     shorter token namespace. We never redefine the 5 colors here — no clash.
+   • styles/motion.css owns the animation keyframes and the shipped motion vars
+     (--ease-threshold, --ease-breath, --dur-*). We re-export compatible names
+     here so a builder has one place to look; the values are kept consistent.
+   • tailwind.config.ts maps obsidian/antique/whitegold/jade/mist to the same 5
+     hex values — keep those in sync with the locked palette below.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import "./aciss-tokens.css";
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     1. COLOR — the five locked ACISS colors (aliased, never redefined)
+     Canonical definitions live in aciss-tokens.css; these `--color-*` aliases
+     give a consistent, predictable naming layer for new work while keeping the
+     original --aciss-* names intact so nothing already shipped breaks.
+     ───────────────────────────────────────────────────────────────────────── */
+  --color-obsidian: var(--aciss-obsidian);         /* #111111 — base canvas / ink        */
+  --color-antique-gold: var(--aciss-antique-gold); /* #B08D57 — primary accent / CTA      */
+  --color-white-gold: var(--aciss-white-gold);     /* #D8D1C5 — primary body text on dark */
+  --color-deep-jade: var(--aciss-deep-jade);       /* #145B4B — secondary / depth accent  */
+  --color-soft-jade-mist: var(--aciss-soft-jade-mist); /* #C7D9D2 — cool status / mist     */
+
+  /* Warm derived set (already defined in aciss-tokens.css) — aliased through. */
+  --color-dawn-gold: var(--aciss-dawn-gold);   /* gold pulled toward white-gold  */
+  --color-gold-glow: var(--aciss-gold-glow);   /* brightest gold, near-bloom      */
+  --color-warm-veil: var(--aciss-warm-veil);   /* obsidian warmed by gold         */
+
+  /* ── Semantic surfaces & lines — all color-mix DERIVED from the five ─────── */
+  --surface-base: var(--aciss-obsidian);
+  --surface-raised: color-mix(in srgb, var(--aciss-obsidian) 92%, var(--aciss-white-gold)); /* faintly lifted panel */
+  --surface-sunken: color-mix(in srgb, var(--aciss-obsidian) 96%, #000);                    /* deepen obsidian only */
+  --surface-glass: color-mix(in srgb, var(--aciss-obsidian) 70%, transparent);              /* frosted panel base   */
+  --surface-inverse: var(--aciss-white-gold);                                               /* light "print" cards  */
+
+  /* Text tokens (alpha ramps of white-gold over obsidian — no new hue). */
+  --text-strong: #ffffff;                                                       /* headline white       */
+  --text-body: var(--aciss-white-gold);                                         /* default body         */
+  --text-muted: color-mix(in srgb, var(--aciss-white-gold) 82%, transparent);   /* secondary body       */
+  --text-faint: color-mix(in srgb, var(--aciss-white-gold) 55%, transparent);   /* captions / eyebrows  */
+  --text-on-accent: var(--aciss-obsidian);                                      /* ink on gold buttons  */
+
+  /* Border / hairline tokens (derived). */
+  --line-subtle: color-mix(in srgb, var(--aciss-white-gold) 15%, transparent);
+  --line-strong: color-mix(in srgb, var(--aciss-antique-gold) 45%, transparent);
+  --line-gold: color-mix(in srgb, var(--aciss-antique-gold) 70%, transparent);
+
+  /* Focus ring — always antique gold, per shipped components. */
+  --focus-ring: var(--aciss-antique-gold);
+  --focus-ring-offset: var(--aciss-obsidian);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     2. TYPOGRAPHY
+     Families come from next/font/local (app/fonts.ts) via --font-display
+     (Cormorant Garamond) and --font-body (Inter). We only reference them.
+     ───────────────────────────────────────────────────────────────────────── */
+  --font-family-display: var(--font-display), Georgia, "Times New Roman", serif;
+  --font-family-body: var(--font-body), Inter, system-ui, -apple-system, sans-serif;
+
+  /* Weights (both fonts are variable; these are the weights actually used). */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line-heights. */
+  --leading-none: 0.95;   /* hero display, matches Section.tsx leading-[0.95] */
+  --leading-tight: 1.1;   /* card / section headings                          */
+  --leading-snug: 1.35;   /* subheads, standfirsts                            */
+  --leading-normal: 1.6;  /* body copy                                        */
+  --leading-relaxed: 1.8; /* long-form editorial (globals uses leading-8)     */
+
+  /* Letter-spacing. */
+  --tracking-tighter: -0.02em; /* large display                               */
+  --tracking-tight: -0.015em;  /* hero-display helper                         */
+  --tracking-normal: 0;
+  --tracking-wide: 0.08em;
+  --tracking-wider: 0.22em;    /* editorial-kicker                            */
+  --tracking-widest: 0.3em;    /* all-caps micro-labels                       */
+
+  /* ── Modular type scale (ratio ≈ 1.25 major third), fluid via clamp() ─────
+     Each step gives min (375px viewport) → max (≥1280px). Body = step 0. */
+  --font-size--1: clamp(0.79rem, 0.77rem + 0.10vw, 0.85rem);   /* fine print / captions   */
+  --font-size-0:  clamp(1rem,   0.96rem + 0.18vw, 1.125rem);   /* body base               */
+  --font-size-1:  clamp(1.2rem, 1.13rem + 0.32vw, 1.44rem);    /* lead paragraph          */
+  --font-size-2:  clamp(1.44rem,1.32rem + 0.55vw, 1.9rem);     /* card title (h3)         */
+  --font-size-3:  clamp(1.73rem,1.53rem + 0.9vw,  2.5rem);     /* sub-section (h3/h2)     */
+  --font-size-4:  clamp(2.07rem,1.75rem + 1.4vw,  3.3rem);     /* section heading (h2)   */
+  --font-size-5:  clamp(2.49rem,1.98rem + 2.3vw,  4.4rem);     /* large heading          */
+  --font-size-6:  clamp(2.99rem,2.2rem  + 3.5vw,  5.8rem);     /* hero display           */
+  --font-size-7:  clamp(3.58rem,2.4rem  + 5.3vw,  7.6rem);     /* oversized hero         */
+  --font-size-8:  clamp(4.3rem, 2.5rem  + 8vw,   10rem);       /* poster / splash        */
+
+  /* Named type roles (semantic aliases onto the scale). */
+  --type-caption: var(--font-size--1);
+  --type-body: var(--font-size-0);
+  --type-lead: var(--font-size-1);
+  --type-h3: var(--font-size-2);
+  --type-h2: var(--font-size-4);
+  --type-h1: var(--font-size-5);
+  --type-display: var(--font-size-6);
+  --type-hero: var(--font-size-7);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     3. SPACING — 4px base rhythm, rem-based (1rem = 16px)
+     ───────────────────────────────────────────────────────────────────────── */
+  --space-0: 0;
+  --space-1: 0.25rem;  /*  4px */
+  --space-2: 0.5rem;   /*  8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px — Section mobile px-5 */
+  --space-6: 1.5rem;   /* 24px — Section md px-6 / card padding */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-14: 3.5rem;  /* 56px — Section mobile py-14 */
+  --space-16: 4rem;    /* 64px */
+  --space-20: 5rem;    /* 80px */
+  --space-24: 6rem;    /* 96px — Section md py-24 */
+  --space-32: 8rem;    /* 128px */
+
+  /* Layout constants (match shipped shells). */
+  --container-max: 72rem;        /* max-w-6xl = 1152px (Section/Header)  */
+  --container-prose: 65ch;
+  --gutter-inline: var(--space-5);    /* mobile page gutter (px-5)      */
+  --gutter-inline-md: var(--space-6); /* desktop page gutter (md:px-6)  */
+  --header-height: 4.5rem;            /* 72px sticky header             */
+  --tap-target-min: 2.75rem;          /* 44px — min-h-11 on all controls */
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     4. RADIUS
+     ───────────────────────────────────────────────────────────────────────── */
+  --radius-xs: 0.375rem;  /*  6px */
+  --radius-sm: 0.75rem;   /* 12px */
+  --radius-md: 1rem;      /* 16px */
+  --radius-lg: 1.5rem;    /* 24px — DownloadRow */
+  --radius-xl: 2rem;      /* 32px — ExperienceCard / ProductCard family */
+  --radius-2xl: 3rem;     /* 48px */
+  --radius-pill: 9999px;  /* buttons, chips, nav toggle */
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     5. SHADOWS — tinted from OBSIDIAN, never pure black
+     Alpha comes from color-mix(... transparent) so the tint stays obsidian.
+     A second gold-tinted layer echoes tailwind's shadow-gold and .glass-panel.
+     ───────────────────────────────────────────────────────────────────────── */
+  --shadow-obsidian-05: color-mix(in srgb, var(--aciss-obsidian) 30%, transparent);
+  --shadow-obsidian-10: color-mix(in srgb, var(--aciss-obsidian) 50%, transparent);
+
+  --shadow-xs: 0 1px 2px var(--shadow-obsidian-05);
+  --shadow-sm: 0 4px 12px var(--shadow-obsidian-05);
+  --shadow-md: 0 12px 44px color-mix(in srgb, var(--aciss-deep-jade) 16%, transparent),
+               0 10px 30px var(--shadow-obsidian-05);
+  --shadow-lg: 0 26px 80px var(--shadow-obsidian-10),
+               inset 0 1px 0 color-mix(in srgb, var(--aciss-white-gold) 12%, transparent);
+  --shadow-gold: 0 24px 80px color-mix(in srgb, var(--aciss-antique-gold) 18%, transparent); /* == tailwind shadow-gold */
+  --shadow-glow-gold: 0 0 60px 8px color-mix(in srgb, var(--aciss-antique-gold) 22%, transparent);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     6. MOTION — timing + easing (kept consistent with styles/motion.css)
+     "One organism": nothing moves faster or slower than these tokens.
+     ───────────────────────────────────────────────────────────────────────── */
+  /* Signature easings. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);       /* decisive arrival, soft landing (== --ease-threshold) */
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);    /* symmetric loops / breath (== --ease-breath)          */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);    /* neutral UI transitions                                */
+
+  /* Durations — scroll-dwell pacing. */
+  --duration-fast: 180ms;    /* micro-interactions: hover, focus (== --dur-micro)   */
+  --duration-base: 300ms;    /* card lift, color/background transitions             */
+  --duration-slow: 600ms;    /* section reveals (== --dur-reveal)                   */
+  --duration-dwell: 5000ms;  /* ambient breath / portal pulse (== --dur-breath)     */
+
+  /* Compatibility aliases so either naming resolves to one value. */
+  --ease-threshold: var(--ease-out);
+  --ease-breath: var(--ease-in-out);
+  --dur-micro: var(--duration-fast);
+  --dur-reveal: var(--duration-slow);
+  --dur-breath: var(--duration-dwell);
+
+  /* Composed transition shorthands. */
+  --transition-colors: color var(--duration-fast) var(--ease-standard),
+                       background-color var(--duration-fast) var(--ease-standard),
+                       border-color var(--duration-fast) var(--ease-standard);
+  --transition-transform: transform var(--duration-base) var(--ease-out);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     7. Z-INDEX (matches shipped chrome)
+     ───────────────────────────────────────────────────────────────────────── */
+  --z-header: 30;
+  --z-mobile-panel: 40;
+  --z-modal: 50;
+}
