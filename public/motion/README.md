@@ -36,5 +36,7 @@ Still placeholders (real footage required, poster-only by design): `portrait`
 (asset C) and `hands` (asset K) — tiny ACISS-gradient stand-ins from
 `scripts/gen-motion-posters.mjs`. When that footage lands, drop the real
 `portrait.*` / `hands.*` here and flip their manifest `status` to `DELIVERED`.
-Re-run `node scripts/gen-motion-posters.mjs` any time you need to regenerate the
-remaining placeholders.
+Re-run `node scripts/gen-motion-posters.mjs` any time you need to fill in missing
+placeholders — it now **skips any poster that already exists**, so it will never
+overwrite the real committed posters. Pass `--force` only when you deliberately
+want to regenerate every placeholder.
