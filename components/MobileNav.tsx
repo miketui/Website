@@ -5,17 +5,17 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { primaryNav, isActiveRoute } from "@/lib/navigation";
+import { primaryNav, isActiveRoute, type NavItem } from "@/lib/navigation";
 import { useReducedMotion } from "@/components/motion/ReducedMotionProvider";
 
 /**
- * Mobile navigation panel. Consumes lib/navigation (same list as desktop —
- * the drift between the two hand-maintained lists is what this replaces).
- * Staggered entrance via motion/react; Escape closes; scroll locks while
- * open; portal keeps it above the journey layers. Reduced motion: panel
- * appears/disappears instantly.
+ * Mobile navigation panel. Mirrors the desktop nav — pass the same `items` so
+ * the two never drift (defaults to lib/navigation's primaryNav). Staggered
+ * entrance via motion/react; Escape closes; scroll locks while open; portal
+ * keeps it above the journey layers. Reduced motion: panel appears/disappears
+ * instantly.
  */
-export function MobileNav() {
+export function MobileNav({ items = primaryNav }: { items?: readonly NavItem[] }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname() ?? "/";
   const quiet = useReducedMotion();
@@ -72,7 +72,7 @@ export function MobileNav() {
                   className="fixed inset-0 top-[72px] z-40 flex flex-col overflow-y-auto bg-obsidian px-6 py-8 md:hidden"
                 >
                   <nav aria-label="Mobile navigation" className="flex flex-col">
-                    {primaryNav.map((link, i) => {
+                    {items.map((link, i) => {
                       const active = isActiveRoute(pathname, link.href);
                       return (
                         <motion.div

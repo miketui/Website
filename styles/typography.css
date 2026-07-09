@@ -22,6 +22,7 @@
 /* Italic serif accent inside display headlines — the concept-film treatment
    where one or two words turn to gold italics mid-sentence. */
 .accent-italic {
+  font-family: var(--font-accent), Georgia, serif;
   font-style: italic;
   font-weight: 500;
   letter-spacing: 0;
@@ -29,7 +30,7 @@
 /* Result line on cards: pain point above, outcome below in gold serif. */
 .result-line {
   color: var(--aciss-dawn-gold);
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-accent), Georgia, serif;
   font-style: italic;
   font-size: 1.05rem;
   line-height: 1.5;
