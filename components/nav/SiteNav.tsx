@@ -3,15 +3,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { MobileNav } from "@/components/MobileNav";
+import { CartButton, CartDrawer } from "@/components/nav/CartDrawer";
 import { useReducedMotion } from "@/components/motion/ReducedMotionProvider";
 
 /**
- * Revamped site nav for the immersive redesign. Sticky (keeps its layout slot →
- * zero reflow), transparent over the hero, condensing to obsidian glass with a
- * gold hairline after 24px of scroll. Hidden (translated up) until the cover
- * reveal finishes on the first "/" visit, then slides in; on returning visits
- * and every non-home route it is visible immediately. The Preorder CTA is
- * launch-state driven (resolved on the server, passed in).
+ * Immersive site nav — unchanged behavior (sticky, transparent-over-hero,
+ * obsidian glass after 24px, cover-reveal aware) + the site-wide cart.
+ * CartButton renders on desktop and mobile clusters; CartDrawer mounts once
+ * here so the cart is reachable from every route (layout mounts SiteNav
+ * globally). Requires <CartProvider> above it in app/layout.tsx.
  */
 
 const links = [
@@ -27,9 +27,6 @@ export function SiteNav({ preorder }: { preorder: { href: string; label: string 
   const [revealed, setRevealed] = useState(true);
 
   useEffect(() => {
-    // Hidden only while the cover intro is still up on this first "/" visit.
-    // Deferred to a frame so the state update isn't synchronous in the effect
-    // body; the nav sits under the cover overlay meanwhile, so no visible flash.
     const raf = requestAnimationFrame(() => {
       if (document.documentElement.hasAttribute("data-cc-cover")) setRevealed(false);
     });
@@ -91,9 +88,11 @@ export function SiteNav({ preorder }: { preorder: { href: string; label: string 
           >
             {preorder.label}
           </Link>
+          <CartButton />
         </nav>
 
         <div className="flex items-center gap-3 md:hidden">
+          <CartButton />
           <Link
             href={preorder.href}
             className="inline-flex min-h-11 items-center rounded-full border border-antique/70 px-3 py-2 text-xs font-semibold text-whitegold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique"
@@ -103,6 +102,7 @@ export function SiteNav({ preorder }: { preorder: { href: string; label: string 
           <MobileNav items={[...links, preorder]} />
         </div>
       </div>
+      <CartDrawer />
     </header>
   );
 }

@@ -32,17 +32,27 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) 
     metadata: session.metadata ?? {}
   }, { onConflict: "stripe_checkout_session_id" }).select("id").single();
   if (order?.id) {
-    const bookRow = { order_id: order.id, email, book_slug: "curls-and-contemplation", status: "active", entitlement_status: "active" };
-    const { error: bookError } = await supabase.from("purchases").upsert(bookRow, { onConflict: "order_id,book_slug" });
-    if (bookError) {
-      // Migration 0002 not applied yet: fall back to the legacy unique(order_id)
-      // key so the buyer's book entitlement is never lost.
-      await supabase.from("purchases").upsert(bookRow, { onConflict: "order_id" });
+    // Cart-aware: the book row is written unless metadata explicitly says the
+    // cart excluded it (workbook-only or deck-only purchases).
+    if (session.metadata?.book_included !== "false") {
+      const bookRow = { order_id: order.id, email, book_slug: "curls-and-contemplation", status: "active", entitlement_status: "active" };
+      const { error: bookError } = await supabase.from("purchases").upsert(bookRow, { onConflict: "order_id,book_slug" });
+      if (bookError) {
+        // Migration 0002 not applied yet: fall back to the legacy unique(order_id)
+        // key so the buyer's book entitlement is never lost.
+        await supabase.from("purchases").upsert(bookRow, { onConflict: "order_id" });
+      }
     }
     if (session.metadata?.card_deck === "true") {
       const { error: deckError } = await supabase.from("purchases").upsert({ order_id: order.id, email, book_slug: "affirmation-deck", status: "active", entitlement_status: "active" }, { onConflict: "order_id,book_slug" });
       if (deckError) {
         await recordServerEvent({ eventName: analyticsEvents.purchaseRecorded, route: "/api/stripe/webhook", metadata: { checkoutSessionId: session.id, deckEntitlementFailed: true, hint: "apply migration 0002_order_bump.sql" }, operational: true });
+      }
+    }
+    if (session.metadata?.workbook === "true") {
+      const { error: workbookError } = await supabase.from("purchases").upsert({ order_id: order.id, email, book_slug: "companion-workbook", status: "active", entitlement_status: "active" }, { onConflict: "order_id,book_slug" });
+      if (workbookError) {
+        await recordServerEvent({ eventName: analyticsEvents.purchaseRecorded, route: "/api/stripe/webhook", metadata: { checkoutSessionId: session.id, workbookEntitlementFailed: true, hint: "requires unique(order_id,book_slug) from migration 0002" }, operational: true });
       }
     }
   }
@@ -62,7 +72,7 @@ export async function revokeEntitlementForRefund(charge: Stripe.Charge) {
   const supabase = createServerSupabaseClient(true);
   if (!supabase) return { ok: false as const, skipped: true as const, reason: "config_missing" as const };
   const { data: order } = await supabase.from("orders").select("id,email").eq("stripe_payment_intent_id", paymentIntent ?? "").maybeSingle();
-  // Revokes every entitlement on the order (book and any order-bump deck).
+  // Revokes every entitlement on the order (book, deck, and workbook).
   if (order?.id) await supabase.from("purchases").update({ status: "refunded", entitlement_status: "revoked", refunded_at: new Date().toISOString(), revoked_at: new Date().toISOString() }).eq("order_id", order.id);
   const notifyEmail = email ?? order?.email;
   if (notifyEmail) {

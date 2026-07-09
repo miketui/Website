@@ -36,10 +36,10 @@ describe("funnel 1 — order bump entitlements", () => {
     expect(entitlementSlugFor("epub")).toBe("curls-and-contemplation");
   });
 
-  it("card deck is a purchasable deliverable kind; workbook stays gated", () => {
+  it("card deck and workbook are purchasable deliverable kinds", () => {
     const entitled = productEntitlements();
     expect(entitled.card_deck).toBe(true);
-    expect(entitled.workbook).toBe(false);
+    expect(entitled.workbook).toBe(true); // workbook shipped 2026-07-09: cart product + /workbook interactive edition
   });
 
   it("card deck deliverable lives in the private bucket cards/ path", () => {
