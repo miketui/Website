@@ -12,6 +12,8 @@ import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 import { ParallaxDepth } from "@/components/motion/ParallaxDepth";
 import { CursorReveal } from "@/components/motion/CursorReveal";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
+import { MotionAsset } from "@/components/motion/MotionAsset";
+import { KineticHeadline } from "@/components/motion/KineticHeadline";
 import { CaptureBand } from "@/components/CaptureBand";
 import { Testimonials, AuthorNote } from "@/components/SocialProof";
 import { bookJsonLd } from "@/lib/schema";
@@ -56,6 +58,25 @@ export default function HomePage() {
       <BookHero />
       <ProofBand />
       <EditorialCameraHold />
+
+      {/* A — HERO, "the book is the door." A felt cinematic beat placed AFTER the
+          editorial fold so it never becomes the LCP element; the video is
+          preload="none" behind a reserved-dimension poster, and the kinetic
+          headline (asset J) is CSS/SVG type, not a video. */}
+      <ScrollReveal>
+        <section className="relative overflow-hidden px-5 py-16 md:px-6 md:py-24">
+          <div className="mx-auto max-w-sm">
+            <MotionAsset id="A" priority className="rounded-[2rem] border border-whitegold/10 shadow-gold">
+              <KineticHeadline
+                text="The book is the door."
+                className="text-3xl md:text-4xl"
+                accentFrom={3}
+              />
+              <p className="mt-3 text-xs uppercase tracking-[0.28em] text-whitegold/70">Open it and the light comes through</p>
+            </MotionAsset>
+          </div>
+        </section>
+      </ScrollReveal>
 
       <div className="flourish-field veil-surface relative overflow-hidden">
         <div aria-hidden="true" className="flourish-layer">
@@ -110,6 +131,28 @@ export default function HomePage() {
             </p>
           </div>
         </CursorReveal>
+      </ScrollReveal>
+
+      {/* B — THE UNFURLING. A mid-scroll breath: the strand opening, framed
+          portrait. Poster-only + gradient until the binary lands; loops in view. */}
+      <ScrollReveal>
+        <section className="relative overflow-hidden px-5 py-10 md:px-6 md:py-16">
+          <div className="mx-auto grid max-w-5xl items-center gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="mx-auto w-full max-w-xs">
+              <MotionAsset id="B" className="rounded-[2rem] border border-whitegold/10" />
+            </div>
+            <div>
+              <p className="editorial-kicker mb-4">The unfurling</p>
+              <p className="max-w-xl font-display text-2xl leading-snug text-white md:text-3xl">
+                What was held tight begins to open &mdash; slowly, on its own time.
+              </p>
+              <p className="mt-4 max-w-xl leading-8 text-whitegold/80">
+                The work of the book is not a push. It&rsquo;s the quieter thing that happens
+                when you finally give your craft room to breathe.
+              </p>
+            </div>
+          </div>
+        </section>
       </ScrollReveal>
 
       {/* WORLD OF THE BOOK — PRD v2 §4.1 section 5. Atmosphere tease → /book.
@@ -171,6 +214,23 @@ export default function HomePage() {
           <ChapterPathway compact />
         </div>
       </Section>
+
+      {/* D — THE SALON THRESHOLD. A widescreen transition band: the salon opening
+          onto the world outside it, carrying the reader from "the book" toward
+          "the why." 16:9, reserved dims, loops in view / poster under reduced motion. */}
+      <ScrollReveal>
+        <section className="relative overflow-hidden px-5 py-12 md:px-6 md:py-20">
+          <div className="mx-auto max-w-5xl">
+            <MotionAsset id="D" className="rounded-[2rem] border border-whitegold/10">
+              <KineticHeadline
+                text="The door was never only the book."
+                className="text-2xl md:text-4xl"
+                accentFrom={4}
+              />
+            </MotionAsset>
+          </div>
+        </section>
+      </ScrollReveal>
 
       <Testimonials />
       <AuthorNote />

@@ -23,3 +23,12 @@ The `<MotionAsset>` component degrades gracefully: it renders the poster when a
 video source is missing or `prefers-reduced-motion: reduce` is set, so the pages
 build and render without the binaries — they just show posters until the zip is
 placed here.
+
+## Placeholder posters (committed)
+
+The `*-poster.webp` files currently in this folder are **placeholders** — tiny
+ACISS-gradient stand-ins (each < 1 KB) written by `scripts/gen-motion-posters.mjs`
+so every DELIVERED/DEFERRED `poster` path resolves and no broken-image icon ever
+appears before the real footage lands. When you drop the `cc-motion-library.zip`
+contents here, the real `-poster.webp` files overwrite these in place. Re-run
+`node scripts/gen-motion-posters.mjs` any time you need to regenerate them.
