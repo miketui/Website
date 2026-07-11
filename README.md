@@ -210,3 +210,38 @@ Prompt 8 consolidated all website-related files into this self-contained `author
 - `docs/website-v4/18_VERCEL_PREVIEW_DEPLOYMENT_GUIDE.md`
 
 Preview may be deployed from Vercel with root directory `author-site` after sandbox env vars are configured. Production remains blocked until Michael approves legal copy, claims, domain, live payment activation, provider configuration, and the production activation checklist.
+
+## Missing Gaps and Action Items
+
+Following a recent codebase audit, several critical action items remain before the site can be considered fully production-ready. These are intentional gates or pending setup items that require human action:
+
+### 1. Live Production Credentials (Blocked by Design)
+The site is currently built to run in a sandbox. Live keys for Stripe (live payment processing), Supabase (production database/storage), Resend (email delivery), MailerLite (production subscriber groups), and Turnstile (bot protection) are intentionally left out.
+**How to add it:**
+- Obtain live API keys from each respective provider.
+- Inject them securely into the Vercel Production Environment Variables settings.
+- Do not commit these keys to the repository or `.env.local`.
+
+### 2. Funnel 4 (Ascension Ladder / Subscriptions)
+Funnels 1, 2, and 3 are fully wired. Funnel 4 is intentionally stubbed per project rules. The database has "placeholder" tables for memberships, but the actual checkout flow and dashboard are not built.
+**How to add it:**
+- Wait for explicit owner approval to activate paid subscriptions in v1.
+- Once approved, build the subscription checkout flow leveraging the existing `memberships` and `membership_events` tables in Supabase.
+- Update `content/funnels.ts` to replace "PROPOSED" pricing with actual live Stripe Price IDs.
+
+### 3. Legal and Policy Approvals
+The legal documents (Privacy Policy, Terms, Preorder Policy, Digital Delivery Policy) are outlines.
+**How to add it:**
+- A human/attorney review must be conducted to finalize the copy for these pages.
+- Update the respective `.tsx` files in `app/privacy/`, `app/terms/`, etc., with the approved text.
+
+### 4. Admin Role Configuration
+The Admin Dashboard (`/admin/*`) is wired to fetch real data from Supabase, but requires an authorized admin account to view it.
+**How to add it:**
+- Add the owner's email address to the `ADMIN_EMAILS` environment variable as a comma-separated list.
+- Ensure the user logs in via the site's authentication flow.
+
+### 5. Final Domain & DNS Setup
+**How to add it:**
+- Select and approve the final domain.
+- Configure DNS records for the domain, email sender (SPF, DKIM, DMARC for Resend), and point the domain to the Vercel production project.
