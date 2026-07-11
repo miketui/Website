@@ -84,8 +84,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setItems(readStored());
-    setHydrated(true);
+    const stored = readStored();
+    if (stored.length > 0) {
+      // Run update in microtask to avoid React strict mode cascading render warnings
+      queueMicrotask(() => setItems(stored));
+    }
+    queueMicrotask(() => setHydrated(true));
   }, []);
 
   useEffect(() => {
