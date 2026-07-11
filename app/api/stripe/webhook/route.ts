@@ -45,9 +45,7 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) 
     }
     if (session.metadata?.card_deck === "true") {
       const { error: deckError } = await supabase.from("purchases").upsert({ order_id: order.id, email, book_slug: "affirmation-deck", status: "active", entitlement_status: "active" }, { onConflict: "order_id,book_slug" });
-      if (deckError) {
-        await recordServerEvent({ eventName: analyticsEvents.purchaseRecorded, route: "/api/stripe/webhook", metadata: { checkoutSessionId: session.id, deckEntitlementFailed: true, hint: "apply migration 0002_order_bump.sql" }, operational: true });
-      }
+      if (deckError) { throw new Error(`Deck entitlement failed: ${deckError.message}`); }
     }
     // Preorder gift (owner-approved 2026-07-09): every preorder that includes
     // the book also receives the Idea-to-Action Workbook free. Post-launch
@@ -56,7 +54,7 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) 
     if (session.metadata?.workbook === "true" || preorderGift) {
       const { error: workbookError } = await supabase.from("purchases").upsert({ order_id: order.id, email, book_slug: "companion-workbook", status: "active", entitlement_status: "active" }, { onConflict: "order_id,book_slug" });
       if (workbookError) {
-        await recordServerEvent({ eventName: analyticsEvents.purchaseRecorded, route: "/api/stripe/webhook", metadata: { checkoutSessionId: session.id, workbookEntitlementFailed: true, hint: "requires unique(order_id,book_slug) from migration 0002" }, operational: true });
+        throw new Error(`Workbook entitlement failed: ${workbookError.message}`);
       }
     }
   }
