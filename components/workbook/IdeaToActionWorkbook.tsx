@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, type Dispatch, type SetStateAction } from "react";
+import React, { useState, useRef, useEffect, type Dispatch, type SetStateAction } from "react";
 
 /**
  * The Idea-to-Action Workbook - 21-page interactive buyer companion.
@@ -99,9 +99,12 @@ export function IdeaToActionWorkbook() {
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setData(JSON.parse(raw) as WorkbookData);
+      if (raw) {
+        // Run update in microtask to avoid React strict mode cascading render warnings
+        queueMicrotask(() => setData(JSON.parse(raw) as WorkbookData));
+      }
     } catch { /* storage unavailable - still usable for the session */ }
-    setHydrated(true);
+    queueMicrotask(() => setHydrated(true));
   }, []);
   useEffect(() => {
     if (!hydrated) return;
