@@ -37,6 +37,8 @@ type NewsletterFormProps = {
   tone?: "footer" | "card";
   /** Mid-scroll surfaces set this so known subscribers aren't re-asked. The footer stays visible for everyone. */
   hideWhenSubscribed?: boolean;
+  /** Full intake adds optional profile fields while compact placements stay low-friction. */
+  collectProfile?: boolean;
 };
 
 export function NewsletterForm({
@@ -45,7 +47,8 @@ export function NewsletterForm({
   copy = "One welcome note, then the occasional letter on pricing, craft, and the business nobody taught you. No spam.",
   cta = "Subscribe",
   tone = "card",
-  hideWhenSubscribed = false
+  hideWhenSubscribed = false,
+  collectProfile = false
 }: NewsletterFormProps) {
   const id = useId();
   const emailId = `${id}-email`;
@@ -71,6 +74,7 @@ export function NewsletterForm({
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = String(data.get("email") ?? "");
+    const interests = data.getAll("interests").map(String);
     const widgetToken = data.get("cf-turnstile-response");
     setStatus("submitting");
     setMessage(null);
@@ -78,7 +82,17 @@ export function NewsletterForm({
       const response = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, source, utm: currentUtmParams(), turnstileToken: widgetToken ? String(widgetToken) : undefined })
+        body: JSON.stringify({
+          email,
+          firstName: String(data.get("firstName") ?? "") || undefined,
+          professionalRole: String(data.get("professionalRole") ?? "") || undefined,
+          careerStage: String(data.get("careerStage") ?? "") || undefined,
+          interests,
+          marketingConsent: true,
+          source,
+          utm: currentUtmParams(),
+          turnstileToken: widgetToken ? String(widgetToken) : undefined
+        })
       });
       const json = await response.json().catch(() => null);
       if (response.ok && json?.ok) {
@@ -127,6 +141,33 @@ export function NewsletterForm({
     <form onSubmit={onSubmit} className={wrapperClass} aria-describedby={message ? msgId : undefined}>
       {heading ? <p className="font-display text-xl text-white">{heading}</p> : null}
       {copy ? <p className="mt-2 max-w-prose text-sm leading-6 text-whitegold/70">{copy}</p> : null}
+      {collectProfile ? (
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <label className="text-sm font-semibold text-white">First name
+            <input name="firstName" type="text" autoComplete="given-name" maxLength={80} className="light mt-2 w-full rounded-full border border-whitegold/20 bg-white px-4 py-3 text-obsidian" />
+          </label>
+          <label className="text-sm font-semibold text-white">Professional role
+            <input name="professionalRole" type="text" maxLength={120} placeholder="Stylist, educator, creative…" className="light mt-2 w-full rounded-full border border-whitegold/20 bg-white px-4 py-3 text-obsidian" />
+          </label>
+          <label className="text-sm font-semibold text-white sm:col-span-2">Career stage
+            <select name="careerStage" className="light mt-2 w-full rounded-full border border-whitegold/20 bg-white px-4 py-3 text-obsidian" defaultValue="">
+              <option value="">Choose one (optional)</option>
+              <option value="building-foundation">Building my foundation</option>
+              <option value="growing-business">Growing my creative business</option>
+              <option value="established-evolving">Established and evolving</option>
+              <option value="educator-leader">Educator or leader</option>
+            </select>
+          </label>
+          <fieldset className="sm:col-span-2">
+            <legend className="text-sm font-semibold text-white">What would help most?</legend>
+            <div className="mt-2 flex flex-wrap gap-3 text-sm text-whitegold/80">
+              {["Pricing", "Creative identity", "Business systems", "Leadership", "Well-being"].map((interest) => (
+                <label key={interest} className="flex items-center gap-2"><input type="checkbox" name="interests" value={interest} /> {interest}</label>
+              ))}
+            </div>
+          </fieldset>
+        </div>
+      ) : null}
       <label className="mt-4 block text-sm font-semibold text-white" htmlFor={emailId}>
         Email address
       </label>
@@ -148,6 +189,7 @@ export function NewsletterForm({
           {status === "submitting" ? "Subscribing…" : cta}
         </button>
       </div>
+      <p className="mt-3 text-xs leading-5 text-whitegold/60">By subscribing, you agree to receive Curls &amp; Contemplation emails. Unsubscribe anytime.</p>
       {turnstileSiteKey ? (
         <>
           <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="lazyOnload" />

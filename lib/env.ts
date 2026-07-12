@@ -7,6 +7,7 @@ const publicEnvSchema = z.object({
   NEXT_PUBLIC_LAUNCH_MODE: launchModeSchema.optional(),
   NEXT_PUBLIC_LAUNCH_STATE: z.string().optional(),
   NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().optional(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().optional(),
   NEXT_PUBLIC_THANKYOU_VIDEO_ID: z.string().optional(),
@@ -18,6 +19,7 @@ const publicEnvSchema = z.object({
 
 const serverEnvSchema = publicEnvSchema.extend({
   RELEASE_DATE: z.string().optional(),
+  SUPABASE_SECRET_KEY: z.string().optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
   SUPABASE_STORAGE_BUCKET: z.string().optional(),
   STRIPE_SECRET_KEY: z.string().optional(),
@@ -53,6 +55,8 @@ const serverEnvSchema = publicEnvSchema.extend({
   MAILERLITE_GROUP_BLOG_READERS: z.string().optional(),
   MAILERLITE_GROUP_VIP_EARLY_READERS: z.string().optional(),
   MAILERLITE_GROUP_QUIZ: z.string().optional(),
+  MAILERLITE_GROUP_CORE_NURTURE: z.string().optional(),
+  MAILERLITE_GROUP_DIGITAL_DIRECTIVE_CUSTOMERS: z.string().optional(),
   TURNSTILE_SECRET_KEY: z.string().optional(),
   ADMIN_EMAILS: z.string().optional(),
   GA4_API_SECRET: z.string().optional(),
@@ -73,6 +77,40 @@ export const env = serverEnvSchema.parse(process.env);
 
 function missing(names: string[]) {
   return names.filter((name) => !process.env[name]);
+}
+
+function firstConfigured(...values: Array<string | undefined>): string | undefined {
+  return values.map((value) => value?.trim()).find((value): value is string => Boolean(value));
+}
+
+function supabaseUrl(): string | undefined {
+  return firstConfigured(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_NEXT_SUPABASE_URL,
+    process.env.NEXT_SUPABASE_URL,
+    process.env.SUPABASE_URL
+  );
+}
+
+function supabasePublishableKey(): string | undefined {
+  return firstConfigured(
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    process.env.NEXT_PUBLIC_NEXT_SUPABASE_PUBLISHABLE_KEY,
+    process.env.NEXT_PUBLIC_NEXT_SUPABASE_ANON_KEY,
+    process.env.NEXT_SUPABASE_PUBLISHABLE_KEY,
+    process.env.NEXT_SUPABASE_ANON_KEY,
+    process.env.SUPABASE_ANON_KEY
+  );
+}
+
+function supabaseSecretKey(): string | undefined {
+  return firstConfigured(
+    process.env.SUPABASE_SECRET_KEY,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    process.env.NEXT_SUPABASE_SECRET_KEY,
+    process.env.NEXT_SUPABASE_SERVICE_ROLE_KEY
+  );
 }
 
 /**
@@ -134,20 +172,26 @@ export function getStripeWebhookConfig(): RuntimeConfigResult<{ secretKey: strin
 }
 
 export function getSupabaseBrowserConfig(): RuntimeConfigResult<{ url: string; anonKey: string }> {
-  const absent = missing(["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"]);
+  const url = supabaseUrl();
+  const publishableKey = supabasePublishableKey();
+  const absent = [!url ? "NEXT_PUBLIC_SUPABASE_URL" : null, !publishableKey ? "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" : null].filter((value): value is string => Boolean(value));
   if (absent.length) return { ok: false, reason: "config_missing", missing: absent };
-  return { ok: true, value: { url: process.env.NEXT_PUBLIC_SUPABASE_URL!, anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! } };
+  return { ok: true, value: { url: url!, anonKey: publishableKey! } };
 }
 
 export function getSupabaseServerConfig(useServiceRole = false): RuntimeConfigResult<{ url: string; key: string; role: "anon" | "service"; bucket: string }> {
-  const required = useServiceRole ? ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"] : ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"];
-  const absent = missing(required);
+  const url = supabaseUrl();
+  const key = useServiceRole ? supabaseSecretKey() : supabasePublishableKey();
+  const absent = [
+    !url ? "NEXT_PUBLIC_SUPABASE_URL" : null,
+    !key ? (useServiceRole ? "SUPABASE_SECRET_KEY" : "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY") : null
+  ].filter((value): value is string => Boolean(value));
   if (absent.length) return { ok: false, reason: "config_missing", missing: absent };
   return {
     ok: true,
     value: {
-      url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      key: useServiceRole ? process.env.SUPABASE_SERVICE_ROLE_KEY! : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      url: url!,
+      key: key!,
       role: useServiceRole ? "service" : "anon",
       bucket: process.env.SUPABASE_STORAGE_BUCKET ?? "curls-deliverables"
     }
@@ -173,7 +217,9 @@ export function getMailerLiteConfig(): RuntimeConfigResult<{ apiKey: string; gro
         refunded: process.env.MAILERLITE_GROUP_REFUNDED,
         blog_readers: process.env.MAILERLITE_GROUP_BLOG_READERS,
         vip_early_readers: process.env.MAILERLITE_GROUP_VIP_EARLY_READERS,
-        quiz: process.env.MAILERLITE_GROUP_QUIZ
+        quiz: process.env.MAILERLITE_GROUP_QUIZ,
+        core_nurture: process.env.MAILERLITE_GROUP_CORE_NURTURE || "192794786755773469",
+        digital_directive_customers: process.env.MAILERLITE_GROUP_DIGITAL_DIRECTIVE_CUSTOMERS || "192794787632383140"
       }
     }
   };

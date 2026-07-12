@@ -12,7 +12,9 @@ export type MailerLiteGroup =
   | "refunded"
   | "blog_readers"
   | "vip_early_readers"
-  | "quiz";
+  | "quiz"
+  | "core_nurture"
+  | "digital_directive_customers";
 
 export const mailerLiteGroups: Record<MailerLiteGroup, string> = {
   subscribers: "Subscribers",
@@ -25,7 +27,9 @@ export const mailerLiteGroups: Record<MailerLiteGroup, string> = {
   refunded: "Refunded",
   blog_readers: "Blog Readers",
   vip_early_readers: "VIP / Early Readers",
-  quiz: "Quiz / Blind-Spot"
+  quiz: "Quiz / Blind-Spot",
+  core_nurture: "Core Nurture — Non-Buyers",
+  digital_directive_customers: "Digital Directive Customers"
 };
 
 const emailSchema = z.string().email();

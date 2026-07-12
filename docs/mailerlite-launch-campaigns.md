@@ -1,36 +1,60 @@
-# MailerLite launch setup — November 24, 2026
+# MailerLite production journeys — November 24, 2026
 
-MailerLite does **not** need nine automations. Groups are segmentation labels; automations are the small number of journeys triggered by those labels. Duplicating an automation for every group would increase double-send risk.
+Authoritative copy: `docs/MAILERLITE-AUTOMATION-EMAIL-LIBRARY.md`, supplied July 12, 2026. The exact subjects, bodies, CTA destinations, and timing rules were loaded through the connected MailerLite account wherever its API permits.
 
-## Canonical automation set
+## Canonical workflow inventory
 
-| Automation | Trigger group | State now | Purpose |
-|---|---|---|---|
-| Pricing Confidence Kit nurture | `Pricing Confidence Kit` (`192789958246794286`) | Build, review, then enable | Deliver checklist immediately; 5–7 useful notes; bridge to preorder |
-| Customer onboarding | `Customers` (`189927259391395798`) | Build, review, then enable | Receipt expectations, protected account, workbook access, support path |
-| Abandoned checkout | `Abandoned Checkout` (`189927264762202014`) | Build, review, then enable | One reminder after 24 hours; no pressure sequence |
-| Launch-day EPUB delivery | `Preorders` (`189927254041560661`) | Keep disabled until November 24 | Send the canonical EPUB link on launch morning after the file and dry run pass |
+| Workflow | Trigger group | MailerLite ID | Email count |
+|---|---|---:|---:|
+| Website Signups — Welcome & Orientation | Website Signups | `192795044280796190` | 2 |
+| Pricing Confidence Kit — Delivery & Activation | Pricing Confidence Kit | `192795046686229893` | 3 |
+| Core Nurture — Beyond the Craft | Core Nurture — Non-Buyers | `192795049449228005` | 5 |
+| Quiz — Blind-Spot Follow-up | Quiz / Blind-Spot | `192795053311132895` | 3 |
+| Preorders — Reservation & Reinforcement | Preorders | `192795055972419267` | 2 |
+| Customers — Post-Purchase Onboarding | Customers | `192795058197497739` | 4 |
+| Abandoned Checkout — Recovery | Abandoned Checkout | `192795061713372667` | 3 |
+| Bonus Claim Started — Workbook Reminders | Bonus Claim Started | `192795267020358662` | 2 |
+| Bonus Claim Completed — Access Active | Bonus Claim Completed | `192795274605758257` | 1 |
+| Digital Daily Directives — Delivery & Use | Digital Directive Customers | `192795281369073567` | 4 |
 
-The quiz group can have a short worksheet follow-up sequence after quiz delivery is verified. It is a fifth optional journey, not one of nine required launch automations.
+The source describes nine funnels. There are ten workflow records because Bonus Claim Started and Bonus Claim Completed are distinct triggers and cannot safely share one linear workflow.
 
-## Required groups
+## Fixed-date preorder sends
 
-- `Pricing Confidence Kit` — created July 12, 2026; ID `192789958246794286`.
-- `Preorders` — ID `189927254041560661`.
-- `Customers` — ID `189927259391395798`.
-- `Abandoned Checkout` — ID `189927264762202014`.
-- `Refunded` — ID `189927280131180245`.
-- `Quiz / Blind-Spot` — ID `191751931239073670`.
+These are scheduled campaigns because relative automation delays would send late to customers who preorder closer to launch:
 
-Other existing groups may remain for reporting and future segmentation, but they do not each need an automation.
+| Send | Campaign ID | Scheduled |
+|---|---:|---|
+| One month until Curls & Contemplation | `192795454682957112` | October 25, 2026 at 09:00 account time |
+| One week until release | `192795457777304695` | November 17, 2026 at 09:00 account time |
+| Tomorrow, the journey begins | `192795460957636199` | November 23, 2026 at 09:00 account time |
 
-## Dates and sender
+All three are in MailerLite `ready` status and target only the Preorders group.
 
-- Launch: Tuesday, **November 24, 2026**.
-- Recommended sender: `Michael David · Curls & Contemplation <info@curlscontemplation.beauty>`.
-- Reply-to: `support@curlscontemplation.beauty`.
-- Authenticate the sending domain with MailerLite before enabling any sequence.
+## Forms and personalization
 
-## Safety gate
+Created embedded, double-opt-in forms:
 
-Do not enable the launch-day delivery automation until the EPUB exists at the locked private path, a signed URL is generated successfully, and a dry-run email reaches the owner inbox. The EPUB is intentionally absent today.
+- Subscription Intake — `192794813012116816`.
+- Pricing Confidence Kit — `192794813955835273`.
+- Blind-Spot Quiz Capture — `192794814849222306`.
+
+Created fields: professional role, career stage, primary interest, marketing consent source, product type, product name, order status, order number, five quiz-result fields, and customer portal URL.
+
+Created groups:
+
+- Core Nurture — Non-Buyers — `192794786755773469`.
+- Digital Directive Customers — `192794787632383140`.
+
+The retired Free Chapter group is named `ARCHIVED — Free Chapter (Do Not Use)`. Nine obsolete/duplicate draft automations were deleted.
+
+## Provider limitation and activation
+
+MailerLite’s connected API can create triggers, delays, subjects, forms, groups, fields, and campaigns, but it explicitly cannot create the visual HTML design for an automation email. An automation with undesigned email steps is marked incomplete and MailerLite will not activate it. The connector also exposes no supported activation action.
+
+Therefore the three fixed-date campaigns are scheduled and live, while each trigger-based workflow needs its automation emails opened in the MailerLite editor, designed using the approved source copy, and switched on. Do not change the subjects, timing, URLs, sender, or reply-to during that dashboard step.
+
+Sender: `Michael David | Curls & Contemplation <info@curlscontemplation.beauty>`
+Reply-to: `info@curlscontemplation.beauty`
+
+Launch-day secure book delivery remains a Resend transaction initiated by the website on November 24 after the canonical EPUB is uploaded. It is not a MailerLite marketing send.

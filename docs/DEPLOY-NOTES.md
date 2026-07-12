@@ -18,11 +18,11 @@ Never put `STRIPE_SECRET_KEY` or `STRIPE_WEBHOOK_SECRET` in Git. The canonical w
 
 ## MailerLite
 
-`Pricing Confidence Kit` was created with ID `192789958246794286`. The website uses this group instead of the former manuscript-giveaway segment. See `docs/mailerlite-launch-campaigns.md`; four core automations are enough, and launch-day EPUB delivery stays disabled until November 24.
+The retired Free Chapter group is marked archived. Ten trigger-correct lifecycle workflow shells, 29 exact automation subjects/bodies, three embedded double-opt-in forms, 14 personalization fields, and two new groups were created from the approved 9-funnel library. Three fixed preorder countdown campaigns are scheduled for October 25, November 17, and November 23 at 9:00 in the account timezone. MailerLite's API cannot create the visual email design or activate an incomplete automation; each workflow therefore still requires its final dashboard design/activation action.
 
 ## Supabase
 
-Target project: `jmfbosczwbfugbjsshwf`. The reconnected account exposes `supabase-teal-prism` (`comfnluqjhnmbxfvvjeo`) and `supabase-crimson-pillar` (`dlwurqmedtwcacollpeq`), but both have zero website tables, users, or stored objects. The connector still cannot access the documented production project, so no files were uploaded to a different project. Reconnect the website project—or intentionally initialize and switch Vercel to a replacement project—then run:
+Replacement production project: `supabase-teal-prism` (`comfnluqjhnmbxfvvjeo`). Six migrations are applied, 21 RLS-enabled public tables exist, the approved Stripe catalog is seeded (15 products / 16 prices), and `curls-free` plus private `curls-deliverables` buckets exist. Set the modern Vercel URL, publishable key, and server-only secret from `docs/VERCEL-PRODUCTION-ENV-2026-07-12.env.example`, then run:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... \
@@ -33,4 +33,4 @@ The upload set contains the free checklist and quiz worksheets, the 21-page work
 
 ## Resend
 
-Resend is connected through Zapier and the application templates are wired. Zapier exposes contacts, segments, and email sending but not sending-domain/DNS inspection. Verify `curlscontemplation.beauty` in Resend and confirm `RESEND_FROM_EMAIL` plus `SUPPORT_EMAIL` in Vercel before any live send.
+Resend's `curlscontemplation.beauty` domain is verified and sending-enabled. Seven transactional templates are published: consent confirmation, preorder receipt, launch delivery, post-launch book delivery, workbook delivery, Daily Directives delivery, and refund/access update. The application uses their `cc-*` aliases. Confirm `RESEND_API_KEY`, `RESEND_FROM_EMAIL=info@curlscontemplation.beauty`, and `SUPPORT_EMAIL=info@curlscontemplation.beauty` in Vercel.

@@ -5,6 +5,7 @@ import { analyticsEvents } from "@/lib/analytics";
 import { recordServerEvent } from "@/lib/events/server-analytics";
 import { requestIp, verifyTurnstileToken } from "@/lib/turnstile";
 import { siteConfig } from "@/content/site";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 /**
  * Contact form endpoint (PRD v2 §4.5). Intent-prefixed subjects route the
@@ -55,10 +56,15 @@ export async function POST(request: Request) {
     text: `From: ${name} <${email}>\nIntent: ${intentLabel[intent]}\n\n${message}`
   });
 
+  const supabase = createServerSupabaseClient(true);
+  if (supabase) {
+    await supabase.from("contact_submissions").insert({ name, email, intent, message, status: "new", source: "website" });
+  }
+
   await recordServerEvent({
     eventName: analyticsEvents.contactSubmitted,
     route: "/api/contact",
-    metadata: { intent, resendSkipped: sent.skipped },
+    metadata: { intent, resendSkipped: sent.skipped, databaseConfigured: Boolean(supabase) },
     operational: true
   });
 

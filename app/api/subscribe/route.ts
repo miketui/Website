@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { upsertSubscriber } from "@/lib/email/mailerlite";
-import { sendWelcomeEmail } from "@/lib/email/resend";
 import { analyticsEvents } from "@/lib/analytics";
 import { recordServerEvent } from "@/lib/events/server-analytics";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -17,7 +16,17 @@ const utmSchema = z
   })
   .optional();
 
-const schema = z.object({ email: z.string().email(), source: z.string().max(80).optional(), utm: utmSchema, turnstileToken: z.string().optional() });
+const schema = z.object({
+  email: z.string().email(),
+  firstName: z.string().trim().max(80).optional(),
+  professionalRole: z.string().trim().max(120).optional(),
+  careerStage: z.string().trim().max(80).optional(),
+  interests: z.array(z.string().trim().max(80)).max(8).default([]),
+  marketingConsent: z.literal(true),
+  source: z.string().max(80).optional(),
+  utm: utmSchema,
+  turnstileToken: z.string().optional()
+});
 
 export async function POST(request: Request) {
   const contentType = request.headers.get("content-type") ?? "";
@@ -33,24 +42,40 @@ export async function POST(request: Request) {
 
   const utm = parsed.data.utm ?? {};
   const definedUtm = Object.fromEntries(Object.entries(utm).filter(([, value]) => typeof value === "string" && value.length > 0)) as Record<string, string>;
-  const mailerlite = await upsertSubscriber(parsed.data.email, "subscribers", { source: parsed.data.source ?? "site", ...definedUtm });
+  const mailerlite = await upsertSubscriber(parsed.data.email, "subscribers", {
+    source: parsed.data.source ?? "site",
+    ...(parsed.data.firstName ? { name: parsed.data.firstName } : {}),
+    ...(parsed.data.professionalRole ? { professional_role: parsed.data.professionalRole } : {}),
+    ...(parsed.data.careerStage ? { career_stage: parsed.data.careerStage } : {}),
+    ...(parsed.data.interests.length ? { primary_interest: parsed.data.interests.join(", ") } : {}),
+    marketing_consent_source: parsed.data.source ?? "site",
+    ...definedUtm
+  });
 
-  // Autonomous welcome email. The NewsletterForm success state promises "check
-  // your inbox for the welcome note", and there is no MailerLite automation on
-  // the signup group to honor that — so send it directly via Resend, matching
-  // the free-chapter/bonus-claim pattern. Skips gracefully (skipped:true) if
-  // Resend isn't configured. The .catch() guarantees a network/timeout failure
-  // in the underlying fetch can never throw past this line — the signup (and the
-  // Supabase writes below) must still succeed even if email delivery is down.
-  const resend = await sendWelcomeEmail(parsed.data.email).catch(
-    () => ({ ok: false as const, skipped: false as const, reason: "provider_error" as const })
-  );
+  // The welcome and nurture messages are owned by the live MailerLite
+  // automations. Tag the subscriber into the delayed non-buyer nurture flow;
+  // transactional order/access email remains in Resend.
+  const nurture = await upsertSubscriber(parsed.data.email, "core_nurture", { source: parsed.data.source ?? "site" });
 
   const supabase = createServerSupabaseClient(true);
   if (supabase) {
-    await supabase.from("subscribers").upsert({ email: parsed.data.email, source: parsed.data.source ?? "site", updated_at: new Date().toISOString() }, { onConflict: "email" });
+    const now = new Date().toISOString();
+    await supabase.from("subscribers").upsert({
+      email: parsed.data.email,
+      first_name: parsed.data.firstName || null,
+      professional_role: parsed.data.professionalRole || null,
+      career_stage: parsed.data.careerStage || null,
+      interests: parsed.data.interests,
+      marketing_consent: true,
+      marketing_consent_at: now,
+      consent_source: parsed.data.source ?? "site",
+      last_seen_at: now,
+      source: parsed.data.source ?? "site",
+      updated_at: now
+    }, { onConflict: "email" });
+    await supabase.from("consent_log").insert({ email: parsed.data.email, consent_state: { marketing: true, source: parsed.data.source ?? "site" } });
     await supabase.from("subscriber_events").insert({ email: parsed.data.email, event_type: "email_signup_completed", provider: "site", metadata: { source: parsed.data.source ?? "site", ...definedUtm } });
   }
-  await recordServerEvent({ eventName: analyticsEvents.emailSignupCompleted, route: "/api/subscribe", source: parsed.data.source, metadata: { mailerliteSkipped: mailerlite.skipped, resendSkipped: resend.skipped }, operational: true });
-  return NextResponse.json({ ok: true, mailerlite, resend, database: supabase ? "recorded" : "skipped_config_missing" });
+  await recordServerEvent({ eventName: analyticsEvents.emailSignupCompleted, route: "/api/subscribe", source: parsed.data.source, metadata: { mailerliteSkipped: mailerlite.skipped, nurtureSkipped: nurture.skipped }, operational: true });
+  return NextResponse.json({ ok: true, mailerlite, nurture, database: supabase ? "recorded" : "skipped_config_missing" });
 }

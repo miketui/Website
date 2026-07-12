@@ -8,7 +8,7 @@ import { siteConfig } from "@/content/site";
 // acquisition surface.
 // Funnel entries (/quiz, /pricing-kit) are indexed landing
 // targets per PRD v2 §3.2 — present here, absent from primary nav.
-const publicRoutes = ["/", "/book", "/order", "/preorder", "/buy", "/pricing-kit", "/daily-directives", "/reset", "/quiz", "/journey", "/blog", "/worksheets", "/about", "/media-kit", "/faq", "/contact"];
+const publicRoutes = ["/", "/book", "/order", "/preorder", "/buy", "/pricing-kit", "/daily-directives", "/subscribe", "/reset", "/quiz", "/journey", "/blog", "/worksheets", "/about", "/media-kit", "/faq", "/contact"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
