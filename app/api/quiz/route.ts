@@ -24,7 +24,18 @@ export async function POST(request: Request) {
   // Capture into the quiz group tagged with the archetype; the worksheet itself
   // is delivered by the owner's MailerLite automation (asset upload is a held
   // launch item, so delivery degrades gracefully until the group ID is set).
-  const mailerlite = await upsertSubscriber(parsed.data.email, "quiz", { source: "quiz", archetype: parsed.data.archetype });
+  const result = quizArchetypes.find((archetype) => archetype.slug === parsed.data.archetype)!;
+  const resultUrl = `https://curlscontemplation.beauty/quiz/results/${result.slug}`;
+  const mailerlite = await upsertSubscriber(parsed.data.email, "quiz", {
+    marketing_consent_source: "quiz",
+    primary_interest: result.focus,
+    quiz_result_name: result.name,
+    quiz_result_summary: result.diagnosis,
+    quiz_strength: result.strength,
+    quiz_risk: result.risk,
+    quiz_next_step: result.nextStep,
+    quiz_result_url: resultUrl
+  });
   const supabase = createServerSupabaseClient(true);
   if (supabase) {
     await supabase.from("quiz_leads").upsert({ email: parsed.data.email, archetype: parsed.data.archetype, marketing_consent: true, updated_at: new Date().toISOString() }, { onConflict: "email" });
