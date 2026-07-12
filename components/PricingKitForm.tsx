@@ -28,7 +28,7 @@ export function PricingKitForm() {
         return;
       }
       setStatus("error");
-      setMessage(json?.error?.code === "turnstile_failed" ? "We couldn't confirm you're human. Complete the check and try again." : "We couldn't send the checklist. Please try again.");
+      setMessage(json?.error?.code === "turnstile_failed" ? "We couldn't confirm you're human. Complete the check and try again." : "We couldn't send the guide. Please try again.");
     } catch {
       setStatus("error");
       setMessage("Network hiccup. Please try again.");
@@ -41,9 +41,9 @@ export function PricingKitForm() {
       <input id="pricing-kit-email" name="email" type="email" required autoComplete="email" className="light mt-2 w-full rounded-full border border-whitegold/20 bg-white px-4 py-3 text-obsidian" placeholder="you@example.com" />
       {turnstileSiteKey ? <><Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="lazyOnload" /><div className="cf-turnstile mt-4" data-sitekey={turnstileSiteKey} data-theme="dark" /></> : null}
       <button type="submit" disabled={status === "submitting"} className="mt-4 rounded-full bg-antique px-5 py-3 font-semibold text-obsidian transition-opacity disabled:opacity-60">
-        {status === "submitting" ? "Sending your checklist…" : "Send my free checklist"}
+        {status === "submitting" ? "Sending your guide…" : "Send my free pricing guide"}
       </button>
-      <p className="mt-3 text-sm text-whitegold/70">Instant PDF delivery. You can unsubscribe from future notes at any time.</p>
+      <p className="mt-3 text-sm text-whitegold/70">Instant seven-page PDF delivery. You can unsubscribe from future notes at any time.</p>
       {message ? <p id="pricing-kit-error" role="alert" className="mt-3 text-sm text-mist">{message}</p> : null}
     </form>
   );
