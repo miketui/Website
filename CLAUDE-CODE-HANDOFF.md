@@ -1,4 +1,36 @@
-# Claude Code Handoff — Remaining Launch Work
+# Codex Execution Handoff — Remaining Launch Work
+
+This is a paste-ready execution brief for a fresh Codex Work session with GitHub, Vercel, Supabase, Zapier, MailerLite, and browser tools connected. Work evidence-first. Never expose credentials or environment-variable values. Do not enable automations, send email, charge a card, or write customer PII without Michael's separate explicit approval.
+
+## Zero-friction start
+
+1. Open repository `miketui/Website` on `main`; read this file plus `docs/LAUNCH-VERIFICATION-2026-07-12.md` and `docs/MAILERLITE-REPLACEMENT-MIGRATION-2026-07-12.md`.
+2. Download and unpack `MailerLite-Copy-Paste-Ready-20260712.zip`. It contains 25 complete HTML imports, one setup matrix, and a README: 22 automation messages plus three scheduled campaigns. Each email already includes its final subject, preheader, MD sender settings, CTA URL, personalization, preference link, and `{$unsubscribe}`. Do not rewrite or invent copy.
+3. Download and unpack `Supabase-Upload-Ready-20260712.zip`. It contains the supplied public/private assets at canonical bucket-relative paths with checksums.
+4. Run:
+
+```bash
+pnpm install
+pnpm browser:install
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm test:e2e
+```
+
+5. If Playwright downloads are blocked, run the same commands on an image with Chromium installed or allow `cdn.playwright.dev`; set `PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright`.
+6. Use connected tools in this order: GitHub state → Vercel env-name/deployment verification → Supabase project/storage verification → Zapier enabled-action inventory → MailerLite workflow/dashboard verification → Resend DNS → browser screenshots.
+7. Record every tool result in one clean/dirty table. A connector limitation is BLOCKED, never PASS.
+
+## Connector execution mandate
+
+- **GitHub:** verify the merge commit on `main`, inspect checks, and create a corrective PR for any code-only finding. Never push directly to `main` after this merge.
+- **Vercel:** inspect environment-variable names only; never print values. Confirm Preview/Production deployment state and error logs.
+- **Supabase:** verify project `comfnluqjhnmbxfvvjeo`, buckets, RLS, and object paths. Binary upload requires the securely configured server secret and the repository uploader below.
+- **Zapier:** call the enabled-action inventory first. Use connected MailerLite, Resend, Vercel, Supabase, and GitHub actions where available. If an expected read action is absent, discover/load it or create a credential-free code action; do not embed tokens.
+- **MailerLite:** all original workflows are paused. Replacement workflow shells listed below must remain inactive until all HTML is installed and acceptance tests pass. The API can verify structure but cannot author the visual email body.
+- **Browser:** capture desktop and iPhone 13 screenshots for `/`, `/preorder`, `/pricing-kit`, and `/website`; fail on console/page errors, horizontal overflow, missing canvas frames, or broken reduced-motion fallback.
 
 Use this after reviewing `docs/LAUNCH-VERIFICATION-2026-07-12.md`. Do not merge, deploy Production, send marketing email, charge a card, delete a campaign, or modify customer data without Michael's explicit approval.
 
