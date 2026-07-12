@@ -72,11 +72,11 @@ export async function sendLaunchDelivery(to: string, links: { epubUrl: string; e
 
 export function pricingKitTemplate(checklistUrl?: string) {
   if (!checklistUrl) {
-    return { subject: "Your Pricing Confidence Checklist", html: "<p>Your request is received. Your checklist will be delivered as soon as file delivery is available.</p>" };
+    return { subject: "Your Detailed Pricing Guide", html: "<p>Your request is received. Your pricing guide will be delivered as soon as file delivery is available.</p>" };
   }
   return {
-    subject: "Your Pricing Confidence Checklist is ready",
-    html: `<p>Here is your <a href="${checklistUrl}">Pricing Confidence Checklist (PDF)</a>.</p><p>Use it to calculate your rate floor, say the number clearly, and hold the boundary that protects the work.</p><p>If you want the full system for pricing, networking, visibility, leadership, and a sustainable creative practice, <em>Curls &amp; Contemplation</em> is available to preorder for $17.99.</p>`
+    subject: "Your Detailed Pricing Guide is ready",
+    html: `<p>Here is your <a href="${checklistUrl}">Detailed Pricing Guide for Stylists (PDF)</a>.</p><p>Use it to calculate your rate floor, define scope, choose a pricing model, write policies, and hold the boundary that protects the work.</p><p>If you want the full system for pricing, networking, visibility, leadership, and a sustainable creative practice, <em>Curls &amp; Contemplation</em> is available to preorder for $17.99.</p>`
   };
 }
 
@@ -84,8 +84,8 @@ export function welcomeSubscriberTemplate() {
   const pricingKitUrl = `${getSiteUrl().replace(/\/$/, "")}/pricing-kit`;
   return {
     subject: "You're in — one honest welcome",
-    html: `<p>Thank you for subscribing to Curls &amp; Contemplation.</p><p>Here's the deal: one welcome note (this one), then the occasional letter on pricing, craft, and the business nobody taught you. No spam, no daily blasts, and you can leave any time.</p><p>Start with the free <a href="${pricingKitUrl}">Pricing Confidence Checklist</a>. The direct book edition is $17.99 through the first fifteen days after release, then $19.99 permanently.</p><p>Talk soon,<br/>Michael David</p>`,
-    text: `Thank you for subscribing to Curls & Contemplation. Start with the Pricing Confidence Checklist: ${pricingKitUrl} — Michael David`
+    html: `<p>Thank you for subscribing to Curls &amp; Contemplation.</p><p>Here's the deal: one welcome note (this one), then the occasional letter on pricing, craft, and the business nobody taught you. No spam, no daily blasts, and you can leave any time.</p><p>Start with the free <a href="${pricingKitUrl}">Detailed Pricing Guide for Stylists</a>. The direct book edition is $17.99 through the first fifteen days after release, then $19.99 permanently.</p><p>Talk soon,<br/>Michael David</p>`,
+    text: `Thank you for subscribing to Curls & Contemplation. Start with the Detailed Pricing Guide for Stylists: ${pricingKitUrl} — Michael David`
   };
 }
 
