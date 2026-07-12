@@ -93,6 +93,7 @@ describe("Prompt 6 sandbox integration readiness", () => {
     const uploader = readFileSync(join(appDir, "scripts/upload-deliverables.mjs"), "utf8");
     const verifier = readFileSync(join(appDir, "scripts/verify-supabase-storage-paths.mjs"), "utf8");
     expect(uploader).toContain("process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY");
+    expect(uploader).toContain('--public-dir');
     expect(verifier).toContain("env.SUPABASE_SECRET_KEY ?? env.SUPABASE_SERVICE_ROLE_KEY");
     expect(verifier).not.toContain('"NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY"');
   });
