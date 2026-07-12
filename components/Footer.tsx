@@ -21,6 +21,13 @@ const legalLinks = [
   { href: "/contact", label: "Contact" }
 ];
 
+const socialLinks = [
+  { href: "https://www.instagram.com/curlscontemplation/", label: "Instagram" },
+  { href: "https://www.tiktok.com/@curlscontemp", label: "TikTok" },
+  { href: "https://www.youtube.com/@Curlscontemplation", label: "YouTube" },
+  { href: "https://www.linkedin.com/in/michael-david-warrenjr", label: "LinkedIn" }
+];
+
 export function Footer() {
   return (
     <footer className="border-t border-whitegold/10 px-6 py-12">
@@ -31,6 +38,23 @@ export function Footer() {
         <div>
           <p className="font-display text-2xl text-white">Curls &amp; Contemplation</p>
           <p className="mt-3 max-w-sm text-sm leading-6 text-whitegold/70">A freelance hairstylist&rsquo;s guide to creative excellence — written, priced, and delivered directly by the author.</p>
+          <nav aria-label="Social media" className="mt-6">
+            <p className="editorial-kicker">Follow</p>
+            <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              {socialLinks.map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-whitegold/70 transition hover:text-antique focus-visible:text-antique"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
         <nav aria-label="Read and explore" className="text-sm">
           <p className="editorial-kicker">Read</p>
