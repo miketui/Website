@@ -1,0 +1,33 @@
+{
+  "source": {
+    "filename": "curl-scrub.mp4",
+    "sha256": "dd7ae62addb3f768deefcf51cb5762739e1e83a0f803ffcabf31c891c8bac675",
+    "duration_seconds": 5.04,
+    "resolution": "1280x720",
+    "fps": 24,
+    "codec": "h264",
+    "total_source_frames": 121
+  },
+  "frames": {
+    "target_count": 90,
+    "format": "webp",
+    "quality": "existing optimized production encode retained after quality-75 comparison",
+    "naming_pattern": "f-{NNN}.webp"
+  },
+  "runtime_scroll_height": "500vh",
+  "runtime_note": "Five editorial dwell regions intentionally extend the extractor's 300vh baseline.",
+  "created": "2026-07-12",
+  "desktop": {
+    "directory": "d",
+    "resolution": "1280x720",
+    "actual_count": 90,
+    "total_bytes": 3897586
+  },
+  "mobile": {
+    "directory": "m",
+    "resolution": "640x360",
+    "actual_count": 90,
+    "total_bytes": 1551168,
+    "ios": "WebP supported; runtime falls back to HTMLImageElement when createImageBitmap is unavailable."
+  }
+}

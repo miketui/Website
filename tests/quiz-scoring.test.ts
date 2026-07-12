@@ -3,6 +3,16 @@ import { scoreQuiz, quizArchetypes, quizItems } from "@/content/funnels";
 import { orEquals } from "@/lib/supabase/filters";
 
 describe("quiz scoring", () => {
+  it("defines every MailerLite personalization value and result URL slug", () => {
+    for (const archetype of quizArchetypes) {
+      expect(archetype.name).toBeTruthy();
+      expect(archetype.diagnosis).toBeTruthy();
+      expect(archetype.strength).toBeTruthy();
+      expect(archetype.risk).toBeTruthy();
+      expect(archetype.nextStep).toBeTruthy();
+      expect(archetype.slug).toMatch(/^[a-z0-9-]+$/);
+    }
+  });
   it("offers one option per archetype on every question", () => {
     const slugs = quizArchetypes.map((a) => a.slug).sort();
     for (const item of quizItems) {

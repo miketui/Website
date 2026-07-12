@@ -1,0 +1,133 @@
+# Codex Execution Handoff — Remaining Launch Work
+
+This is a paste-ready execution brief for a fresh Codex Work session with GitHub, Vercel, Supabase, Zapier, MailerLite, and browser tools connected. Work evidence-first. Never expose credentials or environment-variable values. Do not enable automations, send email, charge a card, or write customer PII without Michael's separate explicit approval.
+
+## Zero-friction start
+
+1. Open repository `miketui/Website` on `main`; read this file plus `docs/LAUNCH-VERIFICATION-2026-07-12.md` and `docs/MAILERLITE-REPLACEMENT-MIGRATION-2026-07-12.md`.
+2. Download and unpack `MailerLite-Copy-Paste-Ready-20260712.zip`. It contains 25 complete HTML imports, one setup matrix, and a README: 22 automation messages plus three scheduled campaigns. Each email already includes its final subject, preheader, MD sender settings, CTA URL, personalization, preference link, and `{$unsubscribe}`. Do not rewrite or invent copy.
+3. Download and unpack `Supabase-Upload-Ready-20260712.zip`. It contains the supplied public/private assets at canonical bucket-relative paths with checksums.
+4. Run:
+
+```bash
+pnpm install
+pnpm browser:install
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm test:e2e
+```
+
+5. If Playwright downloads are blocked, run the same commands on an image with Chromium installed or allow `cdn.playwright.dev`; set `PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright`.
+6. Use connected tools in this order: GitHub state → Vercel env-name/deployment verification → Supabase project/storage verification → Zapier enabled-action inventory → MailerLite workflow/dashboard verification → Resend DNS → browser screenshots.
+7. Record every tool result in one clean/dirty table. A connector limitation is BLOCKED, never PASS.
+
+## Connector execution mandate
+
+- **GitHub:** verify the merge commit on `main`, inspect checks, and create a corrective PR for any code-only finding. Never push directly to `main` after this merge.
+- **Vercel:** inspect environment-variable names only; never print values. Confirm Preview/Production deployment state and error logs.
+- **Supabase:** verify project `comfnluqjhnmbxfvvjeo`, buckets, RLS, and object paths. Binary upload requires the securely configured server secret and the repository uploader below.
+- **Zapier:** call the enabled-action inventory first. Use connected MailerLite, Resend, Vercel, Supabase, and GitHub actions where available. If an expected read action is absent, discover/load it or create a credential-free code action; do not embed tokens.
+- **MailerLite:** all original workflows are paused. Replacement workflow shells listed below must remain inactive until all HTML is installed and acceptance tests pass. The API can verify structure but cannot author the visual email body.
+- **Browser:** capture desktop and iPhone 13 screenshots for `/`, `/preorder`, `/pricing-kit`, and `/website`; fail on console/page errors, horizontal overflow, missing canvas frames, or broken reduced-motion fallback.
+
+Use this after reviewing `docs/LAUNCH-VERIFICATION-2026-07-12.md`. Do not merge, deploy Production, send marketing email, charge a card, delete a campaign, or modify customer data without Michael's explicit approval.
+
+## 1. MailerLite dashboard punchlist
+
+All original workflows remain paused. Eight corrected inactive replacement shells now exist with verified trigger groups and parent-chain order; see `docs/MAILERLITE-REPLACEMENT-MIGRATION-2026-07-12.md`. Use `MailerLite-Copy-Paste-Ready-20260712.zip` to design them. Do not reactivate the old workflows or enable replacements until preview, dry-run, exit-rule, and approved test-recipient acceptance passes.
+
+| Automation | Required dashboard correction | Acceptance criteria |
+|---|---|---|
+| `192795046686229893` | Put Kit delivery first; wait 1 day; send pricing question; wait 3 days; send talent/structure. Add approved preview text to all 3 emails. | Test subscriber receives 2.1 immediately, 2.2 after simulated 1d, 2.3 after simulated 3d; subjects and internal names match. |
+| `192795053311132895` | Personalized result immediately; wait 2d; pattern interruption; wait 3d; book bridge. Reattach each subject/internal name to its matching body. Add preview text. | `quiz_result_name` renders from the verified field; no bracket placeholder remains; three subjects/bodies are aligned. |
+| `192795055972419267` | Confirmation immediately; wait 2d; emotional reinforcement. Replace crossed preview text. | Confirmation is first and names November 24; reinforcement is second. |
+| `192795058197497739` | Wait 1d/welcome; wait 3d/reflection; wait 7d/workbook; wait 14d/feedback. Reattach subjects/internal names and add previews. | Four bodies, subjects, names, delays, and CTAs match Automation 6 source exactly. |
+| `192795061713372667` | Wait 1h/reminder; wait 23h/details; wait 48h/final. Add the first preview. Confirm successful payment immediately removes/excludes the subscriber. | Total sends occur at approximately 1h, 24h, and 72h; paid/refunded subscribers receive nothing further. |
+| `192795267020358662` | Wait 2h; Reminder 1; wait 22h; Reminder 2. Replace previews with approved copy. | Completed claims exit immediately; no reminder fires after completion. |
+| `192795274605758257` | Change sender email to `info@curlscontemplation.beauty`; add approved preview. | One immediate access email; brand-domain sender; correct workbook link. |
+| `192795281369073567` | Delivery immediately; wait 1d/ritual; wait 3d/practice; wait 6d/bundle-or-feedback. Repair crossed subjects/internal names, normalize sender to `info@curlscontemplation.beauty`, add previews, and branch bundle owners away from the upsell. | Individual-set and bundle-owner test paths both pass; no bundle owner receives the bundle upsell. |
+
+Scheduled campaigns:
+
+1. Add the exact preview text from Automation 5 emails 5.3, 5.4, and 5.5.
+2. Confirm all three target **Preorders only** and use the correct account timezone.
+3. Confirm IDs/dates: `192795454682957112` (Oct 25), `192795457777304695` (Nov 17), `192795460957636199` (Nov 23), all 09:00 account time.
+4. Leave draft `192808511238833684` unsent. Archive/delete only after Michael approves that destructive cleanup.
+
+## 2. Vercel environment and redeploy gate
+
+1. Use the 13-key exact-value table in `docs/LAUNCH-VERIFICATION-2026-07-12.md`.
+2. Verify all keys by name in project `website`; do not expose secret values in logs or commits.
+3. Ensure `LAUNCH_FULFILLMENT_ENABLED=false`, and configure approved addresses for `LAUNCH_DRYRUN_TEST_EMAIL` and `LAUNCH_OWNER_EMAIL` plus a strong `CRON_SECRET`.
+4. Redeploy Preview first. Run lint, typecheck, unit tests, build, and the three-page browser check.
+5. Production redeployment requires a fresh explicit approval.
+
+## 3. Supabase deliverables
+
+Canonical project: `comfnluqjhnmbxfvvjeo`. Schema and RLS exist; all four Storage buckets currently have zero objects.
+
+Required before November 23:
+
+- The repository uploader and verifier now accept the current server-only `SUPABASE_SECRET_KEY`; legacy `SUPABASE_SERVICE_ROLE_KEY` remains a fallback. Never paste either key into chat or a commit.
+- Configure `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `SUPABASE_STORAGE_BUCKET=curls-deliverables` in a secure shell/CI environment. The remote verifier no longer incorrectly requires a browser publishable/anon key for a server-side Storage check.
+
+- Upload the public pricing-kit/quiz/challenge PDFs to `curls-free` using the repository manifest.
+- Upload private workbook and Daily Directives archives to `curls-deliverables` using the locked paths in `lib/deliverables.ts`.
+- Upload the canonical v13 EPUB to `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`.
+- Never upload the POD interior as a site deliverable.
+- Run Storage path verification and confirm private objects are not publicly readable.
+
+Acceptance: every expected path exists, paid assets are private, signed URLs work for entitled test users, and an unauthenticated request cannot retrieve paid files.
+
+`Supabase-Upload-Ready-20260712.zip` now contains 12 public PDFs and 14 private files with exact bucket-relative paths, checksums, and an upload README. The supplied workbook TSX was deliberately excluded from Storage because it is application source; the repository component is the newer hardened version. The EPUB remains the only missing optional deliverable. The remaining blocker is execution with the server secret because the Supabase connector does not expose binary Storage upload. Once the bundle is unpacked and the server secret is available securely, run:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=... SUPABASE_SECRET_KEY=... \
+  node scripts/upload-deliverables.mjs \
+  --public-dir /secure/path/Supabase-Upload-Ready-20260712/curls-free \
+  --private-dir /secure/path/Supabase-Upload-Ready-20260712/curls-deliverables
+npm run check:supabase-storage
+```
+
+## 4. Resend DNS and transactional test
+
+The Zapier domain checker is blocked. In Resend Dashboard, confirm Verified + sending enabled + SPF/DKIM pass; confirm DMARC with the DNS provider. Then perform one owner-approved transactional test. Do not send until approval includes the recipient address.
+
+Acceptance: correct brand-domain From/Reply-To, inbox arrival, working secure link, no exposed token in logs, and expected template alias.
+
+## 5. Checkout and fulfillment test
+
+Run in Stripe test mode only:
+
+1. New preorder checkout succeeds.
+2. Stripe webhook writes order/purchase entitlement once; replay remains idempotent.
+3. Customer enters MailerLite Preorders/Customers and exits Abandoned Checkout.
+4. Dashboard/download entitlement appears.
+5. Test refund revokes entitlement and prevents later marketing recovery.
+6. November 23 dry run returns `ok: true`, empty warnings, sends only to `LAUNCH_DRYRUN_TEST_EMAIL`, and writes `launch_ebook_dryrun` without touching purchases.
+7. Keep the kill-switch false after the test.
+
+## 6. FELT/design follow-up
+
+- Replace the preorder working-hands gradient placeholder with approved real footage/image; preserve reduced-motion fallback and layout dimensions.
+- Consider adding one approved checklist preview to `/pricing-kit` without exposing paid book content.
+- Confirm the six home images with empty alt text are decorative; add meaningful alt only where the image conveys content.
+- Re-run desktop and mobile screenshots plus console/overflow checks.
+- `/website` now renders the same immersive canvas experience as `/journey`: 90 desktop and 90 mobile WebP frames, scroll-depth choreography, ambient particles, and static fallbacks for reduced-motion, save-data, and low-memory visitors. Verify this new route in Preview before Production approval.
+- The approved 90-frame source was re-extracted at quality 80 and 75 for comparison. The existing production set was retained because the quality-75 mobile/iOS payload was larger. Keep `public/journey-frames/manifest.json` with the frames and rerun payload/static tests after any future re-extraction.
+
+Rendered browser verification is reproducible through the repository:
+
+```bash
+pnpm browser:install
+pnpm build
+pnpm test:e2e
+```
+
+If `browser:install` returns a zero-byte/truncated archive, the machine is blocking `cdn.playwright.dev`; rerun on CI/Codex with that domain allowed or install Chromium through the machine image, then set `PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright`. The gate covers desktop, an iPhone 13 viewport, reduced motion, frame requests, console/page errors, and overflow.
+
+## Final acceptance gate
+
+Do not enable `LAUNCH_FULFILLMENT_ENABLED=true` until all of these are green: MailerLite order/previews/senders, Resend DNS, Supabase objects, Stripe test purchase/refund, November 23 dry run, owner inbox check, and an approved Production deployment.

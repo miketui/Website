@@ -9,12 +9,12 @@ export default defineConfig({
   timeout: 60_000,
   retries: process.env.CI ? 1 : 0,
   use: {
-    baseURL: "http://localhost:3100",
+    baseURL: "http://127.0.0.1:3100",
     viewport: { width: 1280, height: 800 }
   },
   webServer: {
-    command: "pnpm exec next start -p 3100",
-    url: "http://localhost:3100",
+    command: "pnpm exec next start -H 127.0.0.1 -p 3100",
+    url: "http://127.0.0.1:3100",
     reuseExistingServer: !process.env.CI,
     timeout: 30_000
   }

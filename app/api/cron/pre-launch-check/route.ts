@@ -3,7 +3,8 @@ import { getSiteUrl } from "@/lib/env";
 import { sendTransactionalEmail } from "@/lib/email/resend";
 
 /**
- * Scheduled for July 13 (24h before launch, see vercel.json): runs the
+ * Scheduled for November 23 at 07:30 America/Los_Angeles (24h before the
+ * November 24 launch window; see vercel.json): runs the
  * launch-day dry-run against the internal route and emails the owner a
  * plain-English pass/fail report so launch morning starts with evidence,
  * not hope. Subject gets the [⚠️ ACTION REQUIRED] prefix when anything —

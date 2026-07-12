@@ -6,8 +6,8 @@
  *   Paid assets  → private bucket `curls-deliverables` (from --private-dir; NEVER committed to git)
  *
  * Usage:
- *   SUPABASE_SERVICE_ROLE_KEY=... NEXT_PUBLIC_SUPABASE_URL=... \
- *     node scripts/upload-deliverables.mjs [--private-dir /path/to/files] [--dry-run]
+ *   SUPABASE_SECRET_KEY=... NEXT_PUBLIC_SUPABASE_URL=... \
+ *     node scripts/upload-deliverables.mjs [--public-dir /path/to/free-files] [--private-dir /path/to/files] [--dry-run]
  *
  * Private files mirror the storage paths under --private-dir:
  *   workbook/Idea-to-Action-Workbook.pdf
@@ -23,7 +23,7 @@ import { join, relative, resolve } from "node:path";
 
 const FREE_BUCKET = "curls-free";
 const PRIVATE_BUCKET = "curls-deliverables";
-const FREE_DIR = resolve(process.cwd(), "assets/free-bucket");
+const DEFAULT_FREE_DIR = resolve(process.cwd(), "assets/free-bucket");
 
 const privateTargets = [
   { file: "workbook/Idea-to-Action-Workbook.pdf", path: "workbook/Idea-to-Action-Workbook.pdf", required: true },
@@ -49,6 +49,13 @@ if (args.includes("--help")) {
   process.exit(0);
 }
 const dryRun = args.includes("--dry-run");
+const publicDirIndex = args.indexOf("--public-dir");
+const publicDirValue = publicDirIndex >= 0 ? args[publicDirIndex + 1] : undefined;
+if (publicDirIndex >= 0 && (!publicDirValue || publicDirValue.startsWith("--"))) {
+  console.error("--public-dir requires a directory path.");
+  process.exit(1);
+}
+const freeDir = publicDirValue ? resolve(publicDirValue) : DEFAULT_FREE_DIR;
 const privateDirIndex = args.indexOf("--private-dir");
 const privateDirValue = privateDirIndex >= 0 ? args[privateDirIndex + 1] : undefined;
 if (privateDirIndex >= 0 && (!privateDirValue || privateDirValue.startsWith("--"))) {
@@ -58,9 +65,9 @@ if (privateDirIndex >= 0 && (!privateDirValue || privateDirValue.startsWith("--"
 const privateDir = privateDirValue ? resolve(privateDirValue) : null;
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!dryRun && (!url || !key)) {
-  console.error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.");
+  console.error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SECRET_KEY (legacy SUPABASE_SERVICE_ROLE_KEY is also supported).");
   process.exit(1);
 }
 
@@ -95,10 +102,10 @@ async function uploadAll() {
     }
   }
 
-  const freeFiles = walk(FREE_DIR).filter((file) => /\.pdf$/i.test(file));
-  if (freeFiles.length === 0) console.warn(`No free assets found under ${relative(process.cwd(), FREE_DIR)} — skipping ${FREE_BUCKET}.`);
+  const freeFiles = walk(freeDir).filter((file) => /\.pdf$/i.test(file));
+  if (freeFiles.length === 0) console.warn(`No free assets found under ${relative(process.cwd(), freeDir)} — skipping ${FREE_BUCKET}.`);
   for (const file of freeFiles) {
-    const storagePath = relative(FREE_DIR, file).split("\\").join("/");
+    const storagePath = relative(freeDir, file).split("\\").join("/");
     await upload(FREE_BUCKET, storagePath, file);
   }
 

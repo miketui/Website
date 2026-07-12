@@ -89,6 +89,15 @@ describe("Prompt 6 sandbox integration readiness", () => {
     expect(result.remote.reason).toContain("Missing NEXT_PUBLIC_SUPABASE_URL");
   });
 
+  it("Supabase scripts support modern secret keys without requiring an anon key", () => {
+    const uploader = readFileSync(join(appDir, "scripts/upload-deliverables.mjs"), "utf8");
+    const verifier = readFileSync(join(appDir, "scripts/verify-supabase-storage-paths.mjs"), "utf8");
+    expect(uploader).toContain("process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY");
+    expect(uploader).toContain('--public-dir');
+    expect(verifier).toContain("env.SUPABASE_SECRET_KEY ?? env.SUPABASE_SERVICE_ROLE_KEY");
+    expect(verifier).not.toContain('"NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY"');
+  });
+
   it("package.json references all sandbox check scripts", () => {
     const pkg = JSON.parse(readFileSync(join(appDir, "package.json"), "utf8"));
     expect(pkg.scripts["check:sandbox-env"]).toContain("check-sandbox-env.mjs");

@@ -67,7 +67,7 @@ describe("funnel 1 — free asset delivery", () => {
   it("builds public curls-free urls when configured", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
     const link = pricingKitLink();
-    expect(link).toContain(["/curls-free/checklists/Pricing-Confidence-Checklist", "pdf"].join("."));
+    expect(link).toContain(["/curls-free/checklists/Detailed-Pricing-Guide-for-Stylists", "pdf"].join("."));
   });
 
   it("pricing kit email carries the real checklist link and book bridge", () => {

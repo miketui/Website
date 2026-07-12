@@ -13,6 +13,9 @@ export type QuizArchetype = {
   name: string;
   focus: string;
   diagnosis: string;
+  strength: string;
+  risk: string;
+  nextStep: string;
   worksheetPath: string; // curls-free public bucket, uploaded by owner
 };
 
@@ -22,6 +25,9 @@ export const quizArchetypes: QuizArchetype[] = [
     name: "The Underpriced Artist",
     focus: "Pricing clarity",
     diagnosis: "Your hands are senior. Your prices are junior. The gap between the two is paid for out of your own energy, every single week — and closing it starts with a rate floor, not a pep talk.",
+    strength: "the care and generosity you bring to the work",
+    risk: "letting fear or old expectations set the price before your evidence does",
+    nextStep: "calculate your rate floor and write one clean quote sentence",
     worksheetPath: "quiz/worksheet-underpriced-artist.pdf",
   },
   {
@@ -29,6 +35,9 @@ export const quizArchetypes: QuizArchetype[] = [
     name: "The Invisible Talent",
     focus: "Intentional visibility",
     diagnosis: "The work is excellent and the room doesn't know it. Visibility is not vanity — it is the client experience starting before the chair, and it can be built deliberately.",
+    strength: "the depth of your craft and your instinct to let the work speak",
+    risk: "assuming excellent work will be discovered without a visibility system",
+    nextStep: "choose one proof of work and share it with the room you want to enter",
     worksheetPath: "quiz/worksheet-invisible-talent.pdf",
   },
   {
@@ -36,6 +45,9 @@ export const quizArchetypes: QuizArchetype[] = [
     name: "The Burned-Out Booked",
     focus: "Sustainable rhythm",
     diagnosis: "A full calendar that quietly empties you is not success — it is a business rhythm problem wearing a busy costume. The ledger of energy in versus income out tells the truth.",
+    strength: "your reliability and capacity to carry a full book",
+    risk: "using availability as the only measure of a successful practice",
+    nextStep: "track energy in and income out for one working week",
     worksheetPath: "quiz/worksheet-burned-out-booked.pdf",
   },
   {
@@ -43,6 +55,9 @@ export const quizArchetypes: QuizArchetype[] = [
     name: "The Almost-CEO",
     focus: "Leadership systems",
     diagnosis: "You already lead — your standards, your set, your clients. What's missing is the reflective structure that turns instinct into a repeatable map you can scale without losing the craft.",
+    strength: "the standards and leadership you already practice",
+    risk: "keeping those standards in your head instead of turning them into systems",
+    nextStep: "document one repeatable decision or process before the end of this week",
     worksheetPath: "quiz/worksheet-almost-ceo.pdf",
   }
 ];

@@ -40,14 +40,16 @@ export function verifyLockedPathStrings({ repoRoot = resolve(process.cwd(), "../
 }
 
 async function optionalSupabaseCheck(env) {
-  const required = ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_STORAGE_BUCKET"];
+  const required = ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_STORAGE_BUCKET"];
   const missing = required.filter((name) => !isMeaningfulSandboxValue(env[name]));
+  const secretKey = env.SUPABASE_SECRET_KEY ?? env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!isMeaningfulSandboxValue(secretKey)) missing.push("SUPABASE_SECRET_KEY (or legacy SUPABASE_SERVICE_ROLE_KEY)");
   if (missing.length) return { skipped: true, reason: `Missing ${missing.join(", ")}` };
   if (env.SUPABASE_STORAGE_BUCKET !== lockedStorage.bucket) {
     return { skipped: false, ok: false, reason: `SUPABASE_STORAGE_BUCKET must be ${lockedStorage.bucket}.` };
   }
   const url = env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = env.SUPABASE_SERVICE_ROLE_KEY;
+  const key = secretKey;
   const { createClient } = await import("@supabase/supabase-js");
   const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   const bucketResult = await supabase.storage.getBucket(lockedStorage.bucket);
