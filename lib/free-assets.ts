@@ -2,7 +2,7 @@ export const FREE_BUCKET = "curls-free";
 
 /** Free lead-magnet assets live in the PUBLIC bucket only. Paid files never appear here. */
 export const freeAssets = {
-  pricingChecklist: { label: "Pricing Confidence Checklist (PDF)", path: "checklists/Pricing-Confidence-Checklist.pdf" }
+  pricingChecklist: { label: "Detailed Pricing Guide for Stylists (PDF)", path: "checklists/Detailed-Pricing-Guide-for-Stylists.pdf" }
 } as const;
 
 export type FreeAssetKey = keyof typeof freeAssets;
