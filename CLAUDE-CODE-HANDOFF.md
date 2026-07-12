@@ -4,7 +4,7 @@ Use this after reviewing `docs/LAUNCH-VERIFICATION-2026-07-12.md`. Do not merge,
 
 ## 1. MailerLite dashboard punchlist
 
-All ten workflows were re-read on July 12, 2026 and are now paused (`enabled: false`). This is the safe state for dashboard editing. The connected MailerLite1 app exposes subject/plain-text and delay-duration updates, but it cannot reorder steps, update HTML bodies/internal names, set automation preheaders, or change automation sender addresses. Every dirty workflow requires at least one unsupported operation, so partial writes were intentionally avoided to prevent new subject/body mismatches. In MailerLite, correct each paused automation against `docs/MAILERLITE-AUTOMATION-EMAIL-LIBRARY.md`, test with an approved test subscriber, then re-enable only after acceptance.
+All original workflows remain paused. Eight corrected inactive replacement shells now exist with verified trigger groups and parent-chain order; see `docs/MAILERLITE-REPLACEMENT-MIGRATION-2026-07-12.md`. Use `MailerLite-Copy-Paste-Ready-20260712.zip` to design them. Do not reactivate the old workflows or enable replacements until preview, dry-run, exit-rule, and approved test-recipient acceptance passes.
 
 | Automation | Required dashboard correction | Acceptance criteria |
 |---|---|---|
@@ -49,11 +49,13 @@ Required before November 23:
 
 Acceptance: every expected path exists, paid assets are private, signed URLs work for entitled test users, and an unauthenticated request cannot retrieve paid files.
 
-Current blocker: the Supabase connector does not expose binary Storage upload, all four live buckets are empty, and the private workbook/Daily Directives/EPUB files are not present in this repository. Once the private source directory and server secret are available securely, run:
+`Supabase-Upload-Ready-20260712.zip` now contains 12 public PDFs and 14 private files with exact bucket-relative paths, checksums, and an upload README. The supplied workbook TSX was deliberately excluded from Storage because it is application source; the repository component is the newer hardened version. The EPUB remains the only missing optional deliverable. The remaining blocker is execution with the server secret because the Supabase connector does not expose binary Storage upload. Once the bundle is unpacked and the server secret is available securely, run:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=... SUPABASE_SECRET_KEY=... \
-  node scripts/upload-deliverables.mjs --private-dir /secure/path/to/private-deliverables
+  node scripts/upload-deliverables.mjs \
+  --public-dir /secure/path/Supabase-Upload-Ready-20260712/curls-free \
+  --private-dir /secure/path/Supabase-Upload-Ready-20260712/curls-deliverables
 npm run check:supabase-storage
 ```
 
@@ -82,7 +84,17 @@ Run in Stripe test mode only:
 - Confirm the six home images with empty alt text are decorative; add meaningful alt only where the image conveys content.
 - Re-run desktop and mobile screenshots plus console/overflow checks.
 - `/website` now renders the same immersive canvas experience as `/journey`: 90 desktop and 90 mobile WebP frames, scroll-depth choreography, ambient particles, and static fallbacks for reduced-motion, save-data, and low-memory visitors. Verify this new route in Preview before Production approval.
-- Do not re-extract `public/curl-scrub.mp4` until Michael explicitly approves the proposed 90-frame extraction from the reviewed animated-website skill.
+- The approved 90-frame source was re-extracted at quality 80 and 75 for comparison. The existing production set was retained because the quality-75 mobile/iOS payload was larger. Keep `public/journey-frames/manifest.json` with the frames and rerun payload/static tests after any future re-extraction.
+
+Rendered browser verification is reproducible through the repository:
+
+```bash
+pnpm browser:install
+pnpm build
+pnpm test:e2e
+```
+
+If `browser:install` returns a zero-byte/truncated archive, the machine is blocking `cdn.playwright.dev`; rerun on CI/Codex with that domain allowed or install Chromium through the machine image, then set `PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright`. The gate covers desktop, an iPhone 13 viewport, reduced motion, frame requests, console/page errors, and overflow.
 
 ## Final acceptance gate
 
