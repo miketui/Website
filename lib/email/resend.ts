@@ -2,6 +2,7 @@ import { z } from "zod";
 import { getResendConfig, getSiteUrl } from "@/lib/env";
 
 type EmailPayload = { to: string; subject: string; html: string; text?: string };
+type TemplatePayload = { to: string; templateId: string; variables: Record<string, string | number> };
 export type TransactionalEmailResult = { ok: true; skipped: false } | { ok: false; skipped: true; reason: "config_missing" } | { ok: false; skipped: false; reason: "invalid_recipient" | "provider_error" };
 const emailSchema = z.string().email();
 
@@ -13,9 +14,27 @@ export async function sendTransactionalEmail(payload: EmailPayload): Promise<Tra
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${config.value.apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: config.value.fromEmail, reply_to: config.value.supportEmail, ...payload })
+    body: JSON.stringify({ from: `Michael David | Curls & Contemplation <${config.value.fromEmail}>`, reply_to: config.value.supportEmail, ...payload })
   });
 
+  if (!response.ok) return { ok: false, skipped: false, reason: "provider_error" };
+  return { ok: true, skipped: false };
+}
+
+export async function sendPublishedTemplate(payload: TemplatePayload): Promise<TransactionalEmailResult> {
+  if (!emailSchema.safeParse(payload.to).success) return { ok: false, skipped: false, reason: "invalid_recipient" };
+  const config = getResendConfig();
+  if (!config.ok) return { ok: false, skipped: true, reason: "config_missing" };
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${config.value.apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      from: `Michael David | Curls & Contemplation <${config.value.fromEmail}>`,
+      reply_to: config.value.supportEmail,
+      to: payload.to,
+      template: { id: payload.templateId, variables: payload.variables }
+    })
+  });
   if (!response.ok) return { ok: false, skipped: false, reason: "provider_error" };
   return { ok: true, skipped: false };
 }
@@ -43,7 +62,12 @@ export function launchDeliveryTemplate(links: { epubUrl: string; expiresDays: nu
 }
 
 export async function sendLaunchDelivery(to: string, links: { epubUrl: string; expiresDays: number }) {
-  return sendTransactionalEmail({ to, ...launchDeliveryTemplate(links) });
+  const dashboardUrl = `${getSiteUrl().replace(/\/$/, "")}/dashboard`;
+  return sendPublishedTemplate({
+    to,
+    templateId: "cc-launch-day-delivery",
+    variables: { BOOK_ACCESS_LINK: links.epubUrl, WORKBOOK_ACCESS_LINK: dashboardUrl, CUSTOMER_PORTAL_LINK: dashboardUrl }
+  });
 }
 
 export function pricingKitTemplate(checklistUrl?: string) {
@@ -74,11 +98,26 @@ export const refundAccessRevokedTemplate = { subject: "Refund processed", html: 
 export const supportReceiptTemplate = { subject: "We received your message", html: "<p>Thank you for reaching out. Support will reply from the configured support inbox.</p>" };
 
 export async function sendOrderConfirmation(to: string, orderId: string) {
-  return sendTransactionalEmail({ to, ...orderConfirmationTemplate(orderId) });
+  return sendPublishedTemplate({
+    to,
+    templateId: "cc-preorder-receipt",
+    variables: { CUSTOMER_PORTAL_LINK: `${getSiteUrl().replace(/\/$/, "")}/dashboard`, ORDER_NUMBER: orderId }
+  });
 }
 
 export async function sendDownloadAccess(to: string) {
-  return sendTransactionalEmail({ to, ...downloadAccessTemplate() });
+  const dashboardUrl = `${getSiteUrl().replace(/\/$/, "")}/dashboard`;
+  return sendPublishedTemplate({ to, templateId: "cc-book-delivery", variables: { BOOK_ACCESS_LINK: dashboardUrl, CUSTOMER_PORTAL_LINK: dashboardUrl, ORDER_NUMBER: "See dashboard" } });
+}
+
+export async function sendWorkbookAccess(to: string, orderId: string) {
+  const dashboardUrl = `${getSiteUrl().replace(/\/$/, "")}/dashboard`;
+  return sendPublishedTemplate({ to, templateId: "cc-workbook-delivery", variables: { WORKBOOK_ACCESS_LINK: dashboardUrl, CUSTOMER_PORTAL_LINK: dashboardUrl, ORDER_NUMBER: orderId } });
+}
+
+export async function sendDailyDirectivesAccess(to: string, orderId: string, productName: string, amount: string) {
+  const dashboardUrl = `${getSiteUrl().replace(/\/$/, "")}/dashboard`;
+  return sendPublishedTemplate({ to, templateId: "cc-daily-directives-delivery", variables: { CARDS_ACCESS_LINK: dashboardUrl, CUSTOMER_PORTAL_LINK: dashboardUrl, PRODUCT_NAME: productName, AMOUNT: amount, ORDER_NUMBER: orderId } });
 }
 
 export async function sendPricingKit(to: string, checklistUrl?: string) {
@@ -90,7 +129,11 @@ export async function sendBonusClaimReceived(to: string) {
 }
 
 export async function sendRefundAccessRevoked(to: string) {
-  return sendTransactionalEmail({ to, ...refundAccessRevokedTemplate });
+  return sendPublishedTemplate({
+    to,
+    templateId: "cc-refund-update",
+    variables: { CUSTOMER_PORTAL_LINK: `${getSiteUrl().replace(/\/$/, "")}/dashboard`, PRODUCT_NAME: "your purchase", AMOUNT: "See order", ORDER_NUMBER: "See dashboard" }
+  });
 }
 
 export async function sendSupportReceipt(to: string) {

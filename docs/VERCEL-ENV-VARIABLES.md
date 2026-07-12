@@ -17,15 +17,16 @@ were tracked. Secrets still belong in Vercel, never in Git.
 | `NEXT_PUBLIC_SITE_URL` | `https://curlscontemplation.beauty` | |
 | `NEXT_PUBLIC_LAUNCH_MODE` | `preorder` | One of `preorder` \| `launched` \| `paused` |
 | `RELEASE_DATE` | `2026-11-24` | Code defaults to this if unset or blank — set it explicitly |
-| `SUPPORT_EMAIL` | `support@curlscontemplation.beauty` | |
+| `SUPPORT_EMAIL` | `info@curlscontemplation.beauty` | |
 
 ## Supabase
 
 | Variable | Notes |
 |---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | `https://jmfbosczwbfugbjsshwf.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public-safe, ships to browser |
-| `SUPABASE_SERVICE_ROLE_KEY` | Rotation reported complete; server-only and never prefixed `NEXT_PUBLIC_` |
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://comfnluqjhnmbxfvvjeo.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_B5Qcc1ComydWey6dicCQ9Q_leeqEKZV`; public-safe and recommended for the browser |
+| `SUPABASE_SECRET_KEY` | Copy from the replacement project API Keys screen; server-only and never prefixed `NEXT_PUBLIC_` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` | Legacy aliases supported by code during migration; not required when modern keys are set |
 | `SUPABASE_STORAGE_BUCKET` | `curls-deliverables` |
 
 ## Stripe
@@ -42,7 +43,7 @@ were tracked. Secrets still belong in Vercel, never in Git.
 
 *(`STRIPE_PRICE_ID_BUNDLE` and `STRIPE_PRICE_ID_WORKSHEETS` were removed from the codebase — never confirmed real, and the live checkout UI never sent a product type other than `direct_ebook`. `CheckoutProduct` is now just `"direct_ebook"`.)*
 
-## MailerLite — 1 API key + 11 groups, all IDs verified live via API this session
+## MailerLite — 1 API key + 13 active groups, all IDs verified live via API this session
 
 | Variable | Group name | Live ID |
 |---|---|---|
@@ -58,6 +59,8 @@ were tracked. Secrets still belong in Vercel, never in Git.
 | `MAILERLITE_GROUP_BLOG_READERS` | Blog Readers | `189927285613135631` |
 | `MAILERLITE_GROUP_QUIZ` | Quiz / Blind-Spot | `191751931239073670` |
 | `MAILERLITE_GROUP_VIP_EARLY_READERS` | VIP / Early Readers | `191751933392848782` |
+| `MAILERLITE_GROUP_CORE_NURTURE` | Core Nurture — Non-Buyers | `192794786755773469` |
+| `MAILERLITE_GROUP_DIGITAL_DIRECTIVE_CUSTOMERS` | Digital Directive Customers | `192794787632383140` |
 
 ## Resend
 
@@ -65,6 +68,8 @@ were tracked. Secrets still belong in Vercel, never in Git.
 |---|---|
 | `RESEND_API_KEY` | Rotation reported complete; server-only |
 | `RESEND_FROM_EMAIL` | `info@curlscontemplation.beauty` |
+
+The domain is verified in Resend, sending is enabled, and seven published transactional templates use the `cc-*` aliases documented in the production handoff.
 
 ## Turnstile (bot protection)
 

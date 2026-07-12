@@ -1,14 +1,18 @@
-# Remaining Owner Actions — Curls & Contemplation
+# Remaining Production Actions — Curls & Contemplation
 
-## Required before end-to-end production fulfillment
+## Required
 
-1. Reconnect the Supabase connector to the account that owns project `jmfbosczwbfugbjsshwf`, or explicitly confirm that production is being migrated to a replacement ref. The current connection exposes two healthy but empty Vercel-created projects (`comfnluqjhnmbxfvvjeo` and `dlwurqmedtwcacollpeq`), while the documented production project still returns a permission error. The prepared files were not uploaded to the wrong destination.
-2. In Resend, verify the sending domain and its SPF/DKIM records, then confirm `RESEND_FROM_EMAIL` and `SUPPORT_EMAIL` in the Vercel project. The connected Zapier actions cannot read domain verification status.
-3. In MailerLite, review and enable only the canonical automations documented in `docs/mailerlite-launch-campaigns.md`. Do not enable launch-day EPUB delivery until November 24, 2026.
-4. Upload `Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub` later to `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`, then run the launch-day dry run.
-5. Record or upload a real 60-second author welcome video if desired. The site has a polished fallback and does not use a synthetic person.
-6. Add real approved testimonials only when they exist; none were fabricated.
+1. In Vercel, replace the old Supabase variables with the values in `docs/VERCEL-PRODUCTION-ENV-2026-07-12.env.example`. The project URL and publishable key are provided; copy the server-only `sb_secret_...` value directly from Supabase to Vercel. Never place it in Git or a `NEXT_PUBLIC_` variable.
+2. Upload the prepared public PDFs and private workbook/Daily Directives ZIPs to the new Supabase buckets. The connector can apply schema and query the database but exposes no Storage upload action; the files remain prepared under `/tmp/curls-deliverables`. The EPUB stays absent.
+3. Open each `LIVE` MailerLite workflow, choose **Design email**, paste/style the matching copy from `docs/MAILERLITE-AUTOMATION-EMAIL-LIBRARY.md`, set sender and reply-to to `info@curlscontemplation.beauty`, and switch it on. MailerLite's API explicitly cannot create automation HTML or activate an incomplete workflow.
 
-## Clarification: tracked `.env`
+## Already complete
 
-A tracked `.env` is a secret-bearing environment file committed into Git history. The July 12 audit found no real `.env` file in this repository history—only example templates. Secret rotations were still reported complete, and secrets must remain in provider dashboards/Vercel, never in Git.
+- Replacement Supabase project initialized and advisor-hardened.
+- Correct storage buckets and live Stripe catalog created in Supabase.
+- Stripe catalog and prices verified.
+- Resend domain verified; seven transactional templates published.
+- Three MailerLite double-opt-in forms and 14 personalization fields created.
+- Ten trigger-correct MailerLite workflow shells created; nine obsolete drafts deleted.
+- Three preorder countdown campaigns scheduled and in `ready` status.
+- Website subscription intake, feedback, contact persistence, quiz persistence, and consent logging implemented.

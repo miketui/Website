@@ -5,7 +5,7 @@ import { getStripeWebhookConfig } from "@/lib/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { analyticsEvents } from "@/lib/analytics";
 import { recordServerEvent } from "@/lib/events/server-analytics";
-import { sendDownloadAccess, sendOrderConfirmation, sendRefundAccessRevoked } from "@/lib/email/resend";
+import { sendDailyDirectivesAccess, sendDownloadAccess, sendOrderConfirmation, sendRefundAccessRevoked, sendWorkbookAccess } from "@/lib/email/resend";
 import { upsertSubscriber } from "@/lib/email/mailerlite";
 
 export async function recordWebhookEvent(event: Stripe.Event) {
@@ -63,8 +63,20 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) 
   if (email) {
     await supabase.from("subscriber_events").insert({ email, event_type: "customer_created_from_checkout", provider: "stripe", metadata: { checkout_session_id: session.id } });
     await upsertSubscriber(email, "customers", { source: "stripe_checkout" });
-    await sendOrderConfirmation(email, order?.id ?? session.id);
-    await sendDownloadAccess(email);
+    if (session.metadata?.price_tier === "preorder" && session.metadata?.book_included !== "false") {
+      await upsertSubscriber(email, "preorders", { source: "stripe_checkout", product_type: "book_preorder", order_status: "paid", order_number: order?.id ?? session.id });
+    }
+    if ((session.metadata?.daily_directives_skus ?? "").length > 0) {
+      await upsertSubscriber(email, "digital_directive_customers", { source: "stripe_checkout", product_type: "daily_directives", product_name: session.metadata?.daily_directives_skus ?? "Daily Directives", order_status: "paid", order_number: order?.id ?? session.id });
+    }
+    const orderId = order?.id ?? session.id;
+    const isPreorder = session.metadata?.price_tier === "preorder" && session.metadata?.book_included !== "false";
+    if (isPreorder) await sendOrderConfirmation(email, orderId);
+    if (session.metadata?.price_tier === "regular" && session.metadata?.book_included !== "false") await sendDownloadAccess(email);
+    if (session.metadata?.workbook === "true" && !isPreorder) await sendWorkbookAccess(email, orderId);
+    if ((session.metadata?.daily_directives_skus ?? "").length > 0) {
+      await sendDailyDirectivesAccess(email, orderId, session.metadata?.daily_directives_skus ?? "Daily Directives", `$${(amount / 100).toFixed(2)}`);
+    }
   }
   await recordServerEvent({ eventName: analyticsEvents.purchaseRecorded, route: "/api/stripe/webhook", metadata: { checkoutSessionId: session.id, amount }, operational: true });
   return { ok: true as const };

@@ -19,7 +19,11 @@ export const tableNames = [
   "webhook_events",
   "analytics_events",
   "gate_ledger",
-  "admin_users"
+  "admin_users",
+  "magnet_leads",
+  "contact_submissions",
+  "quiz_leads",
+  "feedback_submissions"
 ] as const;
 
 export type TableName = (typeof tableNames)[number];

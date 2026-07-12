@@ -5,6 +5,7 @@ import { analyticsEvents } from "@/lib/analytics";
 import { recordServerEvent } from "@/lib/events/server-analytics";
 import { requestIp, verifyTurnstileToken } from "@/lib/turnstile";
 import { quizArchetypes } from "@/content/funnels";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const archetypeSlugs = quizArchetypes.map((a) => a.slug) as [string, ...string[]];
 const schema = z.object({
@@ -24,10 +25,14 @@ export async function POST(request: Request) {
   // is delivered by the owner's MailerLite automation (asset upload is a held
   // launch item, so delivery degrades gracefully until the group ID is set).
   const mailerlite = await upsertSubscriber(parsed.data.email, "quiz", { source: "quiz", archetype: parsed.data.archetype });
+  const supabase = createServerSupabaseClient(true);
+  if (supabase) {
+    await supabase.from("quiz_leads").upsert({ email: parsed.data.email, archetype: parsed.data.archetype, marketing_consent: true, updated_at: new Date().toISOString() }, { onConflict: "email" });
+  }
   await recordServerEvent({
     eventName: analyticsEvents.quizCompleted,
     route: "/api/quiz",
-    metadata: { archetype: parsed.data.archetype, mailerliteSkipped: mailerlite.skipped, turnstileSkipped: turnstile.skipped },
+    metadata: { archetype: parsed.data.archetype, mailerliteSkipped: mailerlite.skipped, turnstileSkipped: turnstile.skipped, databaseConfigured: Boolean(supabase) },
     operational: true
   });
   return NextResponse.json({ ok: true, mailerlite, delivery: mailerlite.ok ? "list_tagged" : "captured_pending_config" });
