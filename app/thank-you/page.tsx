@@ -7,7 +7,7 @@ import { pricingKitLink } from "@/lib/free-assets";
 import { publicEnv } from "@/lib/env";
 import { getLaunchStateCopy } from "@/config/launchState";
 
-export const metadata = pageMetadata("Thank You", "Your Pricing Confidence Checklist is on its way.", { path: "/thank-you", noIndex: true });
+export const metadata = pageMetadata("Thank You", "Your Detailed Pricing Guide is on its way.", { path: "/thank-you", noIndex: true });
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ delivery?: string }> }) {
   const { delivery } = await searchParams;
@@ -18,12 +18,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
 
   return (
     <UtilityShell
-      eyebrow={emailSent ? "Your checklist is on its way" : "Your checklist is reserved"}
+      eyebrow={emailSent ? "Your pricing guide is on its way" : "Your pricing guide is reserved"}
       title={emailSent ? "Check your inbox. Then meet me here." : "You're on the list. Here's what happens next."}
       description={
         emailSent
-          ? "The Pricing Confidence Checklist is headed to your email right now. While it lands, here is what the complete book is actually for."
-          : "Your address is saved and the checklist will reach you when delivery is available — no need to sign up twice."
+          ? "The Detailed Pricing Guide is headed to your email right now. While it lands, here is what the complete book is actually for."
+          : "Your address is saved and the pricing guide will reach you when delivery is available — no need to sign up twice."
       }
     >
       <PurchaseBurst className="mb-8" />
@@ -50,7 +50,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
           )}
         </div>
         <div>
-          <h2 className="font-display text-3xl leading-tight text-white md:text-4xl">If the checklist names the gap, the book helps you build the system.</h2>
+          <h2 className="font-display text-3xl leading-tight text-white md:text-4xl">If the guide names the gap, the book helps you build the system.</h2>
           <p className="mt-4 leading-8 text-whitegold/80">
             The direct edition is <strong className="text-white">$17.99</strong>{" "}right now. Fifteen days after release it becomes $19.99 — permanently. That schedule is real — it&rsquo;s in the preorder policy — and it is the only urgency you&rsquo;ll ever get from me. No timers. No &ldquo;only 3 left&rdquo; of a digital file.
           </p>
@@ -62,7 +62,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
             <div className="mt-8 rounded-2xl border border-whitegold/15 bg-white/5 p-5 text-sm leading-6 text-whitegold/75">
               <p className="font-semibold text-white">{emailSent ? "Email playing hard to get?" : "No need to wait on the email:"}</p>
               <p className="mt-2">
-                <a className="text-antique underline underline-offset-4" href={checklist}>Open the Pricing Confidence Checklist (PDF)</a>
+                <a className="text-antique underline underline-offset-4" href={checklist}>Open the Detailed Pricing Guide (PDF)</a>
               </p>
             </div>
           ) : null}
