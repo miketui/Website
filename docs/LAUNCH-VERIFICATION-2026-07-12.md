@@ -11,7 +11,7 @@
 
 ## MailerLite automations — clean/dirty evidence
 
-All requested automations are enabled. Triggers and group IDs match the intended groups. The standard `{$account}`, `{$url}`, and `{$unsubscribe}` tags are MailerLite system tags and are not treated as unresolved defects. The custom `{$quiz_result_name}` tag is valid: the live field `quiz_result_name` exists.
+All ten requested automations were re-read and are paused (`enabled: false`). This is the correct safe state for dashboard repair. Triggers and group IDs match the intended groups. The standard `{$account}`, `{$url}`, and `{$unsubscribe}` tags are MailerLite system tags and are not treated as unresolved defects. The custom `{$quiz_result_name}` tag is valid: the live field `quiz_result_name` exists. The connected MailerLite1 app exposes subject/plain-text and delay-duration updates, but not step reordering, HTML-body/internal-name editing, automation preheaders, or automation sender editing. Since every dirty workflow requires at least one unsupported operation, no partial live writes were made. The structural fixes remain a dashboard handoff rather than a misleading partial-fix claim.
 
 | Automation | Trigger | Live step chain | Verdict | Findings |
 |---|---|---|---|---|
@@ -73,7 +73,7 @@ The Vercel connector verified project `prj_SyCWL5ZUvAXol76cu1kc8WdsORMS`, produc
 - Six recorded migrations are present through `rls_and_index_hardening`.
 - Storage is **not launch-ready**: `curls-deliverables`, `curls-free`, `private`, and `public` all currently contain zero objects.
 
-No database or Storage mutation was performed.
+No database or Storage mutation was performed. The repository Storage uploader and verifier were corrected to accept the modern server-only `SUPABASE_SECRET_KEY` while retaining the legacy `SUPABASE_SERVICE_ROLE_KEY` fallback. The verifier no longer requires an unrelated public anon/publishable key for its server-side bucket check. Upload remains blocked because the connector has no binary Storage-upload action and the required private files are not present in the repository.
 
 ## Resend verification
 
@@ -106,5 +106,8 @@ Screenshots were generated as `home-felt-desktop.png`, `preorder-felt-desktop.pn
 - Re-anchored the final pre-launch cron from November 16 to **November 23 at 07:30 America/Los_Angeles** (`15:30 UTC`).
 - Corrected stale July/November 17 comments.
 - Added the missing launch dry-run and owner-email variable names to the production env template.
+- Added `/website` as an immersive campaign entry backed by the existing `CinematicJourney`: 90 desktop + 90 mobile WebP frames (5.6 MB total), canvas depth, particles, scroll choreography, and reduced-motion/save-data/low-memory fallbacks.
+- Added static regression coverage for `/website`, frame completeness and payload budgets, and motion accessibility gates.
+- Updated Supabase upload/verification scripts for the current `SUPABASE_SECRET_KEY` naming and removed the unnecessary anon-key requirement from the server-side Storage verification path.
 
 No PR was merged, no deployment was triggered manually, no email was sent, no charge was made, and no customer data was written.
