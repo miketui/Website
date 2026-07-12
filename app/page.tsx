@@ -89,7 +89,7 @@ export default function HomePage() {
             </blockquote>
             <CurlDraw className="mx-auto mt-10 h-16 w-full max-w-xs" />
             <p className="mx-auto mt-8 max-w-[54ch] text-left leading-8 text-whitegold/85">
-              That&rsquo;s the craft. The gap between doing that work and getting <em>paid</em> like it matters — that&rsquo;s the
+              That&rsquo;s the craft. The gap between doing that work and getting <em>paid</em>{" "}like it matters — that&rsquo;s the
               book.
             </p>
           </ScrollReveal>
