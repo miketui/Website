@@ -4,7 +4,7 @@ Use this after reviewing `docs/LAUNCH-VERIFICATION-2026-07-12.md`. Do not merge,
 
 ## 1. MailerLite dashboard punchlist
 
-The workflows are enabled, and the API cannot safely update their structure while enabled. In MailerLite, pause one automation at a time, correct it against `docs/MAILERLITE-AUTOMATION-EMAIL-LIBRARY.md`, test with an approved test subscriber, then re-enable only after acceptance.
+All ten workflows were re-read on July 12, 2026 and are now paused (`enabled: false`). This is the safe state for dashboard editing. The connected MailerLite1 app exposes subject/plain-text and delay-duration updates, but it cannot reorder steps, update HTML bodies/internal names, set automation preheaders, or change automation sender addresses. Every dirty workflow requires at least one unsupported operation, so partial writes were intentionally avoided to prevent new subject/body mismatches. In MailerLite, correct each paused automation against `docs/MAILERLITE-AUTOMATION-EMAIL-LIBRARY.md`, test with an approved test subscriber, then re-enable only after acceptance.
 
 | Automation | Required dashboard correction | Acceptance criteria |
 |---|---|---|
@@ -38,6 +38,9 @@ Canonical project: `comfnluqjhnmbxfvvjeo`. Schema and RLS exist; all four Storag
 
 Required before November 23:
 
+- The repository uploader and verifier now accept the current server-only `SUPABASE_SECRET_KEY`; legacy `SUPABASE_SERVICE_ROLE_KEY` remains a fallback. Never paste either key into chat or a commit.
+- Configure `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `SUPABASE_STORAGE_BUCKET=curls-deliverables` in a secure shell/CI environment. The remote verifier no longer incorrectly requires a browser publishable/anon key for a server-side Storage check.
+
 - Upload the public pricing-kit/quiz/challenge PDFs to `curls-free` using the repository manifest.
 - Upload private workbook and Daily Directives archives to `curls-deliverables` using the locked paths in `lib/deliverables.ts`.
 - Upload the canonical v13 EPUB to `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`.
@@ -45,6 +48,14 @@ Required before November 23:
 - Run Storage path verification and confirm private objects are not publicly readable.
 
 Acceptance: every expected path exists, paid assets are private, signed URLs work for entitled test users, and an unauthenticated request cannot retrieve paid files.
+
+Current blocker: the Supabase connector does not expose binary Storage upload, all four live buckets are empty, and the private workbook/Daily Directives/EPUB files are not present in this repository. Once the private source directory and server secret are available securely, run:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=... SUPABASE_SECRET_KEY=... \
+  node scripts/upload-deliverables.mjs --private-dir /secure/path/to/private-deliverables
+npm run check:supabase-storage
+```
 
 ## 4. Resend DNS and transactional test
 
@@ -70,6 +81,8 @@ Run in Stripe test mode only:
 - Consider adding one approved checklist preview to `/pricing-kit` without exposing paid book content.
 - Confirm the six home images with empty alt text are decorative; add meaningful alt only where the image conveys content.
 - Re-run desktop and mobile screenshots plus console/overflow checks.
+- `/website` now renders the same immersive canvas experience as `/journey`: 90 desktop and 90 mobile WebP frames, scroll-depth choreography, ambient particles, and static fallbacks for reduced-motion, save-data, and low-memory visitors. Verify this new route in Preview before Production approval.
+- Do not re-extract `public/curl-scrub.mp4` until Michael explicitly approves the proposed 90-frame extraction from the reviewed animated-website skill.
 
 ## Final acceptance gate
 
