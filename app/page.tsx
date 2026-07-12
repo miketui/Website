@@ -62,7 +62,7 @@ export default function HomePage() {
             </p>
             <div className="mt-9 flex flex-wrap gap-4">
               <Link href={launch.heroCta.href} className={btnGold}>{launch.heroCta.label}</Link>
-              <Link href="/pricing-kit" className={btnGhost}>Get the free pricing checklist</Link>
+              <Link href="/pricing-kit" className={btnGhost}>Get the free pricing guide</Link>
             </div>
           </div>
         </section>
@@ -192,7 +192,7 @@ export default function HomePage() {
                 Know the number. <span className="accent-italic text-antique">Hold the boundary.</span>
               </h2>
               <p className="mt-5 max-w-[52ch] leading-8 text-whitegold/82">
-                Get the one-page Pricing Confidence Checklist: a rate-floor calculation, a clear price script, and a boundary check — delivered to your inbox in minutes.
+                Get the seven-page Detailed Pricing Guide: rate-floor math, scope and pricing models, quote language, policies, and evidence tracking — delivered to your inbox in minutes.
               </p>
               <div className="mt-7">
                 <PricingKitForm />
