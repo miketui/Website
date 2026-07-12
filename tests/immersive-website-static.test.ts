@@ -32,5 +32,7 @@ describe("immersive /website experience", () => {
     expect(component).toContain("const FRAME_COUNT = 90");
     expect(component).toContain("getContext(\"2d\")");
     expect(component).toContain("Ambient particles");
+    expect(component).toContain("new window.Image()");
+    expect(component).toContain('(max-width: 768px)');
   });
 });
