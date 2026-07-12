@@ -28,7 +28,8 @@ async function loadPurchases(userId: string, email: string): Promise<PurchaseRow
 
 const bookLabels: Record<string, string> = {
   "curls-and-contemplation": "Curls & Contemplation — Direct Digital Edition",
-  "affirmation-deck": "Affirmation Card Deck"
+  "daily-directives-bundle": "Daily Directives — Complete 12-Set Bundle",
+  "companion-workbook": "Idea-to-Action Workbook"
 };
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ checkout?: string }> }) {
@@ -67,7 +68,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ c
               <ul className="mt-4 space-y-3">
                 {purchases.map((purchase) => (
                   <li key={purchase.id} className="rounded-2xl border border-whitegold/15 bg-white/5 p-4">
-                    <p className="font-semibold text-white">{bookLabels[purchase.book_slug] ?? purchase.book_slug}</p>
+                    <p className="font-semibold text-white">{bookLabels[purchase.book_slug] ?? purchase.book_slug.replace("daily-directives-set-", "Daily Directives — Set ")}</p>
                     <p className="mt-1 text-sm text-whitegold/70">
                       Status: {purchase.entitlement_status === "active" ? "Active" : purchase.entitlement_status} · Purchased {new Date(purchase.created_at).toLocaleDateString()}
                     </p>

@@ -68,7 +68,7 @@ export function BookHero() {
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
             <MagneticCurlButton href={launch.heroCta.href}>{launch.heroCta.label}</MagneticCurlButton>
-            <MagneticCurlButton href="/free-chapter" variant="secondary">Read Chapter 1 Free</MagneticCurlButton>
+            <MagneticCurlButton href="/pricing-kit" variant="secondary">Get the Free Pricing Kit</MagneticCurlButton>
           </div>
           <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-whitegold/65">
             <span>{launch.deliveryCopy}</span>

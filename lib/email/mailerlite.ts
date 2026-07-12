@@ -3,7 +3,7 @@ import { getMailerLiteConfig } from "@/lib/env";
 
 export type MailerLiteGroup =
   | "subscribers"
-  | "free_chapter"
+  | "pricing_kit"
   | "preorders"
   | "customers"
   | "abandoned_checkout"
@@ -16,7 +16,7 @@ export type MailerLiteGroup =
 
 export const mailerLiteGroups: Record<MailerLiteGroup, string> = {
   subscribers: "Subscribers",
-  free_chapter: "Free Chapter",
+  pricing_kit: "Pricing Confidence Kit",
   preorders: "Preorders",
   customers: "Customers",
   abandoned_checkout: "Abandoned Checkout",

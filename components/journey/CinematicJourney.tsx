@@ -320,7 +320,7 @@ export function CinematicJourney({ ctaHref, ctaLabel, finalLine }: CinematicJour
           <span className="cj-portal" aria-hidden="true" />
           <Link className="cj-cta-gold" href={ctaHref}>{ctaLabel}</Link>
         </span>
-        <Link className="cj-cta-ghost" href="/free-chapter">or read Chapter 1 free</Link>
+        <Link className="cj-cta-ghost" href="/pricing-kit">or get the free pricing kit</Link>
       </div>
     </>
   );
@@ -378,7 +378,7 @@ export function CinematicJourney({ ctaHref, ctaLabel, finalLine }: CinematicJour
           <h2 className="mt-3 font-display text-3xl text-white md:text-4xl">{finalLine}</h2>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
             <Link className="cj-cta-gold" style={{ marginTop: 0 }} href={ctaHref}>{ctaLabel}</Link>
-            <Link className="cj-cta-ghost" style={{ marginTop: 0, alignSelf: "center" }} href="/free-chapter">or read Chapter 1 free</Link>
+            <Link className="cj-cta-ghost" style={{ marginTop: 0, alignSelf: "center" }} href="/pricing-kit">or get the free pricing kit</Link>
           </div>
         </section>
       </div>

@@ -1,8 +1,28 @@
 import Stripe from "stripe";
 import { getLaunchMode, getSiteUrl, getStripeConfig, getStripeWebhookConfig, type LaunchMode } from "@/lib/env";
+import type { DailyDirectiveSku } from "@/content/daily-directives";
 
 export type CheckoutProduct = "direct_ebook";
 export type PriceTier = "preorder" | "regular";
+
+// Stripe Price IDs are public catalog identifiers, not credentials. These
+// production fallbacks keep checkout wired when the hosting connector cannot
+// create environment variables; an env value still overrides each fallback.
+const DAILY_DIRECTIVES_PRICE_IDS = {
+  bundle: "price_1TsMHLBOxLp64xG9ld3KhLXm",
+  "01": "price_1TsMHSBOxLp64xG9G7autXy9",
+  "02": "price_1TsMHZBOxLp64xG9nNtYQmoH",
+  "03": "price_1TsMHgBOxLp64xG9iFZBVATE",
+  "04": "price_1TsMHnBOxLp64xG9DO7jMya7",
+  "05": "price_1TsMHuBOxLp64xG9qAIQ7ADG",
+  "06": "price_1TsMI0BOxLp64xG9mlNeFhyn",
+  "07": "price_1TsMI8BOxLp64xG9v2jDAqAL",
+  "08": "price_1TsMIEBOxLp64xG9TdGdQeDA",
+  "09": "price_1TsMIKBOxLp64xG9jgkUJnxn",
+  "10": "price_1TsMIeBOxLp64xG9mhE0RApF",
+  "11": "price_1TsMIRBOxLp64xG93zQOLoJf",
+  "12": "price_1TsMIYBOxLp64xG9lMLQcZMq"
+} as const;
 
 export function getStripe() {
   const config = getStripeConfig();
@@ -24,10 +44,16 @@ export function resolveServerPriceId(mode: LaunchMode, _product: CheckoutProduct
   return { ok: true as const, priceId, tier: (mode === "launched" ? "regular" : "preorder") as PriceTier };
 }
 
-/** $7.99 Affirmation Card Deck order bump — only offered when its price ID is configured. */
-export function resolveCardDeckPriceId(): string | undefined {
+/** $59 complete Daily Directives bundle — optional book order bump. */
+export function resolveDailyDirectivesBundlePriceId(): string | undefined {
   const config = getStripeConfig();
-  return config.ok ? config.value.cardDeckPriceId : undefined;
+  return config.ok ? (config.value.dailyDirectivesBundlePriceId || DAILY_DIRECTIVES_PRICE_IDS.bundle) : undefined;
+}
+
+/** $7.99 individual Daily Directives set. */
+export function resolveDailyDirectivesSetPriceId(sku: DailyDirectiveSku): string | undefined {
+  const setNumber = sku.slice(-2);
+  return process.env[`STRIPE_PRICE_ID_DAILY_DIRECTIVES_SET_${setNumber}`] || DAILY_DIRECTIVES_PRICE_IDS[setNumber as keyof typeof DAILY_DIRECTIVES_PRICE_IDS] || undefined;
 }
 
 /** $19.99 Idea-to-Action Workbook — buyer companion, cart-only product. */
@@ -42,7 +68,7 @@ export function buildCheckoutMetadata(input: {
   sourcePage?: string;
   utm?: Partial<Record<"utm_source" | "utm_medium" | "utm_campaign", string>>;
   customerEmail?: string;
-  cardDeck?: boolean;
+  dailyDirectivesSkus?: string[];
   workbook?: boolean;
   bookIncluded?: boolean;
 }) {
@@ -52,7 +78,7 @@ export function buildCheckoutMetadata(input: {
     launch_mode: launchMode,
     price_tier: launchMode === "launched" ? "regular" : "preorder",
     product: input.product,
-    card_deck: input.cardDeck ? "true" : "false",
+    daily_directives_skus: input.dailyDirectivesSkus?.join(",") ?? "",
     workbook: input.workbook ? "true" : "false",
     book_included: input.bookIncluded === false ? "false" : "true",
     source_page: input.sourcePage ?? "unknown",

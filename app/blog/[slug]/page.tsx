@@ -30,7 +30,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     <main>
       {jsonLd ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} /> : null}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <PageHero eyebrow={post.date} title={post.title} description={post.excerpt} primaryHref="/free-chapter" primaryLabel="Read Chapter 1 Free" secondaryHref="/blog" secondaryLabel="Back to Journal" />
+      <PageHero eyebrow={post.date} title={post.title} description={post.excerpt} primaryHref="/pricing-kit" primaryLabel="Get the Free Pricing Kit" secondaryHref="/blog" secondaryLabel="Back to Journal" />
       <Section eyebrow="Essay scaffold" title="A short note for the working creative.">
         <p>This editorial route is ready for Michael-approved copy. Placeholder language stays claim-safe and avoids testimonials, awards, or celebrity references.</p>
       </Section>

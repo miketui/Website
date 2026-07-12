@@ -51,8 +51,8 @@ export default function Page() {
         description="The launch price is $17.99 — and stays there through the first fifteen days after release, then becomes $19.99 permanently. Pay today; your EPUB unlocks in your account on release day, with a receipt now and a download note the moment it's live."
         primaryHref="#checkout"
         primaryLabel="Continue to Checkout"
-        secondaryHref="/free-chapter"
-        secondaryLabel="Read Chapter 1 Free"
+        secondaryHref="/pricing-kit"
+        secondaryLabel="Get the Free Pricing Kit"
       >
         <ul className="space-y-3 text-sm leading-6 text-whitegold/78">
           <li>• EPUB delivered from private storage only — signed links, 3 downloads over 7 days.</li>

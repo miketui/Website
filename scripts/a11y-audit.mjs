@@ -12,7 +12,7 @@ const axeSource = readFileSync(axePath, "utf8");
 
 const PORT = process.env.PORT || "4321";
 const BASE = `http://localhost:${PORT}`;
-const ROUTES = ["/", "/preorder", "/book", "/about", "/free-chapter", "/reset", "/contact"];
+const ROUTES = ["/", "/preorder", "/book", "/about", "/pricing-kit", "/daily-directives", "/reset", "/contact"];
 
 const browser = await chromium.launch(
   process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}

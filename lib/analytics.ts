@@ -4,7 +4,7 @@ export const analyticsEvents = {
   scrollDepth90: "scroll_depth_90",
   emailSignupStarted: "email_signup_started",
   emailSignupCompleted: "email_signup_completed",
-  freeChapterRequested: "free_chapter_requested",
+  pricingKitRequested: "pricing_kit_requested",
   preorderCtaClicked: "preorder_cta_clicked",
   buyCtaClicked: "buy_cta_clicked",
   retailerClick: "retailer_click",

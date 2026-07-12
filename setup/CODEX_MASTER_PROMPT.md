@@ -14,7 +14,7 @@ Guardrails:
 Create the complete v4 author-commerce website package and the actual compilable website files for:
 
 **Book:** Curls & Contemplation: A Freelance Hairstylist’s Guide to Creative Excellence  
-**Author:** Michael David Warren Jr. / Michael David  
+**Author:** Michael David
 **Repo:** `miketui/Last2`  
 **Preferred app path:** `author-site/`
 

@@ -71,12 +71,12 @@ Scaffolded: final Supabase project, live Stripe products, MailerLite automations
 ### Supabase private bucket checklist
 - Apply `supabase/migrations/0001_author_commerce.sql`.
 - Create private bucket `curls-deliverables`.
-- Upload EPUB to `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`.
+- Upload the workbook and Daily Directives ZIPs with `scripts/upload-deliverables.mjs`; upload the EPUB later to its locked path.
 - The v13 POD interior PDF is a print artifact for KDP/third-party POD only — it is not a site deliverable and is not uploaded to Storage.
 - Do not add public read policies for paid deliverables.
 
 ### Email and marketing checklist
-- MailerLite: create groups for Subscribers, Free Chapter, Preorders, Customers, Abandoned Checkout, Bonus Claim Started, Bonus Claim Completed, Refunded, Blog Readers, and VIP / Early Readers; copy group IDs into env.
+- MailerLite: use the Pricing Confidence Kit, Preorders, Customers, Abandoned Checkout, Refunded, and Quiz groups. Groups are segments; they do not each need an automation.
 - Resend: verify sender domain and configure SPF, DKIM, and DMARC before real sends.
 - Turnstile: add site/secret keys before enabling remote bot verification on forms.
 
@@ -166,9 +166,9 @@ The check fails on live key patterns and skips safely if test credentials are mi
 
 ### Resend and MailerLite sandbox
 
-Configure Resend sandbox/test sender values: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `SUPPORT_EMAIL`. Test order confirmation, download access, free chapter delivery, bonus claim received, refund/access revoked, and support receipt messages only against sandbox recipients. Production SPF, DKIM, and DMARC remain a launch gate.
+Configure Resend sandbox/test sender values: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `SUPPORT_EMAIL`. Test order confirmation, download access, Pricing Confidence Kit delivery, bonus claim received, refund/access revoked, and support receipt messages only against approved test recipients. Production SPF, DKIM, and DMARC remain a launch gate.
 
-Configure MailerLite sandbox groups for Subscribers, Free Chapter, Preorders, Customers, Abandoned Checkout, Bonus Claim Started, Bonus Claim Completed, Refunded, Blog Readers, and VIP / Early Readers. Set the matching `MAILERLITE_GROUP_*` env IDs and test add/update plus group assignment without sending a production broadcast.
+Configure MailerLite groups for Pricing Confidence Kit, Preorders, Customers, Abandoned Checkout, Refunded, and Quiz. Set the matching `MAILERLITE_GROUP_*` IDs and test group assignment without sending a production broadcast.
 
 ### Turnstile and analytics sandbox
 

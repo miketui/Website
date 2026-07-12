@@ -1,7 +1,7 @@
 # AGENTS.md — Curls & Contemplation Codex Build Rules
 
 ## Project identity
-Build the production-ready author-commerce platform for **Curls & Contemplation: A Freelance Hairstylist's Guide to Creative Excellence** by **Michael David Warren Jr. / Michael David**.
+Build the production-ready author-commerce platform for **Curls & Contemplation: A Freelance Hairstylist's Guide to Creative Excellence** by **Michael David**.
 
 This repository currently contains book, EPUB/POD, validation, and marketing handoff materials. Treat the publishing build as source material. Do not damage or rewrite the EPUB/PDF build system while creating the website.
 

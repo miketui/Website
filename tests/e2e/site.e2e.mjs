@@ -15,7 +15,7 @@ const check = (name, pass, detail = "") => {
 };
 
 const routes = [
-  "/", "/book", "/preorder", "/buy", "/free-chapter", "/thank-you", "/chapters",
+  "/", "/book", "/preorder", "/buy", "/pricing-kit", "/daily-directives", "/thank-you", "/chapters",
   "/chapter/creative-excellence", "/blog", "/resources", "/worksheets", "/about",
   "/media-kit", "/faq", "/contact", "/quiz", "/quiz/results/underpriced-artist",
   "/challenge", "/privacy", "/terms", "/refund-policy", "/accessibility",
@@ -46,12 +46,12 @@ const browser = await chromium.launch();
 {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await ctx.newPage();
-  await page.goto(`${BASE}/free-chapter`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/pricing-kit`, { waitUntil: "networkidle" });
   await page.evaluate(() => sessionStorage.setItem("curls-gateway-seen", "1"));
-  await page.fill("#free-chapter-email", "e2e-test@example.com");
+  await page.fill("#pricing-kit-email", "e2e-test@example.com");
   await page.click('button[type="submit"]');
   await page.waitForURL("**/thank-you", { timeout: 15000 }).catch(() => {});
-  check("funnel1 free-chapter → thank-you pivot", page.url().includes("/thank-you"), page.url());
+  check("pricing-kit → thank-you pivot", page.url().includes("/thank-you"), page.url());
   const cta = page.locator('a[href="/preorder"]', { hasText: "17.99" }).first();
   check("thank-you pivot shows preorder CTA at $17.99", (await cta.count()) > 0);
   const tierFlip = await page.getByText("$19.99").count();
@@ -65,8 +65,8 @@ const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await ctx.newPage();
   await page.goto(`${BASE}/preorder`, { waitUntil: "networkidle" });
-  const bump = page.locator('input[name="card-deck"]');
-  check("preorder shows $7.99 card-deck order bump", (await bump.count()) === 1);
+  const bump = page.locator('input[name="daily-directives"]');
+  check("preorder shows $59 Daily Directives bundle option", (await bump.count()) === 1);
   await bump.check();
   await page.click('form button[type="submit"]');
   const alert = page.locator('[role="alert"]');
@@ -80,7 +80,7 @@ const browser = await chromium.launch();
 // --- Mobile 390x844: no horizontal overflow on key pages -------------------
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-  for (const route of ["/", "/free-chapter", "/preorder", "/thank-you", "/book", "/quiz"]) {
+  for (const route of ["/", "/pricing-kit", "/daily-directives", "/preorder", "/thank-you", "/book", "/quiz"]) {
     const page = await ctx.newPage();
     if (route === "/") await page.addInitScript(() => sessionStorage.setItem("curls-gateway-seen", "1"));
     await page.goto(`${BASE}${route}`, { waitUntil: "networkidle" });

@@ -43,9 +43,11 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) 
         await supabase.from("purchases").upsert(bookRow, { onConflict: "order_id" });
       }
     }
-    if (session.metadata?.card_deck === "true") {
-      const { error: deckError } = await supabase.from("purchases").upsert({ order_id: order.id, email, book_slug: "affirmation-deck", status: "active", entitlement_status: "active" }, { onConflict: "order_id,book_slug" });
-      if (deckError) { throw new Error(`Deck entitlement failed: ${deckError.message}`); }
+    const dailyDirectiveSkus = (session.metadata?.daily_directives_skus ?? "").split(",").filter(Boolean);
+    for (const sku of dailyDirectiveSkus) {
+      const bookSlug = sku === "daily_directives_bundle" ? "daily-directives-bundle" : sku.replaceAll("_", "-");
+      const { error: directiveError } = await supabase.from("purchases").upsert({ order_id: order.id, email, book_slug: bookSlug, status: "active", entitlement_status: "active" }, { onConflict: "order_id,book_slug" });
+      if (directiveError) { throw new Error(`Daily Directives entitlement failed: ${directiveError.message}`); }
     }
     // Preorder gift (owner-approved 2026-07-09): every preorder that includes
     // the book also receives the Idea-to-Action Workbook free. Post-launch
@@ -74,7 +76,7 @@ export async function revokeEntitlementForRefund(charge: Stripe.Charge) {
   const supabase = createServerSupabaseClient(true);
   if (!supabase) return { ok: false as const, skipped: true as const, reason: "config_missing" as const };
   const { data: order } = await supabase.from("orders").select("id,email").eq("stripe_payment_intent_id", paymentIntent ?? "").maybeSingle();
-  // Revokes every entitlement on the order (book, deck, and workbook).
+  // Revokes every entitlement on the order (book, Daily Directives, and workbook).
   if (order?.id) await supabase.from("purchases").update({ status: "refunded", entitlement_status: "revoked", refunded_at: new Date().toISOString(), revoked_at: new Date().toISOString() }).eq("order_id", order.id);
   const notifyEmail = email ?? order?.email;
   if (notifyEmail) {

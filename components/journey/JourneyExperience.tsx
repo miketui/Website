@@ -363,7 +363,7 @@ export function JourneyExperience() {
       {/* Act III — the four worlds. PRD v2 / audit consensus: the journey is
           narrative until the threshold — worlds 01–03 make the reader feel the
           path; only the Bloom asks, once, with the one gold state-driven CTA
-          (free chapter rides along as the quiet secondary). No four-door maze. */}
+          (the free pricing kit rides along as the quiet secondary). */}
       <div className="jr-journey-track">
         <div className="jr-fg">
           <div className="jr-card">
@@ -386,7 +386,7 @@ export function JourneyExperience() {
             <h2>That stylist is sixteen chapters away.</h2>
             <p>The whole map, with a worksheet at every step.</p>
             <Link className="jr-cta" href={journeyCta.href}>{journeyCta.label}</Link>
-            <Link className="jr-cta jr-cta--ghost" href="/free-chapter">or read Chapter 1 free</Link>
+            <Link className="jr-cta jr-cta--ghost" href="/pricing-kit">or get the free pricing kit</Link>
           </div>
         </div>
       </div>

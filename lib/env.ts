@@ -24,13 +24,26 @@ const serverEnvSchema = publicEnvSchema.extend({
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
   STRIPE_PRICE_ID_PREORDER: z.string().optional(),
   STRIPE_PRICE_ID_REGULAR: z.string().optional(),
-  STRIPE_PRICE_ID_CARD_DECK: z.string().optional(),
+  STRIPE_PRICE_ID_DAILY_DIRECTIVES_BUNDLE: z.string().optional(),
+  STRIPE_PRICE_ID_DAILY_DIRECTIVES_SET_01: z.string().optional(),
+  STRIPE_PRICE_ID_DAILY_DIRECTIVES_SET_02: z.string().optional(),
+  STRIPE_PRICE_ID_DAILY_DIRECTIVES_SET_03: z.string().optional(),
+  STRIPE_PRICE_ID_DAILY_DIRECTIVES_SET_04: z.string().optional(),
+  STRIPE_PRICE_ID_DAILY_DIRECTIVES_SET_05: z.string().optional(),
+  STRIPE_PRICE_ID_DAILY_DIRECTIVES_SET_06: z.string().optional(),
+  STRIPE_PRICE_ID_DAILY_DIRECTIVES_SET_07: z.string().optional(),
+  STRIPE_PRICE_ID_DAILY_DIRECTIVES_SET_08: z.string().optional(),
+  STRIPE_PRICE_ID_DAILY_DIRECTIVES_SET_09: z.string().optional(),
+  STRIPE_PRICE_ID_DAILY_DIRECTIVES_SET_10: z.string().optional(),
+  STRIPE_PRICE_ID_DAILY_DIRECTIVES_SET_11: z.string().optional(),
+  STRIPE_PRICE_ID_DAILY_DIRECTIVES_SET_12: z.string().optional(),
+  STRIPE_PRICE_ID_WORKBOOK: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   RESEND_FROM_EMAIL: z.string().email().optional(),
   SUPPORT_EMAIL: z.string().email().optional(),
   MAILERLITE_API_KEY: z.string().optional(),
   MAILERLITE_GROUP_SUBSCRIBERS: z.string().optional(),
-  MAILERLITE_GROUP_FREE_CHAPTER: z.string().optional(),
+  MAILERLITE_GROUP_PRICING_KIT: z.string().optional(),
   MAILERLITE_GROUP_PREORDERS: z.string().optional(),
   MAILERLITE_GROUP_CUSTOMERS: z.string().optional(),
   MAILERLITE_GROUP_ABANDONED_CHECKOUT: z.string().optional(),
@@ -97,7 +110,7 @@ export function getStripeConfig(): RuntimeConfigResult<{
   webhookSecret?: string;
   preorderPriceId: string;
   regularPriceId: string;
-  cardDeckPriceId?: string;
+  dailyDirectivesBundlePriceId?: string;
 }> {
   const required = ["STRIPE_SECRET_KEY", "STRIPE_PRICE_ID_PREORDER", "STRIPE_PRICE_ID_REGULAR"];
   const absent = missing(required);
@@ -109,7 +122,7 @@ export function getStripeConfig(): RuntimeConfigResult<{
       webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
       preorderPriceId: process.env.STRIPE_PRICE_ID_PREORDER!,
       regularPriceId: process.env.STRIPE_PRICE_ID_REGULAR!,
-      cardDeckPriceId: process.env.STRIPE_PRICE_ID_CARD_DECK
+      dailyDirectivesBundlePriceId: process.env.STRIPE_PRICE_ID_DAILY_DIRECTIVES_BUNDLE
     }
   };
 }
@@ -149,7 +162,9 @@ export function getMailerLiteConfig(): RuntimeConfigResult<{ apiKey: string; gro
       apiKey: process.env.MAILERLITE_API_KEY,
       groups: {
         subscribers: process.env.MAILERLITE_GROUP_SUBSCRIBERS,
-        free_chapter: process.env.MAILERLITE_GROUP_FREE_CHAPTER,
+        // MailerLite group IDs are non-secret identifiers. The connected
+        // provider created this canonical group on 2026-07-12; env may override.
+        pricing_kit: process.env.MAILERLITE_GROUP_PRICING_KIT || "192789958246794286",
         preorders: process.env.MAILERLITE_GROUP_PREORDERS,
         customers: process.env.MAILERLITE_GROUP_CUSTOMERS,
         abandoned_checkout: process.env.MAILERLITE_GROUP_ABANDONED_CHECKOUT,

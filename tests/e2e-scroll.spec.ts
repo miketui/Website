@@ -16,7 +16,7 @@ import { test, expect } from "@playwright/test";
  */
 
 const COVER_SEEN = { name: "cc_cover_seen", value: "1", url: "http://localhost:3100" };
-const NAV_IA = ["The Book", "The Journey", "For Stylists", "Free Chapter", "Preorder"];
+const NAV_IA = ["The Book", "The Journey", "Daily Directives", "Free Pricing Kit", "Preorder"];
 
 test.describe("launch navigation", () => {
   test.beforeEach(async ({ context }) => {

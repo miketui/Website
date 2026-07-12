@@ -3,27 +3,27 @@ import { UtilityShell } from "@/components/design/UtilityShell";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 import { PurchaseBurst } from "@/components/motion/PurchaseBurst";
 import { pageMetadata } from "@/lib/seo";
-import { freeChapterLinks } from "@/lib/free-assets";
+import { pricingKitLink } from "@/lib/free-assets";
 import { publicEnv } from "@/lib/env";
 import { getLaunchStateCopy } from "@/config/launchState";
 
-export const metadata = pageMetadata("Thank You", "Chapter 1 is on its way — and here's what comes next.", { path: "/thank-you", noIndex: true });
+export const metadata = pageMetadata("Thank You", "Your Pricing Confidence Checklist is on its way.", { path: "/thank-you", noIndex: true });
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ delivery?: string }> }) {
   const { delivery } = await searchParams;
-  const links = freeChapterLinks();
+  const checklist = pricingKitLink();
   const videoId = publicEnv.NEXT_PUBLIC_THANKYOU_VIDEO_ID;
   const emailSent = delivery !== "pending";
   const launch = getLaunchStateCopy();
 
   return (
     <UtilityShell
-      eyebrow={emailSent ? "Chapter 1 is on its way" : "Your chapter is reserved"}
+      eyebrow={emailSent ? "Your checklist is on its way" : "Your checklist is reserved"}
       title={emailSent ? "Check your inbox. Then meet me here." : "You're on the list. Here's what happens next."}
       description={
         emailSent
-          ? "Your chapter and the Pricing Confidence Checklist are headed to your email right now. While they land, sixty seconds on what this book is actually for."
-          : "Your address is saved and Chapter 1 will reach you the moment delivery goes live — no need to sign up twice. Meanwhile, sixty seconds on what this book is actually for."
+          ? "The Pricing Confidence Checklist is headed to your email right now. While it lands, here is what the complete book is actually for."
+          : "Your address is saved and the checklist will reach you when delivery is available — no need to sign up twice."
       }
     >
       <PurchaseBurst className="mb-8" />
@@ -43,27 +43,26 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
           ) : (
             <figure className="flex aspect-video flex-col items-center justify-center p-8 text-center md:p-12">
               <blockquote className="max-w-md font-display text-3xl leading-tight text-white md:text-4xl">
-                &ldquo;Your craft is not the problem. The missing map is.&rdquo;
+                &ldquo;Your prices can reflect your expertise without costing you your peace.&rdquo;
               </blockquote>
-              <figcaption className="mt-5 text-sm uppercase tracking-[0.18em] text-antique">— the idea Chapter 1 opens</figcaption>
+              <figcaption className="mt-5 text-sm uppercase tracking-[0.18em] text-antique">— the work begins here</figcaption>
             </figure>
           )}
         </div>
         <div>
-          <h2 className="font-display text-3xl leading-tight text-white md:text-4xl">If Chapter 1 reads like your week, the rest is the map.</h2>
+          <h2 className="font-display text-3xl leading-tight text-white md:text-4xl">If the checklist names the gap, the book helps you build the system.</h2>
           <p className="mt-4 leading-8 text-whitegold/80">
             The direct edition is <strong className="text-white">$17.99</strong>{" "}right now. Fifteen days after release it becomes $19.99 — permanently. That schedule is real — it&rsquo;s in the preorder policy — and it is the only urgency you&rsquo;ll ever get from me. No timers. No &ldquo;only 3 left&rdquo; of a digital file.
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
             <MagneticCurlButton href={launch.heroCta.href}>{launch.heroCta.label}</MagneticCurlButton>
-            <MagneticCurlButton href="/chapters" variant="secondary">Preview the Chapters</MagneticCurlButton>
+            <MagneticCurlButton href="/book" variant="secondary">Explore the Book</MagneticCurlButton>
           </div>
-          {links.configured ? (
+          {checklist ? (
             <div className="mt-8 rounded-2xl border border-whitegold/15 bg-white/5 p-5 text-sm leading-6 text-whitegold/75">
               <p className="font-semibold text-white">{emailSent ? "Email playing hard to get?" : "No need to wait on the email:"}</p>
               <p className="mt-2">
-                Direct links, same files: <a className="text-antique underline underline-offset-4" href={links.chapter}>Chapter 1 (PDF)</a> ·{" "}
-                <a className="text-antique underline underline-offset-4" href={links.checklist}>Pricing Confidence Checklist (PDF)</a>
+                <a className="text-antique underline underline-offset-4" href={checklist}>Open the Pricing Confidence Checklist (PDF)</a>
               </p>
             </div>
           ) : null}
