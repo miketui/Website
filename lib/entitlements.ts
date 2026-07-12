@@ -1,7 +1,8 @@
 import { createServerSupabaseClient, type SessionUser } from "@/lib/supabase/server";
 import { orEquals } from "@/lib/supabase/filters";
+import { deliverables, type DeliverableSlug } from "@/lib/deliverables";
 
-export type DeliverableKind = "epub" | "card_deck" | "workbook" | "preorder_bonus";
+export type DeliverableKind = DeliverableSlug;
 export type DownloadDenialReason = "unauthenticated" | "no_purchase" | "refunded" | "revoked" | "download_limit_reached" | "config_missing" | "storage_error";
 export type PurchaseStatus = "active" | "refunded" | "canceled" | "past_due" | "revoked";
 export type EntitlementResult =
@@ -12,12 +13,13 @@ export const DOWNLOAD_CAP = 3;
 export const DOWNLOAD_WINDOW_DAYS = 7;
 
 export function productEntitlements(): Record<DeliverableKind, boolean> {
-  return { epub: true, card_deck: true, workbook: true, preorder_bonus: false };
+  return Object.fromEntries(Object.keys(deliverables).map((slug) => [slug, true])) as Record<DeliverableKind, boolean>;
 }
 
 /** Maps a deliverable kind to the purchases.book_slug that entitles it. */
 export function entitlementSlugFor(deliverable: DeliverableKind): string {
-  if (deliverable === "card_deck") return "affirmation-deck";
+  if (deliverable === "daily_directives_bundle") return "daily-directives-bundle";
+  if (deliverable.startsWith("daily_directives_set_")) return deliverable.replaceAll("_", "-");
   if (deliverable === "workbook") return "companion-workbook";
   return "curls-and-contemplation";
 }

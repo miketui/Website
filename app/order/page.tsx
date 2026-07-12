@@ -12,6 +12,6 @@ import { getLaunchState, isCheckoutPaused } from "@/config/launchState";
 export const dynamic = "force-static";
 
 export default function OrderPage() {
-  if (isCheckoutPaused()) redirect("/free-chapter");
+  if (isCheckoutPaused()) redirect("/pricing-kit");
   redirect(getLaunchState() === "PREORDER" ? "/preorder" : "/buy");
 }

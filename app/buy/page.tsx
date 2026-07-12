@@ -7,7 +7,7 @@ import { priceConfig } from "@/content/book";
 import { getLaunchMode } from "@/lib/env";
 import { productJsonLd, breadcrumbJsonLd } from "@/lib/schema";
 
-export const metadata = pageMetadata("Buy", "Choose the format that fits how you read — direct digital, Kindle, or paperback.", { path: "/buy", image: "/gateway-cover.jpg" });
+export const metadata = pageMetadata("Buy Curls & Contemplation", "Buy the protected direct digital edition of Curls & Contemplation. Kindle and paperback store links will be added when confirmed.", { path: "/buy", image: "/gateway-cover.jpg" });
 
 export default function Page() {
   // The charge follows launch mode server-side; the label must tell the same story.
@@ -25,8 +25,8 @@ export default function Page() {
       >
         <div className="grid gap-3 text-sm text-whitegold/78">
           <p>Direct digital: ${price.toFixed(2)}{launched ? "" : ` now — $${priceConfig.regularDirect.amount.toFixed(2)} fifteen days after release`}</p>
-          <p>Kindle (external store): ${priceConfig.kindleExternal.amount.toFixed(2)}</p>
-          <p>Paperback (external, arrives with launch): ${priceConfig.paperbackExternal.amount.toFixed(2)}</p>
+          <p>Idea-to-Action Workbook: free with preorder; $19.99 after launch.</p>
+          <p>Kindle and paperback: store links will appear here when confirmed.</p>
         </div>
       </PageHero>
       <Section eyebrow="Direct digital" title="Fast path, private delivery.">

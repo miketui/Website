@@ -9,9 +9,11 @@
  *   SUPABASE_SERVICE_ROLE_KEY=... NEXT_PUBLIC_SUPABASE_URL=... \
  *     node scripts/upload-deliverables.mjs [--private-dir /path/to/files] [--dry-run]
  *
- * Private files expected inside --private-dir (flat, by filename):
- *   Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub
- *   Idea-to-Action-Workbook-MDW.pdf
+ * Private files mirror the storage paths under --private-dir:
+ *   workbook/Idea-to-Action-Workbook.pdf
+ *   daily-directives/Daily-Directives-Complete-12-Set-Bundle.zip
+ *   daily-directives/sets/Daily-Directives-Set-01-....zip through Set 12
+ * The EPUB is optional and is uploaded only when present.
  *
  * The v13 POD interior PDF is a print artifact for KDP/third-party POD only —
  * it is not a site deliverable and does not belong in Supabase Storage.
@@ -24,8 +26,21 @@ const PRIVATE_BUCKET = "curls-deliverables";
 const FREE_DIR = resolve(process.cwd(), "assets/free-bucket");
 
 const privateTargets = [
-  { file: "Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub", path: "books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub", required: true },
-  { file: "Idea-to-Action-Workbook-MDW.pdf", path: "workbooks/Idea-to-Action-Workbook-MDW.pdf", required: false }
+  { file: "workbook/Idea-to-Action-Workbook.pdf", path: "workbook/Idea-to-Action-Workbook.pdf", required: true },
+  { file: "daily-directives/Daily-Directives-Complete-12-Set-Bundle.zip", path: "daily-directives/Daily-Directives-Complete-12-Set-Bundle.zip", required: true },
+  { file: "daily-directives/sets/Daily-Directives-Set-01-Permission-to-Begin.zip", path: "daily-directives/sets/Daily-Directives-Set-01-Permission-to-Begin.zip", required: true },
+  { file: "daily-directives/sets/Daily-Directives-Set-02-The-Discipline-of-Showing-Up.zip", path: "daily-directives/sets/Daily-Directives-Set-02-The-Discipline-of-Showing-Up.zip", required: true },
+  { file: "daily-directives/sets/Daily-Directives-Set-03-Visible-on-Purpose.zip", path: "daily-directives/sets/Daily-Directives-Set-03-Visible-on-Purpose.zip", required: true },
+  { file: "daily-directives/sets/Daily-Directives-Set-04-The-Price-of-Your-Gifts.zip", path: "daily-directives/sets/Daily-Directives-Set-04-The-Price-of-Your-Gifts.zip", required: true },
+  { file: "daily-directives/sets/Daily-Directives-Set-05-Boundaries-Build-the-Brand.zip", path: "daily-directives/sets/Daily-Directives-Set-05-Boundaries-Build-the-Brand.zip", required: true },
+  { file: "daily-directives/sets/Daily-Directives-Set-06-Creative-Recovery.zip", path: "daily-directives/sets/Daily-Directives-Set-06-Creative-Recovery.zip", required: true },
+  { file: "daily-directives/sets/Daily-Directives-Set-07-Trust-Your-Taste.zip", path: "daily-directives/sets/Daily-Directives-Set-07-Trust-Your-Taste.zip", required: true },
+  { file: "daily-directives/sets/Daily-Directives-Set-08-Rooms-I-Belong-In.zip", path: "daily-directives/sets/Daily-Directives-Set-08-Rooms-I-Belong-In.zip", required: true },
+  { file: "daily-directives/sets/Daily-Directives-Set-09-The-Courage-to-Pivot.zip", path: "daily-directives/sets/Daily-Directives-Set-09-The-Courage-to-Pivot.zip", required: true },
+  { file: "daily-directives/sets/Daily-Directives-Set-10-Built-from-Evidence.zip", path: "daily-directives/sets/Daily-Directives-Set-10-Built-from-Evidence.zip", required: true },
+  { file: "daily-directives/sets/Daily-Directives-Set-11-Legacy-in-Motion.zip", path: "daily-directives/sets/Daily-Directives-Set-11-Legacy-in-Motion.zip", required: true },
+  { file: "daily-directives/sets/Daily-Directives-Set-12-The-Version-Im-Becoming.zip", path: "daily-directives/sets/Daily-Directives-Set-12-The-Version-Im-Becoming.zip", required: true },
+  { file: "books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub", path: "books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub", required: false }
 ];
 
 const args = process.argv.slice(2);
@@ -57,7 +72,7 @@ function walk(dir) {
   });
 }
 
-const contentTypeFor = (path) => (path.endsWith(".epub") ? "application/epub+zip" : path.endsWith(".pdf") ? "application/pdf" : "application/octet-stream");
+const contentTypeFor = (path) => (path.endsWith(".epub") ? "application/epub+zip" : path.endsWith(".pdf") ? "application/pdf" : path.endsWith(".zip") ? "application/zip" : "application/octet-stream");
 
 async function uploadAll() {
   const { createClient } = await import("@supabase/supabase-js");
@@ -88,7 +103,7 @@ async function uploadAll() {
   }
 
   if (!privateDir) {
-    console.warn("No --private-dir given — skipping private bucket uploads (v13 EPUB, workbook).");
+    console.warn("No --private-dir given — skipping private bucket uploads.");
   } else {
     for (const target of privateTargets) {
       const local = join(privateDir, target.file);

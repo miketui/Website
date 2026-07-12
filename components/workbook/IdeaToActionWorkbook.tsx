@@ -123,7 +123,7 @@ export function IdeaToActionWorkbook() {
         <div className="w-full max-w-lg">
           <div className="h-1 w-full mb-8" style={{background:"#D4AF37"}}/>
           <p className="text-xs font-bold tracking-widest mb-4" style={{color:"#D4AF37"}}>EXCLUSIVE BUYER COMPANION · 21 PAGES</p>
-          <p className="text-sm tracking-wider mb-6" style={{color:"#C7D9D2"}}>MICHAEL DAVID WARREN</p>
+          <p className="text-sm tracking-wider mb-6" style={{color:"#C7D9D2"}}>MICHAEL DAVID</p>
           <div className="w-16 h-0.5 mx-auto mb-6" style={{background:"#D4AF37"}}/>
           <h1 className="text-4xl md:text-5xl font-bold mb-3" style={{fontFamily:"'Georgia',serif",color:"#fff"}}>The Idea-to-Action</h1>
           <h1 className="text-4xl md:text-5xl font-bold mb-6" style={{fontFamily:"'Georgia',serif",color:"#fff"}}>Workbook</h1>

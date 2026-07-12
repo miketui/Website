@@ -10,7 +10,7 @@ import { priceConfig } from "@/content/book";
  * Compatibility: the legacy `NEXT_PUBLIC_LAUNCH_MODE` (preorder | launched |
  * paused) continues to work — it maps onto the v2 states so nothing already
  * deployed breaks. `paused` is honored as a commerce overlay (checkout CTAs
- * fall back to the free chapter) without being a visual state of its own.
+ * fall back to the free pricing kit) without being a visual state of its own.
  *
  * Guardrail (env-var incident class, see lib/env.ts envOrDefault): a blank or
  * invalid value NEVER blank-renders or crashes a deploy. Resolution order:
@@ -65,7 +65,7 @@ export function getLaunchState(now: Date = new Date()): LaunchState {
 }
 
 /** Commerce overlay: when checkout is administratively paused, CTAs route to
- *  the free chapter instead of a dead checkout. Visual state is unaffected. */
+ *  the free pricing kit instead of a dead checkout. Visual state is unaffected. */
 export function isCheckoutPaused(): boolean {
   return process.env.NEXT_PUBLIC_LAUNCH_MODE?.trim().toLowerCase() === "paused";
 }
@@ -98,7 +98,7 @@ export function getLaunchStateCopy(now: Date = new Date()): LaunchStateCopy {
   const paused = isCheckoutPaused();
   const price = state === "PREORDER" ? priceConfig.preorderDirect.amount : priceConfig.regularDirect.amount;
   const priceLabel = `$${price.toFixed(2)}`;
-  const orderHref = paused ? "/free-chapter" : "/order";
+  const orderHref = paused ? "/pricing-kit" : "/order";
   const release = releaseDateLabel();
 
   if (state === "PREORDER") {

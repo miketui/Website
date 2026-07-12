@@ -13,8 +13,8 @@ function normalizeSiteUrl(value: string | undefined, fallback: string): string {
 export const siteConfig = {
   name: "Curls & Contemplation",
   author: "Michael David",
-  tagline: "For the freelance hairstylist who wants to lead.",
-  subtitle: "A Freelance Hairstylist's Guide to Creative Excellence",
+  tagline: "For the stylist building a creative career that lasts.",
+  subtitle: "A Stylist’s Interactive Journey",
   description:
     "Your craft is not the problem — the missing business map is. Pricing, networking, on-set etiquette, and leadership for freelance hairstylists.",
   siteUrl: normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL, "http://localhost:3000"),

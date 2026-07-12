@@ -55,7 +55,7 @@
 ## Schema coverage
 
 - Book JSON-LD exists for the book/direct edition.
-- Person JSON-LD exists for Michael David / Michael David Warren Jr.
+- Person JSON-LD exists for Michael David / Michael David
 - Product JSON-LD exists for the direct digital edition offer.
 - BlogPosting JSON-LD exists for blog detail pages.
 - FAQPage JSON-LD exists for `/faq`.

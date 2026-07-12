@@ -10,5 +10,5 @@ import { permanentRedirect } from "next/navigation";
  * so re-enabling a real claim UI later is a page-only change.
  */
 export default function BonusClaimRedirect() {
-  permanentRedirect("/free-chapter");
+  permanentRedirect("/pricing-kit");
 }

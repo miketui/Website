@@ -1,11 +1,12 @@
 import Link from "next/link";
+import Image from "next/image";
 import { CoverReveal } from "@/components/intro/CoverReveal";
 import { MotionAsset } from "@/components/motion/MotionAsset";
 import { KineticHeadline } from "@/components/motion/KineticHeadline";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { CurlDraw } from "@/components/motion/CurlDraw";
 import { PreorderCountdown } from "@/components/PreorderCountdown";
-import { FreeChapterForm } from "@/components/FreeChapterForm";
+import { PricingKitForm } from "@/components/PricingKitForm";
 import { bookJsonLd } from "@/lib/schema";
 import { pageMetadata } from "@/lib/seo";
 import { getLaunchStateCopy, releaseDateLabel } from "@/config/launchState";
@@ -13,7 +14,7 @@ import { priceConfig } from "@/content/book";
 
 export const metadata = pageMetadata(
   "A Stylist's Interactive Journey",
-  "Curls & Contemplation by Michael David — the business playbook for working stylists. Beauty school taught you hair. Nobody taught you the money. Preorder the direct digital edition.",
+  "Curls & Contemplation by Michael David is a 467-page interactive guide for freelance hairstylists building creative confidence, sustainable pricing, visibility, leadership, and career longevity.",
   { path: "/", image: "/gateway-cover.jpg" }
 );
 
@@ -56,12 +57,12 @@ export default function HomePage() {
             <KineticHeadline text="Curls & Contemplation" as="h1" className="text-5xl text-white md:text-7xl" accentFrom={1} />
             <p className="mt-4 font-accent text-2xl italic text-mist md:text-3xl">A Stylist&rsquo;s Interactive Journey</p>
             <p className="mt-6 max-w-[46ch] leading-8 text-whitegold/85">
-              Sixteen chapters and every worksheet on the part of this career nobody teaches: pricing, pitching, protecting
-              yourself — and staying whole while you do it.
+              A 467-page interactive guide to creative identity, networking, pricing, digital visibility, leadership,
+              financial wisdom, resilience, and building a career that can hold your ambition.
             </p>
             <div className="mt-9 flex flex-wrap gap-4">
               <Link href={launch.heroCta.href} className={btnGold}>{launch.heroCta.label}</Link>
-              <Link href="/free-chapter" className={btnGhost}>Read Chapter 1 free</Link>
+              <Link href="/pricing-kit" className={btnGhost}>Get the free pricing checklist</Link>
             </div>
           </div>
         </section>
@@ -123,11 +124,19 @@ export default function HomePage() {
             <p className="editorial-kicker mb-4">The Journey</p>
             <h2 className="font-display text-4xl text-white md:text-6xl">Step over the threshold</h2>
             <p className="mx-auto mt-5 max-w-[48ch] leading-8 text-whitegold/90">
-              Every chapter opens a door — from the salon floor to the quiet work of knowing your own value.
+              Every chapter opens a door — from technical excellence to the quiet work of trusting your own value.
             </p>
             <div className="mt-8">
               <Link href="/journey" className={btnGold}>Begin the journey</Link>
             </div>
+          </div>
+        </section>
+
+        <section aria-label="A moment of contemplation" className="relative grid min-h-[72svh] place-items-center overflow-hidden border-y border-whitegold/10 bg-[#070707] px-6 text-center">
+          <div aria-hidden="true" className="absolute h-72 w-72 animate-pulse rounded-full bg-antique/[0.07] blur-3xl" />
+          <div className="relative mx-auto max-w-4xl">
+            <p className="editorial-kicker mb-7">Pause here</p>
+            <p className="font-display text-4xl leading-tight text-white md:text-6xl">When did you last name what your work is worth — and believe yourself?</p>
           </div>
         </section>
 
@@ -173,20 +182,20 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ACT VII — THE FREE TASTE. Asset F (chapter-peek) + capture. */}
+        {/* ACT VII — THE PRACTICAL START. Checklist capture, no manuscript giveaway. */}
         <section id="chapter" className="mx-auto max-w-6xl px-6 py-[clamp(4.5rem,12vw,9rem)]">
           <div className="grid items-center gap-14 md:grid-cols-2">
             <MotionAsset id="F" className="rounded-md border border-antique/20" />
             <div>
-              <p className="editorial-kicker mb-4">Free Chapter</p>
+              <p className="editorial-kicker mb-4">Free Pricing Confidence Kit</p>
               <h2 className="font-display text-4xl text-white md:text-5xl">
-                Read the first chapter <span className="accent-italic text-antique">free</span>
+                Know the number. <span className="accent-italic text-antique">Hold the boundary.</span>
               </h2>
               <p className="mt-5 max-w-[52ch] leading-8 text-whitegold/82">
-                Get Chapter 1 plus the Pricing Confidence Checklist — delivered to your inbox in minutes.
+                Get the one-page Pricing Confidence Checklist: a rate-floor calculation, a clear price script, and a boundary check — delivered to your inbox in minutes.
               </p>
               <div className="mt-7">
-                <FreeChapterForm />
+                <PricingKitForm />
               </div>
             </div>
           </div>
@@ -195,18 +204,14 @@ export default function HomePage() {
         {/* ACT VIII — THE AUTHOR. Slim bio, pen name only. */}
         <section id="author" className="mx-auto max-w-6xl px-6 pb-[clamp(4.5rem,12vw,9rem)]">
           <div className="grid items-center gap-12 md:grid-cols-[0.8fr_1.2fr]">
-            <div
-              aria-hidden="true"
-              className="mx-auto grid aspect-square w-full max-w-[16rem] place-items-center rounded-full border border-antique/30 bg-[radial-gradient(circle_at_40%_35%,#1c2622,#0c0c0c)]"
-            >
-              <span className="font-display text-5xl text-antique">MD</span>
+            <div className="relative mx-auto aspect-[4/5] w-full max-w-[20rem] overflow-hidden rounded-[2rem] border border-antique/30 bg-obsidian">
+              <Image src="/michael-david-author.webp" alt="Michael David, author of Curls & Contemplation" fill sizes="320px" className="object-cover object-top" />
             </div>
             <div>
               <p className="editorial-kicker mb-4">The Author</p>
               <h2 className="font-display text-4xl text-white md:text-5xl">Michael David</h2>
               <p className="mt-5 max-w-[54ch] leading-8 text-whitegold/82">
-                A stylist writing for stylists — on the craft that fills the chair and the contemplation that sustains a
-                career. He writes, prices, and delivers this book directly, so the whole of it stays honest.
+                Michael David is a hairstylist, creative professional, and educator writing from lived practice. His work connects technical excellence with business clarity, cultural respect, leadership, and the inner steadiness required for a long creative career.
               </p>
               <div className="mt-7">
                 <Link href="/about" className={btnGhost}>More about Michael</Link>

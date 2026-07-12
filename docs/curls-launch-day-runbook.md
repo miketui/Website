@@ -1,6 +1,6 @@
 # Curls & Contemplation — Launch-Day Runbook
 
-**Launch:** Tuesday, **2026-11-17**. The fulfillment cron (`/api/cron/launch-day`) runs **hourly** (see `vercel.json`); the kill-switch keeps every run a no-op until you flip it, and each run sends at most 50 buyers so the function always finishes inside Vercel's execution limit — a larger backlog drains over the following hours automatically.
+**Launch:** Tuesday, **2026-11-24**. The fulfillment cron (`/api/cron/launch-day`) runs **hourly** (see `vercel.json`); the kill-switch keeps every run a no-op until you flip it, and each run sends at most 50 buyers so the function always finishes inside Vercel's execution limit — a larger backlog drains over the following hours automatically.
 **Owner:** Michael David. **Scope:** getting the v13 EPUB to every paid buyer automatically, with a kill-switch between the cron and their inboxes. (The POD interior PDF is a print artifact for KDP/third-party POD — the site never delivers it.)
 
 ---
@@ -15,10 +15,10 @@ The launch-day cron does **nothing** unless `LAUNCH_FULFILLMENT_ENABLED` is exac
 |---|---|
 | **Now / any day** | Run the dry-run curl below. Prove the chain end-to-end against your test address. |
 | **2026-11-16 07:30** | Automatic: `/api/cron/pre-launch-check` runs the dry run and emails you a pass/fail report. Subject prefixed `[⚠️ ACTION REQUIRED]` if anything is off. |
-| **2026-11-17 06:30–06:55** | Pre-flip verification (checklist below). |
-| **2026-11-17 ~06:55** | Flip the switch (30+ min before the 07:00 cron): Vercel Dashboard → **Website** project → Settings → Environment Variables → Production → set `LAUNCH_FULFILLMENT_ENABLED=true` → **redeploy** (env changes need a deploy). CLI alternative: `vercel env rm LAUNCH_FULFILLMENT_ENABLED production && echo "true" \| vercel env add LAUNCH_FULFILLMENT_ENABLED production && vercel redeploy` |
-| **2026-11-17 07:00** | Cron fires (next hourly tick after the flip). Paid, unfulfilled buyers get a 30-day signed EPUB link, 50 per run until the backlog is empty (`remainingAfterBatch` in the response shows what's left). `purchases.launch_email_sent_at` gates re-sends; the hourly cadence also picks up late buyers automatically. |
-| **2026-11-17 07:15** | Verify (checklist below). If `remainingAfterBatch` was non-zero, re-check after the next hourly run. |
+| **2026-11-24 06:30–06:55** | Pre-flip verification (checklist below). |
+| **2026-11-24 ~06:55** | Flip the switch (30+ min before the 07:00 cron): Vercel Dashboard → **Website** project → Settings → Environment Variables → Production → set `LAUNCH_FULFILLMENT_ENABLED=true` → **redeploy** (env changes need a deploy). CLI alternative: `vercel env rm LAUNCH_FULFILLMENT_ENABLED production && echo "true" \| vercel env add LAUNCH_FULFILLMENT_ENABLED production && vercel redeploy` |
+| **2026-11-24 07:00** | Cron fires (next hourly tick after the flip). Paid, unfulfilled buyers get a 30-day signed EPUB link, 50 per run until the backlog is empty (`remainingAfterBatch` in the response shows what's left). `purchases.launch_email_sent_at` gates re-sends; the hourly cadence also picks up late buyers automatically. |
+| **2026-11-24 07:15** | Verify (checklist below). If `remainingAfterBatch` was non-zero, re-check after the next hourly run. |
 
 ## Verify BEFORE flipping the switch
 

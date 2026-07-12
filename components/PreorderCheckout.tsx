@@ -3,8 +3,8 @@
 import { useState, type FormEvent } from "react";
 
 /**
- * Funnel 1 checkout entry: book at the launch price, with the honest $7.99
- * Affirmation Card Deck order bump. Posts to /api/checkout and follows the
+ * Funnel 1 checkout entry: book at the launch price, with the optional $59
+ * Daily Directives bundle. Posts to /api/checkout and follows the
  * Stripe-hosted session URL. Test mode until live keys are activated.
  */
 export function PreorderCheckout({
@@ -25,14 +25,14 @@ export function PreorderCheckout({
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const addCardDeck = new FormData(event.currentTarget).get("card-deck") === "on";
+    const addDailyDirectives = new FormData(event.currentTarget).get("daily-directives") === "on";
     setStatus("submitting");
     setMessage(null);
     try {
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product: "direct_ebook", addCardDeck, sourcePage })
+        body: JSON.stringify({ product: "direct_ebook", addDailyDirectives, sourcePage })
       });
       const json = await response.json().catch(() => null);
       if (response.ok && json?.ok && json.url) {
@@ -41,8 +41,8 @@ export function PreorderCheckout({
       }
       setStatus("error");
       setMessage(
-        json?.error?.code === "card_deck_unavailable"
-          ? "The card deck isn't available right now. Uncheck it and your book order will continue — nothing extra was charged."
+        json?.error?.code === "daily_directives_unavailable"
+          ? "The Daily Directives bundle isn't available right now. Uncheck it and your book order will continue — nothing extra was charged."
           : json?.error?.code === "config_missing" || json?.error?.code === "checkout_paused"
             ? "Checkout isn't switched on in this environment yet. Stripe activates with the owner's keys — nothing was charged."
             : "We couldn't start checkout. Please try again."
@@ -62,10 +62,10 @@ export function PreorderCheckout({
       <p className="mt-2 text-sm leading-6 text-whitegold/70">{note}</p>
 
       <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-2xl border border-antique/40 bg-white/5 p-4 transition hover:border-antique/70">
-        <input type="checkbox" name="card-deck" className="mt-1 h-5 w-5 accent-[#B08D57]" />
+        <input type="checkbox" name="daily-directives" className="mt-1 h-5 w-5 accent-[#B08D57]" />
         <span>
-          <span className="block font-semibold text-white">Add the Affirmation Card Deck — $7.99</span>
-          <span className="mt-1 block text-sm leading-6 text-whitegold/70">30 print-at-home cards plus phone wallpapers, drawn from the book&rsquo;s affirmations. Delivered alongside your edition.</span>
+          <span className="block font-semibold text-white">Add all 12 Daily Directives sets — $59</span>
+          <span className="mt-1 block text-sm leading-6 text-whitegold/70">372 digital affirmation cards across twelve focused sets. Delivered to your protected account after checkout.</span>
         </span>
       </label>
 

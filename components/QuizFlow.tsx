@@ -117,22 +117,22 @@ export function QuizFlow() {
   const { archetype } = phase;
   return (
     <div className="editorial-panel rounded-[2rem] p-6 md:p-10">
-      <p className="editorial-kicker">Your blind spot · {archetype.bookPart}</p>
+      <p className="editorial-kicker">Your focus · {archetype.focus}</p>
       <h2 className="mt-3 font-display text-4xl text-white md:text-5xl">{archetype.name}</h2>
       <p className="mt-4 max-w-2xl leading-8 text-whitegold/85">{archetype.diagnosis}</p>
 
       {captureStatus === "done" ? (
         <div role="status" className="mt-8 rounded-2xl border border-antique/40 bg-jade/15 p-6">
           <h3 className="font-display text-2xl text-white">Check your inbox.</h3>
-          <p className="mt-2 text-whitegold/80">Your worksheet is on its way. While you wait, the chapter that addresses this is already public.</p>
+          <p className="mt-2 text-whitegold/80">Your focused worksheet is on its way. Use it tonight, then continue with the complete guide when you are ready.</p>
           <div className="mt-5 flex flex-col gap-4 sm:flex-row">
-            <MagneticCurlButton href={`/chapter/${archetype.chapterSlug}`} variant="secondary">Preview the chapter</MagneticCurlButton>
+            <MagneticCurlButton href="/book" variant="secondary">Explore the book</MagneticCurlButton>
             <MagneticCurlButton href={launch.heroCta.href}>{launch.heroCta.label}</MagneticCurlButton>
           </div>
         </div>
       ) : (
         <form onSubmit={(event) => onCapture(event, archetype)} className="mt-8 rounded-2xl border border-antique/30 bg-obsidian p-6" aria-describedby={captureMessage ? "quiz-capture-error" : undefined}>
-          <h3 className="font-display text-2xl text-white">Send my worksheet + the matching chapter</h3>
+          <h3 className="font-display text-2xl text-white">Send my focused worksheet</h3>
           <label className="mt-4 block text-sm font-semibold text-white" htmlFor="quiz-email">Email address</label>
           <input
             id="quiz-email"

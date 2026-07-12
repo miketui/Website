@@ -13,7 +13,7 @@ export type SignedDownloadResult =
   | { allowed: false; reason: DownloadDenialReason };
 
 export function isSafePrivateDeliverablePath(path: string) {
-  return !path.startsWith("/") && !path.includes("release/") && !path.includes("public/") && (path.endsWith(".epub") || path.endsWith(".pdf"));
+  return !path.startsWith("/") && !path.includes("release/") && !path.includes("public/") && (path.endsWith(".epub") || path.endsWith(".pdf") || path.endsWith(".zip"));
 }
 
 export async function createSignedDownloadUrl(user: SessionUser | null, slug: DeliverableSlug): Promise<SignedDownloadResult> {

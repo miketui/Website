@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { priceConfig } from "@/content/book";
+import { dailyDirectives, dailyDirectiveSets, dailyDirectiveSku, type DailyDirectiveSku } from "@/content/daily-directives";
 import { toast } from "@/components/ui/Toast";
 
 /**
@@ -16,7 +17,7 @@ import { toast } from "@/components/ui/Toast";
  * artifact sandbox). Guarded for SSR + storage-denied environments.
  */
 
-export type CartSku = "book" | "card_deck" | "workbook";
+export type CartSku = "book" | "daily_directives_bundle" | "workbook" | DailyDirectiveSku;
 
 export interface CartCatalogEntry {
   sku: CartSku;
@@ -27,6 +28,13 @@ export interface CartCatalogEntry {
   regularPrice?: number;
 }
 
+const directiveEntries = Object.fromEntries(
+  dailyDirectiveSets.map((set) => {
+    const sku = dailyDirectiveSku(set.number);
+    return [sku, { sku, name: `Daily Directives — ${set.title}`, tagline: `31 digital affirmation cards · Set ${String(set.number).padStart(2, "0")}`, price: dailyDirectives.individualPrice }];
+  })
+) as Record<DailyDirectiveSku, CartCatalogEntry>;
+
 export const CART_CATALOG: Record<CartSku, CartCatalogEntry> = {
   book: {
     sku: "book",
@@ -35,18 +43,19 @@ export const CART_CATALOG: Record<CartSku, CartCatalogEntry> = {
     price: priceConfig.preorderDirect.amount,
     regularPrice: priceConfig.regularDirect.amount
   },
-  card_deck: {
-    sku: "card_deck",
-    name: "Affirmation Card Deck",
-    tagline: "30 printable cards from the Affirmation Odyssey",
-    price: 7.99
+  daily_directives_bundle: {
+    sku: "daily_directives_bundle",
+    name: dailyDirectives.bundleName,
+    tagline: `${dailyDirectives.totalCards} digital affirmation cards · all 12 sets`,
+    price: dailyDirectives.bundlePrice
   },
   workbook: {
     sku: "workbook",
     name: "The Idea-to-Action Workbook",
     tagline: "21-page buyer companion · interactive on-site + printable PDF",
     price: 19.99
-  }
+  },
+  ...directiveEntries
 };
 
 const STORAGE_KEY = "cc-cart-v1";
@@ -72,7 +81,7 @@ function readStored(): CartSku[] {
     if (!raw) return [];
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter((s): s is CartSku => s === "book" || s === "card_deck" || s === "workbook");
+    return parsed.filter((s): s is CartSku => typeof s === "string" && s in CART_CATALOG);
   } catch {
     return [];
   }

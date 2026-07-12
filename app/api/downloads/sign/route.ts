@@ -5,7 +5,12 @@ import { getSessionUser } from "@/lib/supabase/server";
 import { analyticsEvents } from "@/lib/analytics";
 import { recordServerEvent } from "@/lib/events/server-analytics";
 
-const schema = z.object({ deliverable: z.enum(["epub", "card_deck"]) });
+const schema = z.object({ deliverable: z.enum([
+  "epub", "daily_directives_bundle", "workbook",
+  "daily_directives_set_01", "daily_directives_set_02", "daily_directives_set_03", "daily_directives_set_04",
+  "daily_directives_set_05", "daily_directives_set_06", "daily_directives_set_07", "daily_directives_set_08",
+  "daily_directives_set_09", "daily_directives_set_10", "daily_directives_set_11", "daily_directives_set_12"
+]) });
 
 export async function POST(request: Request) {
   const contentType = request.headers.get("content-type") ?? "";

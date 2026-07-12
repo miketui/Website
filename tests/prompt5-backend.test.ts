@@ -39,7 +39,7 @@ describe("Prompt 5 protected downloads", () => {
 
 describe("Prompt 5 email providers", () => {
   it("maps all required MailerLite groups", () => {
-    expect(mailerLiteGroups).toMatchObject({ subscribers: "Subscribers", free_chapter: "Free Chapter", vip_early_readers: "VIP / Early Readers" });
+    expect(mailerLiteGroups).toMatchObject({ subscribers: "Subscribers", pricing_kit: "Pricing Confidence Kit", vip_early_readers: "VIP / Early Readers" });
   });
 
   it("rejects invalid email and skips missing API keys safely", async () => {

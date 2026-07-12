@@ -11,7 +11,7 @@ export const metadata = pageMetadata(
   { path: "/reset", image: "/gateway-cover.jpg" }
 );
 
-/* Reframed from the "Contemplation" chapter takeaways (content/chapters.ts) into a
+/* Reframed from the book's reflection practice into a
    soft, reflective practice. No medical claims — this is a habit of attention, not
    therapy or treatment. */
 const practices = [
@@ -50,8 +50,8 @@ export default function ResetPage() {
         description="The reset is the part of the craft nobody schedules — the pause where you set the work down for a moment and pick your own head back up. It's the through-line of the Contemplation chapter, pulled out here on its own."
         primaryHref={launch.heroCta.href}
         primaryLabel={launch.heroCta.label}
-        secondaryHref="/free-chapter"
-        secondaryLabel="Read Chapter 1 Free"
+        secondaryHref="/pricing-kit"
+        secondaryLabel="Get the Free Pricing Kit"
       >
         <p className="text-sm leading-7 text-whitegold/80">
           This isn&rsquo;t therapy and it isn&rsquo;t a cure for anything. It&rsquo;s a working habit

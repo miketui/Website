@@ -9,5 +9,5 @@ import { getLaunchCta, getLaunchMode } from "@/lib/launch-mode";
  */
 export function Header() {
   const cta = getLaunchCta(getLaunchMode());
-  return <SiteHeader cta={<LaunchModeCTA showHelper={false} />} mobileCta={{ href: cta.href, label: cta.priceTier === "preorder" ? "Preorder" : cta.priceTier === "regular" ? "Buy" : "Free Chapter" }} />;
+  return <SiteHeader cta={<LaunchModeCTA showHelper={false} />} mobileCta={{ href: cta.href, label: cta.priceTier === "preorder" ? "Preorder" : cta.priceTier === "regular" ? "Buy" : "Free Pricing Kit" }} />;
 }

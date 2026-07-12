@@ -36,11 +36,7 @@ export function bookJsonLd() {
     bookEdition: "Digital Edition",
     publisher: { "@type": "Organization", name: siteConfig.name },
     audience: { "@type": "Audience", audienceType: "Freelance hairstylists and beauty professionals" },
-    workExample: {
-      "@type": "Book",
-      bookFormat: "https://schema.org/EBook",
-      potentialAction: { "@type": "ReadAction", target: absoluteUrl("/free-chapter") }
-    },
+    potentialAction: { "@type": "ViewAction", target: absoluteUrl("/pricing-kit") },
     offers: {
       "@type": "Offer",
       price: priceConfig.preorderDirect.amount.toFixed(2),

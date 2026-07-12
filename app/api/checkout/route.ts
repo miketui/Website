@@ -8,29 +8,36 @@ import {
   buildCheckoutMetadata,
   checkoutUrls,
   getStripe,
-  resolveCardDeckPriceId,
+  resolveDailyDirectivesBundlePriceId,
+  resolveDailyDirectivesSetPriceId,
   resolveServerPriceId,
   resolveWorkbookPriceId
 } from "@/lib/stripe";
+import type { DailyDirectiveSku } from "@/content/daily-directives";
 
 /**
  * Checkout accepts BOTH shapes:
  *  1. Legacy single-product body (PreorderCheckout / LaunchModeCTA):
- *       { product: "direct_ebook", addCardDeck?: boolean, ... }
+ *       { product: "direct_ebook", addDailyDirectives?: boolean, ... }
  *  2. Cart body (site-wide CartDrawer):
- *       { items: [{ sku: "book" | "card_deck" | "workbook" }], ... }
+ *       { items: [{ sku: server-allowlisted catalog sku }], ... }
  *
  * The sku → Stripe price mapping lives entirely server-side (env-configured
  * price IDs). Clients can never inject a price or price ID; unknown skus are
  * rejected. The book's tier still follows the launch-mode machine.
  */
 
-const cartSku = z.enum(["book", "card_deck", "workbook"]);
+const directiveSetSkus = [
+  "daily_directives_set_01", "daily_directives_set_02", "daily_directives_set_03", "daily_directives_set_04",
+  "daily_directives_set_05", "daily_directives_set_06", "daily_directives_set_07", "daily_directives_set_08",
+  "daily_directives_set_09", "daily_directives_set_10", "daily_directives_set_11", "daily_directives_set_12"
+] as const;
+const cartSku = z.enum(["book", "daily_directives_bundle", "workbook", ...directiveSetSkus]);
 
 const checkoutSchema = z.object({
   product: z.enum(["direct_ebook"]).default("direct_ebook"),
-  addCardDeck: z.boolean().default(false),
-  items: z.array(z.object({ sku: cartSku })).max(3).optional(),
+  addDailyDirectives: z.boolean().default(false),
+  items: z.array(z.object({ sku: cartSku })).max(15).optional(),
   sourcePage: z.string().max(120).optional(),
   utm: z
     .object({
@@ -66,7 +73,7 @@ export async function POST(request: Request) {
     for (const item of parsed.data.items) skus.add(item.sku);
   } else {
     skus.add("book");
-    if (parsed.data.addCardDeck) skus.add("card_deck");
+    if (parsed.data.addDailyDirectives) skus.add("daily_directives_bundle");
   }
   if (skus.size === 0) {
     return NextResponse.json({ ok: false, error: { code: "empty_cart", message: "Your cart is empty." } }, { status: 400 });
@@ -86,13 +93,21 @@ export async function POST(request: Request) {
     bookTier = resolved.tier;
     lineItems.push({ price: resolved.priceId, quantity: 1 });
   }
-  if (skus.has("card_deck")) {
-    const cardDeckPriceId = resolveCardDeckPriceId();
+  if (skus.has("daily_directives_bundle")) {
+    const bundlePriceId = resolveDailyDirectivesBundlePriceId();
     // Never silently drop a paid add-on the buyer asked for.
-    if (!cardDeckPriceId) {
-      return NextResponse.json({ ok: false, error: { code: "card_deck_unavailable", message: "The Affirmation Card Deck isn't available right now." } }, { status: 503 });
+    if (!bundlePriceId) {
+      return NextResponse.json({ ok: false, error: { code: "daily_directives_unavailable", message: "The Daily Directives bundle isn't available right now." } }, { status: 503 });
     }
-    lineItems.push({ price: cardDeckPriceId, quantity: 1 });
+    lineItems.push({ price: bundlePriceId, quantity: 1 });
+  }
+  for (const sku of directiveSetSkus) {
+    if (!skus.has(sku)) continue;
+    const priceId = resolveDailyDirectivesSetPriceId(sku as DailyDirectiveSku);
+    if (!priceId) {
+      return NextResponse.json({ ok: false, error: { code: "daily_directives_unavailable", message: "That Daily Directives set isn't available right now." } }, { status: 503 });
+    }
+    lineItems.push({ price: priceId, quantity: 1 });
   }
   if (skus.has("workbook")) {
     const workbookPriceId = resolveWorkbookPriceId();
@@ -102,12 +117,13 @@ export async function POST(request: Request) {
     lineItems.push({ price: workbookPriceId, quantity: 1 });
   }
 
+  const dailyDirectivesSkus = Array.from(skus).filter((sku) => sku === "daily_directives_bundle" || sku.startsWith("daily_directives_set_"));
   const metadata = buildCheckoutMetadata({
     product: parsed.data.product,
     sourcePage: parsed.data.sourcePage,
     utm: parsed.data.utm,
     customerEmail: parsed.data.customerEmail,
-    cardDeck: skus.has("card_deck"),
+    dailyDirectivesSkus,
     workbook: skus.has("workbook"),
     bookIncluded: skus.has("book")
   });
@@ -130,7 +146,7 @@ export async function POST(request: Request) {
         launchMode: mode,
         priceTier: bookTier ?? "none",
         skus: Array.from(skus).join(","),
-        cardDeck: skus.has("card_deck"),
+        dailyDirectives: dailyDirectivesSkus.join(","),
         workbook: skus.has("workbook")
       },
       operational: true

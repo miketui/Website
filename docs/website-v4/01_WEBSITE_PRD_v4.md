@@ -6,7 +6,7 @@ No app scaffold, credentials, live payment activation, or release/book/build/arc
 # 01_WEBSITE_PRD_v4 — Author-Commerce Product Requirements
 
 ## 1. Product overview
-Build a production-ready author-commerce platform for **Curls & Contemplation: A Freelance Hairstylist's Guide to Creative Excellence** by **Michael David Warren Jr. / Michael David**. The site sells the direct digital bundle, grows an owned email list, protects paid deliverables, and prepares the business for post-launch retention without activating subscriptions in v1.
+Build a production-ready author-commerce platform for **Curls & Contemplation: A Freelance Hairstylist's Guide to Creative Excellence** by **Michael David**. The site sells the direct digital bundle, grows an owned email list, protects paid deliverables, and prepares the business for post-launch retention without activating subscriptions in v1.
 
 Controlling repo truth:
 - Audit source: `author-site/docs/website-v4/00_REPO_AUDIT.md`.

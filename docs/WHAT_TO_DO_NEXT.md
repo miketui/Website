@@ -1,6 +1,6 @@
 # What To Do Next — Curls & Contemplation setup runbook
 
-**For:** Michael David Warren Jr. (and any operator)
+**For:** Michael David (and any operator)
 **Companion to:** `docs/SITE_AUDIT_2026-06-20.md`
 **Golden rule:** Real secret values go in `author-site/.env.local` (git-ignored) or the Vercel
 dashboard — **never committed to the repo.** `.env.example` holds variable *names only*.

@@ -17,8 +17,8 @@ import { useReducedMotion } from "@/components/motion/ReducedMotionProvider";
 const links = [
   { href: "/book", label: "The Book" },
   { href: "/journey", label: "The Journey" },
-  { href: "/#stylists", label: "For Stylists" },
-  { href: "/free-chapter", label: "Free Chapter" }
+  { href: "/daily-directives", label: "Daily Directives" },
+  { href: "/pricing-kit", label: "Free Pricing Kit" }
 ] as const;
 
 export function SiteNav({ preorder }: { preorder: { href: string; label: string } }) {

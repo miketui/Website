@@ -11,44 +11,39 @@ export const FUNNELS_STAGED = false as const;
 export type QuizArchetype = {
   slug: string;
   name: string;
-  bookPart: string;
+  focus: string;
   diagnosis: string;
   worksheetPath: string; // curls-free public bucket, uploaded by owner
-  chapterSlug: string;
 };
 
 export const quizArchetypes: QuizArchetype[] = [
   {
     slug: "underpriced-artist",
     name: "The Underpriced Artist",
-    bookPart: "Part I",
+    focus: "Pricing clarity",
     diagnosis: "Your hands are senior. Your prices are junior. The gap between the two is paid for out of your own energy, every single week — and closing it starts with a rate floor, not a pep talk.",
     worksheetPath: "quiz/worksheet-underpriced-artist.pdf",
-    chapterSlug: "creative-excellence"
   },
   {
     slug: "invisible-talent",
     name: "The Invisible Talent",
-    bookPart: "Part II",
+    focus: "Intentional visibility",
     diagnosis: "The work is excellent and the room doesn't know it. Visibility is not vanity — it is the client experience starting before the chair, and it can be built deliberately.",
     worksheetPath: "quiz/worksheet-invisible-talent.pdf",
-    chapterSlug: "client-experience"
   },
   {
     slug: "burned-out-booked",
     name: "The Burned-Out Booked",
-    bookPart: "Part III",
+    focus: "Sustainable rhythm",
     diagnosis: "A full calendar that quietly empties you is not success — it is a business rhythm problem wearing a busy costume. The ledger of energy in versus income out tells the truth.",
     worksheetPath: "quiz/worksheet-burned-out-booked.pdf",
-    chapterSlug: "business-rhythm"
   },
   {
     slug: "almost-ceo",
     name: "The Almost-CEO",
-    bookPart: "Part IV",
+    focus: "Leadership systems",
     diagnosis: "You already lead — your standards, your set, your clients. What's missing is the reflective structure that turns instinct into a repeatable map you can scale without losing the craft.",
     worksheetPath: "quiz/worksheet-almost-ceo.pdf",
-    chapterSlug: "contemplation"
   }
 ];
 

@@ -5,7 +5,8 @@ import { deliverables, type DeliverableSlug } from "@/lib/deliverables";
 
 const itemNotes: Record<string, string> = {
   epub: "Private signed URL after entitlement check. 3 downloads / 7 days.",
-  card_deck: "Included with the Affirmation Card Deck order bump. 3 downloads / 7 days."
+  workbook: "Free with preorders; $19.99 after launch. 3 downloads / 7 days.",
+  daily_directives_bundle: "All 12 sets and 372 cards in one ZIP. 3 downloads / 7 days."
 };
 
 const errorMessages: Record<string, string> = {
@@ -74,7 +75,7 @@ export function DownloadList() {
   return (
     <div className="space-y-4">
       {Object.values(deliverables).map((item) => (
-        <DownloadRow key={item.slug} slug={item.slug} label={item.label} note={itemNotes[item.slug]} />
+        <DownloadRow key={item.slug} slug={item.slug} label={item.label} note={itemNotes[item.slug] ?? "Private digital download. 3 downloads / 7 days."} />
       ))}
     </div>
   );

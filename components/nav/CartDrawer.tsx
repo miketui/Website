@@ -43,7 +43,7 @@ export function CartButton() {
   );
 }
 
-const BUMP_ORDER: CartSku[] = ["card_deck", "workbook"];
+const BUMP_ORDER: CartSku[] = ["daily_directives_bundle", "workbook"];
 
 export function CartDrawer({ sourcePage }: { sourcePage?: string }) {
   const cart = useCart();

@@ -3,8 +3,8 @@ import { siteConfig } from "@/content/site";
 import { NewsletterForm } from "@/components/NewsletterForm";
 
 const readLinks = [
-  { href: "/free-chapter", label: "Free Chapter" },
-  { href: "/chapters", label: "Chapters" },
+  { href: "/pricing-kit", label: "Free Pricing Kit" },
+  { href: "/daily-directives", label: "Daily Directives" },
   { href: "/blog", label: "Blog" },
   { href: "/worksheets", label: "Worksheets" }
 ];

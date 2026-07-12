@@ -46,22 +46,22 @@ export async function sendLaunchDelivery(to: string, links: { epubUrl: string; e
   return sendTransactionalEmail({ to, ...launchDeliveryTemplate(links) });
 }
 
-export function freeChapterTemplate(links?: { chapter: string; checklist: string }) {
-  if (!links) {
-    return { subject: "Your Curls & Contemplation chapter", html: "<p>Your free chapter request is received. The production asset will be attached or linked after email delivery is configured.</p>" };
+export function pricingKitTemplate(checklistUrl?: string) {
+  if (!checklistUrl) {
+    return { subject: "Your Pricing Confidence Checklist", html: "<p>Your request is received. Your checklist will be delivered as soon as file delivery is available.</p>" };
   }
   return {
-    subject: "Chapter 1 is yours — read it tonight",
-    html: `<p>Thank you for reading with me. Here is everything, instantly:</p><p><a href="${links.chapter}">Chapter 1 — free excerpt (PDF)</a><br/><a href="${links.checklist}">Pricing Confidence Checklist (PDF)</a></p><p>One honest note on price: the direct edition is $17.99 through the first fifteen days after release, then $19.99 permanently. No countdown games — just the real schedule.</p>`
+    subject: "Your Pricing Confidence Checklist is ready",
+    html: `<p>Here is your <a href="${checklistUrl}">Pricing Confidence Checklist (PDF)</a>.</p><p>Use it to calculate your rate floor, say the number clearly, and hold the boundary that protects the work.</p><p>If you want the full system for pricing, networking, visibility, leadership, and a sustainable creative practice, <em>Curls &amp; Contemplation</em> is available to preorder for $17.99.</p>`
   };
 }
 
 export function welcomeSubscriberTemplate() {
-  const freeChapterUrl = `${getSiteUrl().replace(/\/$/, "")}/free-chapter`;
+  const pricingKitUrl = `${getSiteUrl().replace(/\/$/, "")}/pricing-kit`;
   return {
     subject: "You're in — one honest welcome",
-    html: `<p>Thank you for subscribing to Curls &amp; Contemplation.</p><p>Here's the deal: one welcome note (this one), then the occasional letter on pricing, craft, and the business nobody taught you. No spam, no daily blasts, and you can leave any time from the link at the bottom of every email.</p><p>If you haven't read it yet, Chapter 1 is free — <a href="${freeChapterUrl}">read it tonight</a>. And when the book launches, the direct edition is $17.99 through the first fifteen days after release, then $19.99 permanently. No countdown games — just the real schedule.</p><p>Talk soon,<br/>Michael David</p>`,
-    text: `Thank you for subscribing to Curls & Contemplation. One welcome note (this one), then the occasional letter on pricing, craft, and the business nobody taught you. No spam. Chapter 1 is free: ${freeChapterUrl} — Michael David`
+    html: `<p>Thank you for subscribing to Curls &amp; Contemplation.</p><p>Here's the deal: one welcome note (this one), then the occasional letter on pricing, craft, and the business nobody taught you. No spam, no daily blasts, and you can leave any time.</p><p>Start with the free <a href="${pricingKitUrl}">Pricing Confidence Checklist</a>. The direct book edition is $17.99 through the first fifteen days after release, then $19.99 permanently.</p><p>Talk soon,<br/>Michael David</p>`,
+    text: `Thank you for subscribing to Curls & Contemplation. Start with the Pricing Confidence Checklist: ${pricingKitUrl} — Michael David`
   };
 }
 
@@ -81,8 +81,8 @@ export async function sendDownloadAccess(to: string) {
   return sendTransactionalEmail({ to, ...downloadAccessTemplate() });
 }
 
-export async function sendFreeChapter(to: string, links?: { chapter: string; checklist: string }) {
-  return sendTransactionalEmail({ to, ...freeChapterTemplate(links) });
+export async function sendPricingKit(to: string, checklistUrl?: string) {
+  return sendTransactionalEmail({ to, ...pricingKitTemplate(checklistUrl) });
 }
 
 export async function sendBonusClaimReceived(to: string) {
