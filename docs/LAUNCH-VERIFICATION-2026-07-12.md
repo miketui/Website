@@ -11,7 +11,7 @@
 
 ## MailerLite automations — clean/dirty evidence
 
-All ten requested automations were re-read and are paused (`enabled: false`). This is the correct safe state for dashboard repair. Triggers and group IDs match the intended groups. The standard `{$account}`, `{$url}`, and `{$unsubscribe}` tags are MailerLite system tags and are not treated as unresolved defects. The custom `{$quiz_result_name}` tag is valid: the live field `quiz_result_name` exists. The connected MailerLite1 app exposes subject/plain-text and delay-duration updates, but not step reordering, HTML-body/internal-name editing, automation preheaders, or automation sender editing. Since every dirty workflow requires at least one unsupported operation, no partial live writes were made. The structural fixes remain a dashboard handoff rather than a misleading partial-fix claim.
+All original automations remain paused (`enabled: false`). Eight corrected inactive replacement shells were created with the intended group triggers, subjects, delays, and parent-chain order; their IDs and acceptance procedure are in `docs/MAILERLITE-REPLACEMENT-MIGRATION-2026-07-12.md`. They remain incomplete and unsendable until the approved HTML, internal names, preheaders, sender/reply-to, and exit rules are set in the visual editor. A 25-message copy/paste package was generated for the 22 automation emails and three scheduled campaigns. No workflow was activated and no message was sent.
 
 | Automation | Trigger | Live step chain | Verdict | Findings |
 |---|---|---|---|---|
@@ -73,7 +73,7 @@ The Vercel connector verified project `prj_SyCWL5ZUvAXol76cu1kc8WdsORMS`, produc
 - Six recorded migrations are present through `rls_and_index_hardening`.
 - Storage is **not launch-ready**: `curls-deliverables`, `curls-free`, `private`, and `public` all currently contain zero objects.
 
-No database or Storage mutation was performed. The repository Storage uploader and verifier were corrected to accept the modern server-only `SUPABASE_SECRET_KEY` while retaining the legacy `SUPABASE_SERVICE_ROLE_KEY` fallback. The verifier no longer requires an unrelated public anon/publishable key for its server-side bucket check. Upload remains blocked because the connector has no binary Storage-upload action and the required private files are not present in the repository.
+No database or Storage mutation was performed. The repository Storage uploader and verifier accept the modern server-only `SUPABASE_SECRET_KEY`, retain the legacy fallback, and support an explicit `--public-dir`. `Supabase-Upload-Ready-20260712.zip` passed archive integrity and a full dry run: 12 public PDFs plus 14 private workbook/card files map to the intended buckets. The supplied TSX is source-only and was excluded. The EPUB remains optional and missing. Remote upload is still blocked because the connector has no binary action and no server secret is exposed to this workspace.
 
 ## Resend verification
 
