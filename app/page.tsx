@@ -54,7 +54,13 @@ export default function HomePage() {
           <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-obsidian/90 via-obsidian/60 to-obsidian/25" />
           <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-28 md:py-32">
             <p className="editorial-kicker mb-5">Beauty school taught you hair. Nobody taught you the money.</p>
-            <KineticHeadline text="Curls & Contemplation" as="h1" className="text-5xl text-white md:text-7xl" accentFrom={1} />
+            <KineticHeadline
+              text="Curls & Contemplation"
+              as="h1"
+              className="text-5xl text-white md:text-7xl"
+              accentFrom={1}
+              waitForEvent="cc:revealed"
+            />
             <p className="mt-4 font-accent text-2xl italic text-mist md:text-3xl">A Stylist&rsquo;s Interactive Journey</p>
             <p className="mt-6 max-w-[46ch] leading-8 text-whitegold/85">
               A 467-page interactive guide to creative identity, networking, pricing, digital visibility, leadership,

@@ -62,6 +62,26 @@ test.describe("scroll-aware header", () => {
 });
 
 test.describe("immersive homepage", () => {
+  test("first visit becomes emotionally legible and hands off before two seconds", async ({ page }) => {
+    await page.context().clearCookies();
+    await page.goto("/");
+
+    const cover = page.locator("#cc-cover");
+    await expect(cover).toBeVisible();
+    await expect(cover).toContainText("You learned the craft. Nobody taught you the business.");
+
+    // The previous entrance held the hero for ~4.7s and let this animation run
+    // invisibly. The cover now starts its dissolve at ~1.3s and unmounts by
+    // ~1.8s; allow modest CI scheduling headroom without weakening the gate.
+    await expect(cover).toHaveCount(0, { timeout: 2500 });
+    const headline = page.locator("main h1");
+    await expect(headline).toBeVisible();
+    await expect
+      .poll(() => headline.locator("span").first().evaluate((node) => Number(getComputedStyle(node).opacity)))
+      .toBeGreaterThan(0);
+    await expect(page.getByRole("link", { name: /preorder the journey/i }).first()).toBeVisible();
+  });
+
   test("hero + preorder motion sections render (poster/gradient, CLS-safe)", async ({ page }) => {
     await page.context().addCookies([COVER_SEEN]);
     await page.goto("/");
