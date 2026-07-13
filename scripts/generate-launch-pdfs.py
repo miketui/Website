@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the checklist-only lead magnet and the four quiz worksheets."""
+"""Generate the public pricing, quiz, and Chapter I worksheet PDFs."""
 from pathlib import Path
 import os
 from reportlab.lib import colors
@@ -226,13 +226,57 @@ def worksheet_story(name, focus, lede, sections):
     s.append(Paragraph("Educational and reflective tool only. curlscontemplation.beauty", SMALL))
     return s
 
+def chapter_one_worksheet_story():
+    s = header(
+        "Free chapter companion",
+        "Chapter I Worksheet",
+        "Unveiling Your Creative Odyssey — Reflection & Planning",
+    )
+    prompts = [
+        (
+            "1 · Your creative journey",
+            "Describe your unique creative journey in hairstyling. What initially drew you to this profession, and how has your vision evolved over time?",
+        ),
+        (
+            "2 · Skills to develop",
+            "Identify three specific skills you want to develop this year that align with your creative vision. How will mastering these skills help you stand out in your market?",
+        ),
+        (
+            "3 · Vulnerability and growth",
+            "Reflect on a time when vulnerability led to growth in your career. What did you learn, and how can you apply that lesson moving forward?",
+        ),
+        (
+            "4 · Creative Odyssey Roadmap",
+            "List 3 short-term goals (0-6 months), 3 mid-term goals (6-18 months), and your ultimate creative vision (3-5 years).",
+        ),
+    ]
+    for index, (title, prompt) in enumerate(prompts):
+        if index == 2:
+            s.append(PageBreak())
+            s += header(
+                "Chapter I · page 2 of 2",
+                "Continue Your Creative Odyssey",
+                "Turn reflection into a clear next direction.",
+            )
+        s += section(title, prompt)
+        s.append(blank_lines(6))
+    s.append(
+        Paragraph(
+            "Use these pages for journaling and reflection. Clarity matters more than perfection.",
+            CALLOUT,
+        )
+    )
+    return s
+
 def main():
     build(OUT / "checklists" / "Pricing-Confidence-Checklist.pdf", "Pricing Confidence Checklist", checklist_story())
+    chapter_one_path = OUT / "chapter" / "Chapter-1-Worksheet.pdf"
+    build(chapter_one_path, "Curls & Contemplation — Chapter I Worksheet", chapter_one_worksheet_story())
     for slug, name, focus, lede, sections in WORKSHEETS:
         build(OUT / "quiz" / f"worksheet-{slug}.pdf", f"{name} Worksheet", worksheet_story(name, focus, lede, sections))
     workbook_path = PRIVATE_OUT / "workbook" / "Idea-to-Action-Workbook.pdf"
     build(workbook_path, "The Idea-to-Action Workbook", workbook_story())
-    for path in [OUT / "checklists" / "Pricing-Confidence-Checklist.pdf", *sorted((OUT / "quiz").glob("worksheet-*.pdf"))]:
+    for path in [OUT / "checklists" / "Pricing-Confidence-Checklist.pdf", chapter_one_path, *sorted((OUT / "quiz").glob("worksheet-*.pdf"))]:
         print(f"{path.relative_to(ROOT)}\t{path.stat().st_size} bytes")
     print(f"{workbook_path}\t{workbook_path.stat().st_size} bytes")
 
