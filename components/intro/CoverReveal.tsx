@@ -18,6 +18,9 @@ import { MotionAsset } from "@/components/motion/MotionAsset";
 
 const SEEN_COOKIE = "cc_cover_seen";
 const REVEAL_EVENT = "cc:revealed";
+const AUTO_ENTER_MS = 700;
+const SWIRL_MS = 600;
+const EXIT_MS = 500;
 
 function markRevealed() {
   document.documentElement.removeAttribute("data-cc-cover");
@@ -28,6 +31,7 @@ function markRevealed() {
 export function CoverReveal() {
   const [active, setActive] = useState(false);
   const [swirling, setSwirling] = useState(false);
+  const [exiting, setExiting] = useState(false);
   const [gone, setGone] = useState(false);
   const enteringRef = useRef(false);
   const timers = useRef<number[]>([]);
@@ -44,8 +48,12 @@ export function CoverReveal() {
     } catch {
       /* cookies unavailable — the intro simply replays next load */
     }
+    // Crossfade into the real selling hero and release pointer interaction
+    // immediately. The headline listens for cc:revealed so its kinetic entrance
+    // begins during this dissolve instead of finishing behind the cover.
+    setExiting(true);
     markRevealed();
-    later(() => setGone(true), 1200);
+    later(() => setGone(true), EXIT_MS);
   }, [later]);
 
   const enter = useCallback(
@@ -57,7 +65,7 @@ export function CoverReveal() {
         return;
       }
       setSwirling(true);
-      later(reveal, 1500);
+      later(reveal, SWIRL_MS);
     },
     [later, reveal]
   );
@@ -81,7 +89,9 @@ export function CoverReveal() {
         return;
       }
       setActive(true);
-      const auto = later(() => enter(false), 3200);
+      // The cover is act one, not a gate: begin the handoff inside the first
+      // second and expose the real hero at roughly 1.3s after hydration.
+      const auto = later(() => enter(false), AUTO_ENTER_MS);
       const onWheel = () => {
         window.clearTimeout(auto);
         enter(false);
@@ -111,7 +121,12 @@ export function CoverReveal() {
   if (gone || !active) return null;
 
   return (
-    <div id="cc-cover" className={swirling ? "is-swirling" : ""} role="dialog" aria-label="Curls and Contemplation — enter the journey">
+    <div
+      id="cc-cover"
+      className={[swirling ? "is-swirling" : "", exiting ? "is-gone" : ""].join(" ").trim()}
+      role="dialog"
+      aria-label="Curls and Contemplation — enter the journey"
+    >
       <div className="cc-swirl" aria-hidden="true">
         <MotionAsset id="B" fill priority />
       </div>
@@ -120,6 +135,9 @@ export function CoverReveal() {
         <p className="font-accent text-2xl italic text-mist">&amp;</p>
         <p className="font-display text-lg tracking-[0.12em] text-white">CONTEMPLATION</p>
         <p className="mt-3 font-accent text-base italic text-whitegold/80">A Stylist&rsquo;s Interactive Journey</p>
+        <p className="cc-promise mt-5 max-w-[15rem] text-sm leading-5 text-whitegold/90">
+          You learned the craft. Nobody taught you the business.
+        </p>
         <p className="mt-auto text-[0.6rem] uppercase tracking-[0.34em] text-antique">Michael David</p>
       </div>
       <button

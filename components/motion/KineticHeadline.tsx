@@ -15,13 +15,16 @@ export function KineticHeadline({
   text,
   as: Tag = "h2",
   className,
-  accentFrom
+  accentFrom,
+  waitForEvent
 }: {
   text: string;
   as?: ElementType;
   className?: string;
   /** Zero-based word index from which the remaining words render in antique gold. */
   accentFrom?: number;
+  /** Optional window event that starts the reveal (used for coordinated entrances). */
+  waitForEvent?: string;
 }) {
   const reduced = useReducedMotion();
   const ref = useRef<HTMLElement | null>(null);
@@ -33,6 +36,17 @@ export function KineticHeadline({
     if (reduced) return undefined;
     const node = ref.current;
     if (!node) return undefined;
+
+    // On a first homepage visit, wait for the cover dissolve. Without this
+    // coordination the headline can complete its reveal behind the opaque
+    // intro. Returning visitors have no cover attribute and use the observer
+    // path immediately.
+    if (waitForEvent && document.documentElement.hasAttribute("data-cc-cover")) {
+      const reveal = () => setVisible(true);
+      window.addEventListener(waitForEvent, reveal, { once: true });
+      return () => window.removeEventListener(waitForEvent, reveal);
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry?.isIntersecting) {
@@ -44,7 +58,7 @@ export function KineticHeadline({
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, [reduced]);
+  }, [reduced, waitForEvent]);
 
   // Collapse any run of whitespace so no empty <span> gets a transition/delay.
   const words = text.trim().split(/\s+/);
