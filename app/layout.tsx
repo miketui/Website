@@ -49,7 +49,8 @@ const coverCurtainScript = `try{var seen=false;try{seen=document.cookie.indexOf(
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const launch = getLaunchStateCopy();
   const preorder = { href: launch.heroCta.href, label: launch.navOrderLabel };
+  const isVercelRuntime = process.env.VERCEL === "1";
   /* suppressHydrationWarning: the cover curtain script (below) sets a
      data attribute on <html> before hydration by design. */
-  return <html lang="en" suppressHydrationWarning className={`${displayFont.variable} ${accentFont.variable} ${bodyFont.variable}`}><body><script dangerouslySetInnerHTML={{ __html: coverCurtainScript }} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><CartProvider><SiteNav preorder={preorder} /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><GoogleAnalytics /><SiteCurlTrail /><Toaster /></CartProvider></ReducedMotionProvider><SpeedInsights /></body></html>;
+  return <html lang="en" suppressHydrationWarning className={`${displayFont.variable} ${accentFont.variable} ${bodyFont.variable}`}><body><script dangerouslySetInnerHTML={{ __html: coverCurtainScript }} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><CartProvider><SiteNav preorder={preorder} /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><GoogleAnalytics /><SiteCurlTrail /><Toaster /></CartProvider></ReducedMotionProvider>{isVercelRuntime ? <SpeedInsights /> : null}</body></html>;
 }

@@ -45,6 +45,9 @@ jobs:
     needs: gates
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      # Keep install and test on the same repository-local browser cache.
+      PLAYWRIGHT_BROWSERS_PATH: .cache/ms-playwright
     steps:
       - uses: actions/checkout@v4
         with:
