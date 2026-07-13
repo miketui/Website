@@ -17,8 +17,8 @@ destructive cleanup was performed.
 | Production build | CLEAN | Next.js production build completed and generated 71 routes/pages. |
 | Built-route HTTP smoke | CLEAN | `/`, `/preorder`, `/pricing-kit`, and `/website` each returned HTTP 200 from the local production server. |
 | Public deliverables check | CLEAN | Repository check found no paid PDF/EPUB under `public` and no public paid-file URL. |
-| Playwright install | BLOCKED | Playwright CDN returned a zero-byte/truncated Chromium archive. No Chromium executable is installed in the machine image. |
-| E2E/browser screenshots | BLOCKED | Nine tests stopped before page execution because the Chromium executable is absent. No application assertion ran. |
+| Playwright install | BLOCKED LOCALLY / FIXED IN CI | The local sandbox received a zero-byte/truncated archive. GitHub Actions downloaded Chromium successfully; its first run exposed a cache-path mismatch between install and test, corrected by setting one job-level `PLAYWRIGHT_BROWSERS_PATH`. |
+| E2E/browser screenshots | PENDING CI RERUN | The first local and CI runs stopped before page execution because the executable was searched for in the wrong/missing cache. The corrective workflow patch aligns install and test paths. |
 | Supabase schema/RLS | CLEAN WITH NOTE | Canonical project is healthy; 21 public tables have RLS enabled. Security advisor reports nine INFO notices for RLS-enabled tables with no policies; confirm these are intentionally server-only/deny-all. |
 | Supabase Storage | DIRTY / BLOCKED | All four buckets exist and contain zero objects. Twelve public PDFs and 14 private files were prepared and passed archive integrity plus uploader dry run. Binary upload is blocked because no server secret is available to this workspace and the connector exposes no binary upload action. |
 | EPUB | BLOCKED | Canonical v13 EPUB was not included in the supplied files. |
