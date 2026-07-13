@@ -9,7 +9,7 @@ destructive cleanup was performed.
 
 | Area | Result | Evidence |
 |---|---|---|
-| GitHub source | CLEAN | Repository `miketui/Website` cloned from `main`; corrective work isolated on `codex/launch-assets-worksheet-20260712`. |
+| GitHub source | CLEAN | Repository `miketui/Website` cloned from `main`; corrective work isolated on `agent/launch-assets-worksheet-20260712` in draft PR #31. |
 | Dependency install | CLEAN WITH NOTE | `pnpm install --frozen-lockfile` completed after routing pnpm's cache into the writable workspace. pnpm reported four ignored dependency build scripts; no broad build-script approval was granted. |
 | Lint | CLEAN | `pnpm lint` passed with zero warnings. |
 | TypeScript | CLEAN | `pnpm typecheck` passed. |
@@ -17,8 +17,8 @@ destructive cleanup was performed.
 | Production build | CLEAN | Next.js production build completed and generated 71 routes/pages. |
 | Built-route HTTP smoke | CLEAN | `/`, `/preorder`, `/pricing-kit`, and `/website` each returned HTTP 200 from the local production server. |
 | Public deliverables check | CLEAN | Repository check found no paid PDF/EPUB under `public` and no public paid-file URL. |
-| Playwright install | BLOCKED LOCALLY / FIXED IN CI | The local sandbox received a zero-byte/truncated archive. GitHub Actions downloaded Chromium successfully; its first run exposed a cache-path mismatch between install and test, corrected by setting one job-level `PLAYWRIGHT_BROWSERS_PATH`. |
-| E2E/browser screenshots | PENDING CI RERUN | The first local and CI runs stopped before page execution because the executable was searched for in the wrong/missing cache. The corrective workflow patch aligns install and test paths. |
+| Playwright install | CLEAN IN CI / BLOCKED LOCALLY | The local sandbox received a zero-byte/truncated archive. GitHub Actions run 75 downloaded Chromium successfully using the job-level `PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright`. |
+| E2E/browser screenshots | CLEAN IN CI | GitHub Actions run 75 passed the complete Playwright job after preventing Vercel-only Speed Insights from loading in the local CI server. The gate covers desktop, iPhone 13, reduced motion, frame requests, console/page errors, and horizontal overflow. |
 | Supabase schema/RLS | CLEAN WITH NOTE | Canonical project is healthy; 21 public tables have RLS enabled. Security advisor reports nine INFO notices for RLS-enabled tables with no policies; confirm these are intentionally server-only/deny-all. |
 | Supabase Storage | DIRTY / BLOCKED | All four buckets exist and contain zero objects. Twelve public PDFs and 14 private files were prepared and passed archive integrity plus uploader dry run. Binary upload is blocked because no server secret is available to this workspace and the connector exposes no binary upload action. |
 | EPUB | BLOCKED | Canonical v13 EPUB was not included in the supplied files. |
@@ -71,12 +71,9 @@ Unscheduling them requires explicit owner approval.
 2. Provide the canonical v13 EPUB if it should be included.
 3. Approve unscheduling the three READY campaigns before replacing their HTML,
    or copy the validated draft content in the dashboard while preserving dates.
-4. Install Chromium in CI/a machine image or allow a non-truncated Playwright
-   CDN download, then run desktop, iPhone 13, reduced-motion, console, frame,
-   and overflow gates.
-5. Confirm Vercel environment-variable names in the dashboard. Keep
+4. Confirm Vercel environment-variable names in the dashboard. Keep
    `LAUNCH_FULFILLMENT_ENABLED=false`.
-6. Run Stripe test checkout/refund and launch dry run only after the required
+5. Run Stripe test checkout/refund and launch dry run only after the required
    test addresses and test-mode scope are explicitly approved.
-7. Production deployment, workflow activation, campaign sending, and cleanup
+6. Production deployment, workflow activation, campaign sending, and cleanup
    remain separate approval-gated actions.
