@@ -10,8 +10,8 @@
     "deepJade": "#145B4B",
     "softJadeMist": "#C7D9D2",
     "bannedTokens": [
-      "#2B9999",
-      "#C9A961"
+      "#145B4B",
+      "#B08D57"
     ]
   },
   "delivery": {
