@@ -26,17 +26,21 @@ import { siteConfig } from "@/content/site";
 //    "do not". Shipping both is a contradictory signal, the same defect as
 //    listing a redirect. Every page below emits `index, follow`.
 //
-//    Deliberately excluded on this ground: the policy pages (/privacy, /terms,
-//    /cookies, /refund-policy, /preorder-policy, /digital-delivery-policy,
-//    /accessibility) plus /worksheets and /media-kit — all carry an authored
-//    `noIndex: true` in their pageMetadata() call. /worksheets and /media-kit
-//    were listed here while noindex before this change.
+//    Still excluded on this ground: /worksheets, which keeps an authored
+//    `noIndex: true` in its pageMetadata() call.
 //
-//    If any of those should be indexed — policy pages are a reasonable trust
-//    signal for a commerce site — flip `noIndex` in the page first, then add
-//    the route here. The two must be changed together.
+//    The policy pages and /media-kit were noindex until 2026-07-28, when the
+//    owner made them indexable: visible policy pages are a standard trust
+//    signal for a site taking payments, and a media kit exists to be found by
+//    press. Their `noIndex` flags were removed in the same change that added
+//    them below — tests/seo-contract.test.ts fails if the two ever drift apart.
 
 const primaryRoutes = ["/", "/book", "/preorder", "/buy", "/pricing-kit", "/daily-directives", "/subscribe", "/reset", "/quiz", "/journey", "/blog", "/about", "/faq", "/contact"];
+
+// Indexable, but not acquisition surfaces. Split out so they carry a lower
+// priority and a yearly change frequency — legal text is stable, and letting
+// it compete with /book or /preorder for crawl attention would be backwards.
+const secondaryRoutes = ["/privacy", "/terms", "/cookies", "/refund-policy", "/preorder-policy", "/digital-delivery-policy", "/accessibility", "/media-kit"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -50,11 +54,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "weekly" as const,
     priority: route === "/" ? 1 : 0.7
   }));
+  const secondaryEntries = secondaryRoutes.map((route) => ({
+    url: `${siteConfig.siteUrl}${route}`,
+    lastModified: now,
+    changeFrequency: "yearly" as const,
+    priority: 0.3
+  }));
   const blogEntries = posts.map((post) => ({
     url: `${siteConfig.siteUrl}/blog/${post.slug}`,
     lastModified: new Date(post.date),
     changeFrequency: "monthly" as const,
     priority: 0.5
   }));
-  return [...primaryEntries, ...blogEntries];
+  return [...primaryEntries, ...secondaryEntries, ...blogEntries];
 }

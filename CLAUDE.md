@@ -70,7 +70,7 @@ Node 22, pnpm 10. CI runs typecheck → lint → test → build, then Playwright
 
 **Four Supabase env naming schemes coexist** — `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_NEXT_SUPABASE_URL`, `NEXT_SUPABASE_URL`, `SUPABASE_URL`. Read the fallback chain in `lib/env.ts` before adding or renaming anything. A project-reference mismatch here previously broke checkout.
 
-**Known open defect:** `scripts/checkout-smoke-test.mjs` checks `STRIPE_PRICE_ID_DAILY_DIRECTIVES`, but the real variable is `STRIPE_PRICE_ID_DAILY_DIRECTIVES_BUNDLE`. It is marked optional, so it skips silently and the bundle price is never verified. Fix on next touch.
+**Optional price vars skip silently.** `scripts/checkout-smoke-test.mjs` marks non-book prices `required: false`, so a typo in a variable name reads as "not configured" rather than as an error — the bundle price went unverified that way until the name was corrected to `STRIPE_PRICE_ID_DAILY_DIRECTIVES_BUNDLE`. When adding a price var, check the name against `.env.example` and `lib/stripe.ts`; a silent skip looks identical to a pass. The 12 `_SET_01..12` prices are still unverified by this script.
 
 ---
 

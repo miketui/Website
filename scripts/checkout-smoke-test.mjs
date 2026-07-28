@@ -28,7 +28,7 @@ import Stripe from "stripe";
 const PRICE_VARS = [
   { name: "STRIPE_PRICE_ID_PREORDER", required: true, label: "book — preorder tier" },
   { name: "STRIPE_PRICE_ID_REGULAR", required: true, label: "book — regular tier" },
-  { name: "STRIPE_PRICE_ID_DAILY_DIRECTIVES", required: false, label: "Daily Directives bundle" },
+  { name: "STRIPE_PRICE_ID_DAILY_DIRECTIVES_BUNDLE", required: false, label: "Daily Directives bundle" },
   { name: "STRIPE_PRICE_ID_WORKBOOK", required: false, label: "Idea-to-Action Workbook" }
 ];
 
