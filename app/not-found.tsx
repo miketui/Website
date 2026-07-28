@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 import { NewsletterForm } from "@/components/NewsletterForm";
+import { pageMetadata } from "@/lib/seo";
+
+/**
+ * Without this the 404 inherited the root layout's metadata and declared
+ * itself canonical to the homepage. noIndex keeps mistyped and retired URLs
+ * out of the index while the page still recovers the visit.
+ */
+export const metadata = pageMetadata("Page not found", "That page has moved or never existed — here is the way back in.", { path: "/404", noIndex: true });
 
 /**
  * Branded 404. Recovers the visit instead of dead-ending it: route the

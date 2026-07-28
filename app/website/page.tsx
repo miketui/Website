@@ -5,7 +5,9 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata = pageMetadata(
   "An Immersive Curls & Contemplation Experience",
   "Enter the cinematic, scroll-driven world of Curls & Contemplation.",
-  { path: "/website", image: "/gateway-cover.jpg" }
+  // Campaign alias: renders the same CinematicJourney as /journey, so it
+  // canonicals there rather than competing with it as duplicate content.
+  { path: "/journey", image: "/gateway-cover.jpg" }
 );
 
 /**

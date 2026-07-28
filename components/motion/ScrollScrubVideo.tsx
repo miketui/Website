@@ -9,7 +9,7 @@ import { isDecorativeMotionExcludedRoute } from "@/lib/route-policy";
  * Scroll-controlled video scrub (Atoms guide, skill 04). A tall track pins a
  * full-viewport video; scroll progress through the track maps continuously to
  * video.currentTime — down scrubs forward, up scrubs backward. The video is
- * muted, playsInline, preload="auto" and stays PAUSED for the whole
+ * muted, playsInline, preload="metadata" and stays PAUSED for the whole
  * interaction: this is seeking, never playback. A single rAF loop eases the
  * displayed time toward the target and writes currentTime at most once per
  * frame (writing on the raw scroll event causes jitter and black frames).
@@ -113,7 +113,7 @@ export function ScrollScrubVideo({ src, webmSrc, poster, trackVh = 240, classNam
       <section className="sticky top-0 h-screen overflow-hidden">
         {/* object-fit: cover (swap to `contain` to letterbox instead).
             H.264 first for hardware decode; VP9 covers codec-less builds. */}
-        <video ref={videoRef} className="absolute inset-0 h-full w-full object-cover" poster={poster} muted playsInline preload="auto" aria-hidden="true" tabIndex={-1}>
+        <video ref={videoRef} className="absolute inset-0 h-full w-full object-cover" poster={poster} muted playsInline preload="metadata" aria-hidden="true" tabIndex={-1}>
           <source src={src} type="video/mp4" />
           {webmSrc && <source src={webmSrc} type="video/webm" />}
         </video>
