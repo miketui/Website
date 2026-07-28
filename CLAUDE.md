@@ -70,7 +70,9 @@ Node 22, pnpm 10. CI runs typecheck → lint → test → build, then Playwright
 
 **Four Supabase env naming schemes coexist** — `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_NEXT_SUPABASE_URL`, `NEXT_SUPABASE_URL`, `SUPABASE_URL`. Read the fallback chain in `lib/env.ts` before adding or renaming anything. A project-reference mismatch here previously broke checkout.
 
-**Optional price vars skip silently.** `scripts/checkout-smoke-test.mjs` marks non-book prices `required: false`, so a typo in a variable name reads as "not configured" rather than as an error — the bundle price went unverified that way until the name was corrected to `STRIPE_PRICE_ID_DAILY_DIRECTIVES_BUNDLE`. When adding a price var, check the name against `.env.example` and `lib/stripe.ts`; a silent skip looks identical to a pass. The 12 `_SET_01..12` prices are still unverified by this script.
+**Optional price vars skip silently.** `scripts/checkout-smoke-test.mjs` marks non-book prices `required: false`, so a typo in a variable name reads as "not configured" rather than as an error — the bundle price went unverified that way until the name was corrected to `STRIPE_PRICE_ID_DAILY_DIRECTIVES_BUNDLE`. When adding a price var, check the name against `.env.example` and `lib/stripe.ts`; a silent skip looks identical to a pass.
+
+**The name lives in two places.** Correcting it in `scripts/checkout-smoke-test.mjs` alone does nothing — `.github/workflows/ci.yml` maps the repository secret onto an env var by name in the `Checkout smoke test` step, so a mismatch there re-creates the silent skip in CI even when the script is right. Fixing one side and not the other is exactly how this defect survived its first fix. The 12 `_SET_01..12` prices are still unverified by this script.
 
 ---
 

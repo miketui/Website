@@ -68,9 +68,13 @@ All state strings live in `config/launchState.ts`. Do not scatter ternaries.
 
 **Duplicate** — `/website` renders the same `CinematicJourney` component as `/journey` and canonicals to it.
 
-**Indexable** — home, `/book`, `/preorder`, `/buy`, `/pricing-kit`, `/daily-directives`, `/subscribe`, `/reset`, `/quiz`, `/journey`, `/blog`, `/about`, `/faq`, `/contact`, plus blog posts. These are exactly what `sitemap.xml` lists.
+**Indexable — primary.** Home, `/book`, `/preorder`, `/buy`, `/pricing-kit`, `/daily-directives`, `/subscribe`, `/reset`, `/quiz`, `/journey`, `/blog`, `/about`, `/faq`, `/contact`, plus blog posts. The acquisition surfaces.
 
-Policy pages (`/privacy`, `/terms`, `/cookies`, `/refund-policy`, `/preorder-policy`, `/digital-delivery-policy`, `/accessibility`) and `/worksheets`, `/media-kit` carry an authored `noIndex: true` and are therefore excluded from the sitemap. Whether any should become indexable is an owner decision, not an agent one.
+**Indexable — secondary.** The policy pages (`/privacy`, `/terms`, `/cookies`, `/refund-policy`, `/preorder-policy`, `/digital-delivery-policy`, `/accessibility`) and `/media-kit`. Made indexable 2026-07-28 by owner decision: visible policy pages are a standard trust signal for a site taking payments, and a media kit exists to be found by press. They sit in `secondaryRoutes` in `sitemap.ts` at priority 0.3 / yearly so stable legal text does not compete with `/book` or `/preorder` for crawl attention.
+
+Together these two groups are exactly what `sitemap.xml` lists — 24 URLs.
+
+`/worksheets` keeps an authored `noIndex: true` and stays out of the sitemap. Changing any page's `noIndex` requires updating `sitemap.ts` in the same commit; `tests/seo-contract.test.ts` fails if the two drift apart.
 
 ---
 
