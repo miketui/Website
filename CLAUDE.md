@@ -36,6 +36,7 @@ Never report work as done without running the gates and pasting the output. "Sho
 
 ```bash
 pnpm install --frozen-lockfile
+pnpm security:audit
 pnpm typecheck && pnpm lint && pnpm test && pnpm build
 ```
 
@@ -52,7 +53,7 @@ Extra gates, not in CI by default:
 | `pnpm check:sandbox` | Sandbox env safety — asserts the environment is **not** production. |
 | `CHECK_PROD_ENV=true pnpm build` | Forces the production env guard locally. |
 
-Node 22, pnpm 10. CI runs typecheck → lint → test → build, then Playwright e2e against the production build.
+Node 22, pnpm 10. CI runs the production dependency audit → typecheck → lint → test → build, then Playwright e2e against the production build. CodeQL scans JavaScript/TypeScript and GitHub Actions; Dependabot checks pnpm and Actions dependencies weekly.
 
 ---
 
@@ -88,9 +89,18 @@ Node 22, pnpm 10. CI runs typecheck → lint → test → build, then Playwright
 
 ---
 
-## Orphaned tooling — wire up before rewriting
+## Maintenance tooling — use before rewriting
 
-Several scripts exist but are referenced by nothing. Check before building a replacement: `scripts/a11y-audit.mjs`, `scripts/mobile-qa.mjs`, `scripts/upload-deliverables.mjs`, `scripts/gen-motion-posters.mjs`. A previous session nearly rewrote a checkout smoke test that already existed.
+These existing tools are exposed through `package.json`. Check them before building a replacement:
+
+| Command | Purpose |
+|---|---|
+| `pnpm audit:a11y` | Run the standalone axe audit against a local server on `PORT` (default 4321). |
+| `pnpm qa:mobile` | Check horizontal overflow and tap targets against a local server on `PORT` (default 4321). |
+| `pnpm upload:deliverables -- --dry-run` | Preview Supabase deliverable uploads. Omit `--dry-run` only for an intentional upload. |
+| `pnpm generate:motion-posters` | Generate missing motion poster placeholders without overwriting existing files. |
+
+A previous session nearly rewrote a checkout smoke test that already existed.
 
 ---
 

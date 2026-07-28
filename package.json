@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "node scripts/check-prod-env.mjs && next build",
+    "security:audit": "pnpm audit --prod --audit-level=high",
     "check:prod-env": "node scripts/check-prod-env.mjs",
     "check:sandbox-env": "node scripts/check-sandbox-env.mjs",
     "check:deliverables": "node scripts/check-public-deliverables.mjs",
@@ -17,8 +18,16 @@
     "check:sandbox": "pnpm check:sandbox-env && pnpm check:deliverables && pnpm check:supabase-storage && pnpm check:stripe-test",
     "check:checkout": "node scripts/checkout-smoke-test.mjs",
     "browser:install": "PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright playwright install chromium",
+    "audit:a11y": "node scripts/a11y-audit.mjs",
+    "qa:mobile": "node scripts/mobile-qa.mjs",
+    "upload:deliverables": "node scripts/upload-deliverables.mjs",
+    "generate:motion-posters": "node scripts/gen-motion-posters.mjs",
     "test:e2e": "PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright playwright test tests/e2e-scroll.spec.ts",
     "test:a11y": "PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright playwright test tests/a11y.spec.ts"
+  },
+  "engines": {
+    "node": ">=22.13.0",
+    "pnpm": ">=10.0.0 <11"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.62.0",
