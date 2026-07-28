@@ -8,7 +8,18 @@ describe("immersive /website experience", () => {
   it("renders the cinematic journey at /website", () => {
     const page = readFileSync(join(root, "app/website/page.tsx"), "utf8");
     expect(page).toContain("<CinematicJourney");
-    expect(page).toContain('path: "/website"');
+  });
+
+  it("canonicals /website to /journey instead of duplicating it", () => {
+    // /website and /journey render the same CinematicJourney with the same
+    // props — identical content at two URLs. /journey is the sitemap entry, so
+    // /website points its canonical there. Before 2026-07-27 it self-
+    // canonicalized and competed with /journey for the same content.
+    const website = readFileSync(join(root, "app/website/page.tsx"), "utf8");
+    const journey = readFileSync(join(root, "app/journey/page.tsx"), "utf8");
+    expect(website).toContain('path: "/journey"');
+    expect(website).not.toContain('path: "/website"');
+    expect(journey).toContain('path: "/journey"');
   });
 
   it("ships a complete performance-budgeted frame sequence", () => {

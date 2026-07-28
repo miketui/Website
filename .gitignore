@@ -13,3 +13,5 @@ test-results/
 playwright-report/
 tmp/
 .cache/ms-playwright/
+# Large local build artifact — never re-commit (audit 2026-07-27)
+elevation-immersive-nav.bundle

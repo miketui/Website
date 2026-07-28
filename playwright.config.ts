@@ -1,11 +1,13 @@
 import { defineConfig } from "@playwright/test";
 
-// E2E config for the scroll-choreography gate (tests/e2e-scroll.spec.ts).
-// Runs against a production build (`next build` must precede `playwright test`)
-// so CI verifies what actually ships. Vitest owns tests/[glob].test.ts; this
-// runner owns *.spec.ts only — the two never overlap.
+// E2E config. Runs against a production build (`next build` must precede
+// `playwright test`) so CI verifies what actually ships. Vitest owns
+// tests/*.test.ts; this runner owns *.spec.ts only — the two never overlap.
+//
+// testMatch widened from the single scroll spec on 2026-07-27 to pick up
+// tests/a11y.spec.ts. Target one suite with `pnpm test:e2e` / `pnpm test:a11y`.
 export default defineConfig({
-  testMatch: "tests/e2e-scroll.spec.ts",
+  testMatch: "tests/*.spec.ts",
   timeout: 60_000,
   retries: process.env.CI ? 1 : 0,
   use: {

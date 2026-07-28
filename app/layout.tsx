@@ -25,7 +25,11 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   metadataBase: new URL(siteConfig.siteUrl),
-  alternates: { canonical: siteConfig.siteUrl },
+  // No `alternates.canonical` here on purpose. A canonical set at the root is
+  // inherited by every page that does not override it, so any new route added
+  // without pageMetadata() would silently declare itself a duplicate of the
+  // homepage. Each page sets its own canonical via lib/seo.ts pageMetadata();
+  // a missing canonical is a visible, lintable gap — a wrong one is invisible.
   openGraph: {
     title: siteConfig.name,
     description: siteConfig.description,

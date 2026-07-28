@@ -7,7 +7,8 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata = pageMetadata(
   "The Idea-to-Action Workbook",
   "The interactive buyer companion to Curls & Contemplation — 21 guided pages for choosing your strongest idea, working through fear, and building your next move.",
-  { path: "/workbook" }
+  // Entitlement-gated deliverable — crawlable content must never be indexed.
+  { path: "/workbook", noIndex: true }
 );
 
 export const dynamic = "force-dynamic";

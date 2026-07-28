@@ -9,7 +9,7 @@ import { isDecorativeMotionExcludedRoute } from "@/lib/route-policy";
  * Mouse-controlled video scrub (Atoms guide, skill 03). Mouse X across the
  * band maps to video.currentTime: ratio = clamp(x / width) → targetTime =
  * ratio × duration. Seeking only — the video is muted, playsInline,
- * preload="auto" and never plays. mousemove stores the target; a single rAF
+ * preload="metadata" and never plays. mousemove stores the target; a single rAF
  * loop eases the displayed time toward it and writes currentTime at most
  * once per frame, stopping when settled and restarting on the next move.
  *
@@ -85,7 +85,7 @@ export function MouseScrubVideo({ src, webmSrc, poster, className, children }: {
       ) : (
         /* object-fit: cover (swap to `contain` to letterbox instead).
            H.264 first for hardware decode; VP9 covers codec-less builds. */
-        <video ref={videoRef} className="absolute inset-0 h-full w-full object-cover" poster={poster} muted playsInline preload="auto" aria-hidden="true" tabIndex={-1}>
+        <video ref={videoRef} className="absolute inset-0 h-full w-full object-cover" poster={poster} muted playsInline preload="metadata" aria-hidden="true" tabIndex={-1}>
           <source src={src} type="video/mp4" />
           {webmSrc && <source src={webmSrc} type="video/webm" />}
         </video>
