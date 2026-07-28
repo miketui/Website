@@ -39,7 +39,9 @@ pnpm install --frozen-lockfile
 pnpm typecheck && pnpm lint && pnpm test && pnpm build
 ```
 
-Baseline as of 2026-07-27: typecheck 0, lint 0, **96 tests across 18 files**, build 0. A lower test count means something did not apply or a suite was skipped — investigate before proceeding.
+Baseline as of 2026-07-28: typecheck 0, lint 0, **110 tests across 19 files**, build 0. A lower test count means something did not apply or a suite was skipped — investigate before proceeding.
+
+`pnpm audit --prod` is **0 advisories** and should stay there. `pnpm audit` (including dev) still reports one high on `brace-expansion@1.1.16`, reachable only via `eslint → @eslint/config-array → minimatch@3`. Do not add a blanket `brace-expansion` override to silence it: v5 changed the export shape, `minimatch@3` calls the v1 API, and forcing it makes `pnpm lint` die with `TypeError: expand is not a function`. It is dev-only and never ships. Wait for the upstream bump.
 
 Extra gates, not in CI by default:
 
@@ -67,6 +69,16 @@ Node 22, pnpm 10. CI runs typecheck → lint → test → build, then Playwright
 **Sitemap and `noIndex` must agree.** A sitemap entry says "index this"; a `noindex` meta says the opposite. `tests/seo-contract.test.ts` scans every page's source and fails if a `noIndex` route appears in `sitemap.ts`. Change both together or neither.
 
 **Canonicals come from `pageMetadata()` in `lib/seo.ts`.** Do not add `alternates.canonical` to the root layout — it is inherited by every page that does not override it, silently making new routes duplicates of the homepage. A missing canonical is lintable; a wrong one is invisible.
+
+**A webhook is only "processed" after fulfillment succeeds.** `recordWebhookEvent` writes the row with `processed_at: null`; `markWebhookProcessed` stamps it after the handler returns. Stamping at receipt — which is what the code did until 2026-07-28 — makes every failed fulfillment permanent: the handler throws, Stripe retries, the retry matches a stamped row, gets dismissed as a duplicate, and a paid order is never fulfilled. For the same reason, a handler that cannot reach Supabase must return non-2xx (503), never 200. Locked by `tests/security-audit-2026-07-28.test.ts`.
+
+**`if (SECRET && wrong)` is a fail-open auth check.** When the variable is unset the condition is false and the caller is admitted. All three cron routes had this shape. Use `authorizeCronRequest` in `lib/cron-auth.ts`: 503 when `CRON_SECRET` is missing, 401 on mismatch, constant-time compare. Never re-inline the check.
+
+**Demo sessions are an admin bypass if they reach production.** `ALLOW_DEMO_SESSION=1` makes unsigned `cc_demo_email` / `cc_demo_user` cookies define the current user, and admin authorization keys on that email — so a spoofed cookie carrying an `ADMIN_EMAILS` address is an admin. `getSessionUser()` now ignores the flag whenever `VERCEL_ENV=production`, and the prod env guard rejects it outright. Keep both.
+
+**The download cap is enforced in the database, not the application.** "3 downloads / 7 days" runs through the `claim_download_slot` RPC (migration 0007), which counts `download_events` inside the window and increments under `select … for update`. The old read-then-write in `lib/downloads.ts` compared a lifetime counter that never reset and let concurrent requests both pass. `checkDownloadEntitlement` is advisory — for UI counts only. If the signed URL fails after a slot is claimed, call `release_download_slot` so the buyer is not charged a download they never got.
+
+**A gate that cannot pass protects nothing.** `check-public-deliverables.mjs` flagged every absolute `.pdf` URL as a paid leak, so it failed on two legitimate `curls-free` lead magnets — meaning `check:sandbox` could never pass and nobody ran it. The public lead-magnet bucket is allowlisted; the private bucket and every `.epub` are not. Its `public/` pattern is anchored to a quote/space/start, because unanchored it also matched the `public` segment inside a Supabase storage URL. Note it scans **every** file in the repo including tests — build paid-looking URLs from segments in test fixtures rather than as literals.
 
 **Four Supabase env naming schemes coexist** — `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_NEXT_SUPABASE_URL`, `NEXT_SUPABASE_URL`, `SUPABASE_URL`. Read the fallback chain in `lib/env.ts` before adding or renaming anything. A project-reference mismatch here previously broke checkout.
 

@@ -1,6 +1,6 @@
 # Curls & Contemplation Author Site
 
-Production-oriented scaffold for the Next.js App Router author-commerce platform under `author-site/`.
+Production-oriented Next.js App Router author-commerce platform. **The app lives at the repository root** — there is no `author-site/` directory. Older docs that reference one are stale; ignore their path guidance.
 
 ## Local setup
 
@@ -37,7 +37,7 @@ Wrappers fail safely when keys are absent. Configure MailerLite group IDs and Re
 
 ## Deployment
 
-Vercel root directory: `author-site`. Set preview and production env vars separately. Do not deploy production until launch QA and human legal review pass.
+Vercel root directory: **the repository root** (leave the setting empty). Set preview and production env vars separately. Do not deploy production until launch QA and human legal review pass.
 
 ## Testing commands
 
@@ -57,7 +57,7 @@ Scaffolded: final Supabase project, live Stripe products, MailerLite automations
 ## Prompt 5 sandbox integration notes
 
 ### Vercel settings
-- Root directory: `author-site`
+- Root directory: repository root (leave empty — there is no `author-site/` directory)
 - Install command: `pnpm install`
 - Build command: `pnpm build`
 - Local env file: `.env.local` only; never commit it.
@@ -116,7 +116,7 @@ The sandbox checks hide secret values, allow missing provider credentials during
 Apply the migration in a sandbox Supabase project:
 
 ```bash
-cd author-site
+# Run from the repository root.
 supabase db push --include-all
 # or run supabase/migrations/0001_author_commerce.sql in the Supabase SQL editor.
 ```
@@ -185,7 +185,7 @@ Before production activation, Michael must approve legal copy, domain/email DNS,
 
 Prompt 7 documents provider-readiness without using production keys or deploying production. The complete report lives at `docs/website-v4/14_SANDBOX_VERIFICATION_REPORT.md` from this app directory.
 
-Run the safe verification suite from `author-site/`:
+Run the safe verification suite from the repository root:
 
 ```bash
 pnpm check:sandbox
@@ -202,14 +202,14 @@ Provider-backed checks remain blocked until sandbox-only credentials are configu
 
 ## Prompt 8 final handoff
 
-Prompt 8 consolidated all website-related files into this self-contained `author-site/` folder. A future operator should start here, then read:
+Prompt 8 consolidated all website-related files into this self-contained app, which now lives at the repository root (it was `author-site/` at the time). A future operator should start here, then read:
 
 - `docs/website-v4/15_FINAL_HANDOFF.md`
 - `docs/website-v4/16_PRODUCTION_ACTIVATION_CHECKLIST.md`
 - `docs/website-v4/17_FINAL_QA_REPORT.md`
 - `docs/website-v4/18_VERCEL_PREVIEW_DEPLOYMENT_GUIDE.md`
 
-Preview may be deployed from Vercel with root directory `author-site` after sandbox env vars are configured. Production remains blocked until Michael approves legal copy, claims, domain, live payment activation, provider configuration, and the production activation checklist.
+Preview may be deployed from Vercel with the root directory left at the repository root, after sandbox env vars are configured. Production remains blocked until Michael approves legal copy, claims, domain, live payment activation, provider configuration, and the production activation checklist.
 
 ## Missing Gaps and Action Items
 

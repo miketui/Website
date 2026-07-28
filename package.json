@@ -28,7 +28,7 @@
     "@vercel/speed-insights": "^2.0.0",
     "clsx": "^2.1.1",
     "motion": "^12.42.2",
-    "next": "^16.2.9",
+    "next": "^16.2.11",
     "posthog-js": "^1.396.3",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
@@ -48,10 +48,20 @@
     "eslint-config-next": "^16.2.9",
     "jsdom": "^29.1.1",
     "playwright": "^1.61.1",
-    "postcss": "^8.5.16",
+    "postcss": "^8.5.18",
     "tailwindcss": "^3.4.17",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"
   },
-  "packageManager": "pnpm@10.0.0"
+  "packageManager": "pnpm@10.0.0",
+  "pnpm": {
+    "overrides": {
+      "postcss@<8.5.18": ">=8.5.18",
+      "dompurify@<3.4.12": ">=3.4.12",
+      "fast-uri@<3.1.4": ">=3.1.4",
+      "sharp@<0.35.0": ">=0.35.0",
+      "undici@<7.28.0": ">=7.28.0",
+      "js-yaml@<4.3.0": ">=4.3.0"
+    }
+  }
 }

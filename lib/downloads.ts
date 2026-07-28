@@ -28,17 +28,30 @@ export async function createSignedDownloadUrl(user: SessionUser | null, slug: De
   const item = deliverables[slug];
   if (!isSafePrivateDeliverablePath(item.path)) return { allowed: false, reason: "storage_error" };
 
+  // Claim the slot BEFORE minting the URL. The old order — mint, then read the
+  // count, then write count + 1 — allowed two concurrent requests to read the
+  // same value and both succeed, and it compared against a lifetime counter
+  // rather than the seven-day window. claim_download_slot does the window
+  // count and the increment inside one transaction under a row lock.
+  const { data: claim, error: claimError } = await supabase.rpc("claim_download_slot", {
+    p_purchase_id: entitlement.purchaseId,
+    p_user_id: entitlement.user.id,
+    p_deliverable_slug: slug,
+    p_cap: DOWNLOAD_CAP,
+    p_window_days: DOWNLOAD_WINDOW_DAYS
+  });
+  if (claimError || !claim) return { allowed: false, reason: "storage_error" };
+
+  const claimed = claim as { allowed: boolean; reason?: DownloadDenialReason; event_id?: string };
+  if (!claimed.allowed) return { allowed: false, reason: claimed.reason ?? "download_limit_reached" };
+
   const bucket = config.value.bucket || siteConfig.storageBucket || PRIVATE_BUCKET;
   const { data, error } = await supabase.storage.from(bucket).createSignedUrl(item.path, SIGNED_URL_TTL_SECONDS);
-  if (error || !data?.signedUrl || data.signedUrl.includes("/release/")) return { allowed: false, reason: "storage_error" };
+  if (error || !data?.signedUrl || data.signedUrl.includes("/release/")) {
+    // The buyer never received a URL, so the slot must go back.
+    if (claimed.event_id) await supabase.rpc("release_download_slot", { p_event_id: claimed.event_id });
+    return { allowed: false, reason: "storage_error" };
+  }
 
-  await supabase.from("download_events").insert({
-    user_id: entitlement.user.id,
-    purchase_id: entitlement.purchaseId,
-    deliverable_slug: slug,
-    event_type: "download_signed_url_created",
-    metadata: { cap: DOWNLOAD_CAP, window_days: DOWNLOAD_WINDOW_DAYS }
-  });
-  await supabase.from("purchases").update({ download_count: entitlement.downloadsUsed + 1, updated_at: new Date().toISOString() }).eq("id", entitlement.purchaseId);
   return { allowed: true, url: data.signedUrl, expiresInSeconds: SIGNED_URL_TTL_SECONDS, label: item.label };
 }

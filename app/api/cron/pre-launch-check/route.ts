@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSiteUrl } from "@/lib/env";
 import { sendTransactionalEmail } from "@/lib/email/resend";
+import { authorizeCronRequest } from "@/lib/cron-auth";
 
 /**
  * Scheduled for November 23 at 07:30 America/Los_Angeles (24h before the
@@ -11,10 +12,9 @@ import { sendTransactionalEmail } from "@/lib/email/resend";
  * a warning, a failed send, an unreachable bucket — is off.
  */
 export async function GET(request: Request) {
-  const cronSecret = process.env.CRON_SECRET;
-  const authHeader = request.headers.get("authorization");
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ ok: false, error: { code: "unauthorized" } }, { status: 401 });
+  const auth = authorizeCronRequest(request);
+  if (!auth.ok) {
+    return NextResponse.json({ ok: false, error: { code: auth.code } }, { status: auth.status });
   }
 
   const owner = process.env.LAUNCH_OWNER_EMAIL;
@@ -23,7 +23,11 @@ export async function GET(request: Request) {
   let pass = false;
   try {
     const response = await fetch(`${base}/api/cron/launch-day/dry-run`, {
-      headers: cronSecret ? { authorization: `Bearer ${cronSecret}` } : undefined,
+      // authorizeCronRequest already established CRON_SECRET is set — it
+      // returns 503 otherwise — so this header is now unconditional. It used
+      // to be omitted when the secret was absent, which only worked because
+      // the dry-run route accepted unauthenticated callers in that case.
+      headers: { authorization: `Bearer ${process.env.CRON_SECRET}` },
       cache: "no-store"
     });
     report = (await response.json().catch(() => ({}))) as Record<string, unknown>;

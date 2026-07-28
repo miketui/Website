@@ -45,6 +45,31 @@ const REQUIRED_IN_PRODUCTION = [
       if (Number.isNaN(new Date(`${value.trim()}T00:00:00Z`).getTime())) return `is "${value}" — not a real date`;
       return null;
     }
+  },
+  {
+    name: "CRON_SECRET",
+    validate(value) {
+      // The cron routes used to authenticate only when this was set, so an
+      // absent secret admitted every caller instead of rejecting them. They
+      // now return 503 without it — which means a production deploy missing
+      // this variable has non-functioning launch automation. Fail the build
+      // rather than discover it on launch morning.
+      if (!value || !value.trim()) return "is empty or unset — the launch-day and pre-launch cron routes return 503 without it, so launch automation would not run";
+      if (value.trim().length < 16) return "is shorter than 16 characters — use a high-entropy value; this is the only thing standing in front of the launch email routes";
+      return null;
+    }
+  },
+  {
+    name: "ALLOW_DEMO_SESSION",
+    validate(value) {
+      // Demo sessions accept unsigned, spoofable cookies that define the
+      // current user by email — and admin authorization keys on that email.
+      // getSessionUser() now ignores this flag when VERCEL_ENV=production, so
+      // this check is defense in depth against the flag reaching production
+      // config at all.
+      if (value && value.trim() === "1") return 'is "1" — demo sessions accept unsigned spoofable cookies and must never be enabled in production';
+      return null;
+    }
   }
 ];
 

@@ -64,9 +64,12 @@ export async function createSupabaseSessionClient(): Promise<SupabaseClient | nu
 export async function getSessionUser(): Promise<SessionUser | null> {
   const cookieStore = await cookies();
   // Demo-session cookies are a sandbox convenience only. They are unsigned and
-  // spoofable, so they are honored ONLY behind an explicit owner opt-in that
-  // must never be set in production (entitlement + admin checks key on email).
-  if (process.env.ALLOW_DEMO_SESSION === "1") {
+  // spoofable, and both entitlement and admin checks key on email — so setting
+  // cc_demo_email to an address in ADMIN_EMAILS would hand an anonymous caller
+  // the admin surface. "Must never be set in production" was a comment, not a
+  // control; this makes it one. The environment check runs FIRST so that an
+  // accidental ALLOW_DEMO_SESSION=1 in production is inert rather than fatal.
+  if (process.env.VERCEL_ENV !== "production" && process.env.ALLOW_DEMO_SESSION === "1") {
     const email = cookieStore.get("cc_demo_email")?.value;
     const userId = cookieStore.get("cc_demo_user")?.value;
     if (email && userId) return { id: userId, email };
