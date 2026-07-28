@@ -36,7 +36,11 @@ jobs:
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY_TEST }}
           STRIPE_PRICE_ID_PREORDER: ${{ secrets.STRIPE_PRICE_ID_PREORDER_TEST }}
           STRIPE_PRICE_ID_REGULAR: ${{ secrets.STRIPE_PRICE_ID_REGULAR_TEST }}
-          STRIPE_PRICE_ID_DAILY_DIRECTIVES: ${{ secrets.STRIPE_PRICE_ID_DAILY_DIRECTIVES_TEST }}
+          # Must match the name the smoke test reads. The script previously
+          # read STRIPE_PRICE_ID_DAILY_DIRECTIVES while the application uses
+          # ..._BUNDLE; because the var is optional, the wrong name read as
+          # "not configured" and the $59 bundle price silently went unverified.
+          STRIPE_PRICE_ID_DAILY_DIRECTIVES_BUNDLE: ${{ secrets.STRIPE_PRICE_ID_DAILY_DIRECTIVES_TEST }}
           STRIPE_PRICE_ID_WORKBOOK: ${{ secrets.STRIPE_PRICE_ID_WORKBOOK_TEST }}
         run: pnpm check:checkout
       - name: Persist production build for e2e
