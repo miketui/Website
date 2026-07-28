@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   gates:
-    name: Static gates (typecheck · lint · unit · build)
+    name: Static gates (audit · typecheck · lint · unit · build)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -23,6 +23,8 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Audit production dependencies
+        run: pnpm security:audit
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
