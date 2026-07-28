@@ -12,4 +12,6 @@ declare module "../scripts/*.mjs" {
   export function runSupabaseStorageCheck(options?: { repoRoot?: string; appDir?: string; env?: Record<string, string | undefined> }): Promise<{ ok: boolean; staticResult: unknown; remote: { skipped?: boolean; ok?: boolean; reason?: string } }>;
   export const stripeEnvNames: string[];
   export function stripeTestModeStatus(env?: Record<string, string | undefined>): { ok: boolean; skipped?: boolean; missing?: string[]; reason?: string };
+  export function collectProdEnvIssues(env?: Record<string, string | undefined>): string[];
+  export function runProdEnvCheck(options?: { env?: Record<string, string | undefined> }): { enforced: boolean; issues: string[]; ok: boolean };
 }

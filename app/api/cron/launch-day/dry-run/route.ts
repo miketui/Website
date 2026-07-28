@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { recordServerEvent } from "@/lib/events/server-analytics";
 import { analyticsEvents } from "@/lib/analytics";
 import { deliverLaunchCopy, verifyLaunchPreconditions } from "@/lib/launch-fulfillment";
+import { authorizeCronRequest } from "@/lib/cron-auth";
 
 /**
  * Launch-day DRY RUN. Exercises the entire fulfillment chain — signed URL,
@@ -17,10 +18,9 @@ import { deliverLaunchCopy, verifyLaunchPreconditions } from "@/lib/launch-fulfi
  */
 export async function GET(request: Request) {
   const started = Date.now();
-  const cronSecret = process.env.CRON_SECRET;
-  const authHeader = request.headers.get("authorization");
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ ok: false, error: { code: "unauthorized" } }, { status: 401 });
+  const auth = authorizeCronRequest(request);
+  if (!auth.ok) {
+    return NextResponse.json({ ok: false, error: { code: auth.code } }, { status: auth.status });
   }
 
   const testEmail = process.env.LAUNCH_DRYRUN_TEST_EMAIL;

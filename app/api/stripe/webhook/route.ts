@@ -8,13 +8,34 @@ import { recordServerEvent } from "@/lib/events/server-analytics";
 import { sendDailyDirectivesAccess, sendDownloadAccess, sendOrderConfirmation, sendRefundAccessRevoked, sendWorkbookAccess } from "@/lib/email/resend";
 import { upsertSubscriber } from "@/lib/email/mailerlite";
 
+/**
+ * Records RECEIPT of an event — deliberately not completion.
+ *
+ * `processed_at` stays null until fulfillment actually succeeds
+ * (`markWebhookProcessed`). Writing it here, as this function used to, made
+ * every failed fulfillment permanent: the handler would throw after the row
+ * was already stamped, Stripe would retry, the retry would match a stamped row
+ * and be dismissed as a duplicate, and a paid order would silently never be
+ * fulfilled. Only a *completed* event may suppress a retry.
+ */
 export async function recordWebhookEvent(event: Stripe.Event) {
   const supabase = createServerSupabaseClient(true);
   if (!supabase) return { ok: false as const, skipped: true as const, reason: "config_missing" as const };
   const { data: existing } = await supabase.from("webhook_events").select("id, processed_at").eq("provider_event_id", event.id).maybeSingle();
+  // Only a finished event is a duplicate. A row with processed_at null is a
+  // previous attempt that failed — Stripe is retrying, and it must reprocess.
   if (existing?.processed_at) return { ok: true as const, duplicate: true as const };
-  await supabase.from("webhook_events").upsert({ provider: "stripe", provider_event_id: event.id, event_type: event.type, payload: event, processed_at: new Date().toISOString() }, { onConflict: "provider_event_id" });
+  const { error } = await supabase.from("webhook_events").upsert({ provider: "stripe", provider_event_id: event.id, event_type: event.type, payload: event, processed_at: null }, { onConflict: "provider_event_id" });
+  if (error) return { ok: false as const, skipped: true as const, reason: "record_failed" as const };
   return { ok: true as const, duplicate: false as const };
+}
+
+/** Stamps completion. Called only after fulfillment has fully succeeded. */
+export async function markWebhookProcessed(eventId: string) {
+  const supabase = createServerSupabaseClient(true);
+  if (!supabase) return { ok: false as const };
+  const { error } = await supabase.from("webhook_events").update({ processed_at: new Date().toISOString() }).eq("provider_event_id", eventId);
+  return { ok: !error };
 }
 
 export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
@@ -116,36 +137,65 @@ export async function POST(request: Request) {
   }
 
   const recorded = await recordWebhookEvent(event);
-  if (recorded.ok && "duplicate" in recorded && recorded.duplicate) return NextResponse.json({ ok: true, duplicate: true });
-
-  switch (event.type) {
-    case "checkout.session.completed":
-      await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
-      await recordServerEvent({ eventName: analyticsEvents.checkoutCompleted, route: "/api/stripe/webhook", metadata: { stripeEventId: event.id }, operational: true });
-      break;
-    case "payment_intent.succeeded":
-      await recordServerEvent({ eventName: analyticsEvents.checkoutCompleted, route: "/api/stripe/webhook", metadata: { stripeEventId: event.id, paymentIntent: true }, operational: true });
-      break;
-    case "charge.refunded":
-      await revokeEntitlementForRefund(event.data.object as Stripe.Charge);
-      break;
-    case "checkout.session.expired": {
-      // Funnel 1: one compliant abandoned-checkout reminder is sent from
-      // MailerLite (+24h automation, owner-gated); here we only tag the group.
-      const expired = event.data.object as Stripe.Checkout.Session;
-      const abandonedEmail = expired.customer_details?.email ?? expired.customer_email ?? undefined;
-      if (abandonedEmail) await upsertSubscriber(abandonedEmail, "abandoned_checkout", { source: "stripe_checkout_expired" });
-      await recordServerEvent({ eventName: analyticsEvents.paymentFailed, route: "/api/stripe/webhook", metadata: { stripeEventId: event.id, expired: true }, operational: true });
-      break;
-    }
-    case "customer.subscription.created":
-    case "customer.subscription.updated":
-    case "customer.subscription.deleted":
-      await recordServerEvent({ eventName: analyticsEvents.purchaseRecorded, route: "/api/stripe/webhook", metadata: { stripeEventId: event.id, subscriptionPlaceholder: true }, operational: true });
-      break;
-    default:
-      return NextResponse.json({ ok: true, ignored: true });
+  // Storage is unreachable or misconfigured. This used to fall through to the
+  // switch and return 200 with nothing written — Stripe saw success and never
+  // retried, so the order was lost. 503 tells Stripe to retry.
+  if (!recorded.ok) {
+    return NextResponse.json({ ok: false, error: { code: "reason" in recorded ? recorded.reason : "record_failed" } }, { status: 503 });
   }
+  if ("duplicate" in recorded && recorded.duplicate) return NextResponse.json({ ok: true, duplicate: true });
+
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const result = await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+        // A skipped fulfillment is a failure, not a success. Surfacing it as a
+        // non-2xx keeps processed_at null so Stripe's retry reprocesses it.
+        if (!result.ok) return NextResponse.json({ ok: false, error: { code: result.reason } }, { status: 503 });
+        await recordServerEvent({ eventName: analyticsEvents.checkoutCompleted, route: "/api/stripe/webhook", metadata: { stripeEventId: event.id }, operational: true });
+        break;
+      }
+      case "payment_intent.succeeded":
+        await recordServerEvent({ eventName: analyticsEvents.checkoutCompleted, route: "/api/stripe/webhook", metadata: { stripeEventId: event.id, paymentIntent: true }, operational: true });
+        break;
+      case "charge.refunded": {
+        const result = await revokeEntitlementForRefund(event.data.object as Stripe.Charge);
+        if (!result.ok) return NextResponse.json({ ok: false, error: { code: result.reason } }, { status: 503 });
+        break;
+      }
+      case "checkout.session.expired": {
+        // Funnel 1: one compliant abandoned-checkout reminder is sent from
+        // MailerLite (+24h automation, owner-gated); here we only tag the group.
+        const expired = event.data.object as Stripe.Checkout.Session;
+        const abandonedEmail = expired.customer_details?.email ?? expired.customer_email ?? undefined;
+        if (abandonedEmail) await upsertSubscriber(abandonedEmail, "abandoned_checkout", { source: "stripe_checkout_expired" });
+        await recordServerEvent({ eventName: analyticsEvents.paymentFailed, route: "/api/stripe/webhook", metadata: { stripeEventId: event.id, expired: true }, operational: true });
+        break;
+      }
+      case "customer.subscription.created":
+      case "customer.subscription.updated":
+      case "customer.subscription.deleted":
+        await recordServerEvent({ eventName: analyticsEvents.purchaseRecorded, route: "/api/stripe/webhook", metadata: { stripeEventId: event.id, subscriptionPlaceholder: true }, operational: true });
+        break;
+      default:
+        // Nothing to fulfill, so nothing can fail: stamp it so Stripe stops.
+        await markWebhookProcessed(event.id);
+        return NextResponse.json({ ok: true, ignored: true });
+    }
+  } catch (error) {
+    // processed_at is still null, so the retry will reprocess rather than be
+    // dismissed as a duplicate. This is the whole point of the split.
+    return NextResponse.json(
+      { ok: false, error: { code: "fulfillment_failed", message: error instanceof Error ? error.message : "unknown" } },
+      { status: 500 }
+    );
+  }
+
+  const stamped = await markWebhookProcessed(event.id);
+  // Fulfillment succeeded but the completion stamp did not land. Reporting
+  // success here would be safe for the buyer but leaves the event replayable;
+  // a 503 makes Stripe retry, and the handlers upsert on stable keys.
+  if (!stamped.ok) return NextResponse.json({ ok: false, error: { code: "mark_processed_failed" } }, { status: 503 });
 
   return NextResponse.json({ ok: true, received: true });
 }

@@ -4,7 +4,7 @@ Project facts for `miketui/Website`. Tool-agnostic — read by Claude Code, Code
 
 **Working rules — gates, verification, gotchas — live in `CLAUDE.md`.** This file holds only *what the project is*. Do not duplicate content between the two; the previous version of this file went stale precisely because it did.
 
-*Last verified against the codebase: 2026-07-27.*
+*Last verified against the codebase: 2026-07-28.*
 
 ---
 
@@ -131,6 +131,7 @@ Type: Cormorant Garamond for display, Inter for UI. Funnel pages may use their o
 These are structural, not stylistic. Breaking one is a launch blocker.
 
 - Downloads are gated by **server-side** entitlement checks. Never client-side.
+- The "3 downloads / 7 days" cap is enforced in the database by the `claim_download_slot` RPC (migration `0007`), under a row lock. Application-side counting is advisory only — a read-then-write there let concurrent requests exceed the cap, and it compared a lifetime counter that never reset.
 - Paid deliverables are served from the private Supabase bucket via signed URLs or secure server routes — never from `public/`, never as a static path.
 - Stripe webhooks **must** verify the signature before acting on the payload.
 - A refund must revoke entitlement.
@@ -163,7 +164,8 @@ Full list in `.env.example`. The ones that break things when wrong:
 | `STRIPE_PRICE_ID_PREORDER`, `_REGULAR`, `_WORKBOOK`, `_DAILY_DIRECTIVES_BUNDLE`, `_SET_01..12` | All resolved server-side. Clients can never inject a price. |
 | `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET` | Fulfillment and entitlement writes. |
 | `MAILERLITE_GROUP_*` | 13 groups. Segmentation depends on exact IDs. |
-| `CRON_SECRET` | Guards the launch-day and pre-launch cron routes. |
+| `CRON_SECRET` | Guards the launch-day and pre-launch cron routes. **Required in production** — those routes return 503 without it, so launch automation silently would not run. Enforced by the production env guard. |
+| `ALLOW_DEMO_SESSION` | Sandbox only. Must never be `1` in production: it accepts unsigned, spoofable session cookies and admin authorization keys on the cookie-supplied email. Ignored when `VERCEL_ENV=production`, and the production guard rejects it. |
 
 Vercel cron: `/api/cron/launch-day` hourly, `/api/cron/pre-launch-check` on November 23.
 

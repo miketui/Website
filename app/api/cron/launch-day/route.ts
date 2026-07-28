@@ -10,6 +10,7 @@ import {
   launchFulfillmentEnabled,
   verifyLaunchPreconditions
 } from "@/lib/launch-fulfillment";
+import { authorizeCronRequest } from "@/lib/cron-auth";
 
 /** Keep every batched send comfortably inside the function limit (Hobby-safe). */
 export const maxDuration = 60;
@@ -45,10 +46,9 @@ async function alertOwner(subject: string, body: string) {
  * output exactly as it does to manual sends.
  */
 export async function GET(request: Request) {
-  const cronSecret = process.env.CRON_SECRET;
-  const authHeader = request.headers.get("authorization");
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ ok: false, error: { code: "unauthorized" } }, { status: 401 });
+  const auth = authorizeCronRequest(request);
+  if (!auth.ok) {
+    return NextResponse.json({ ok: false, error: { code: auth.code } }, { status: auth.status });
   }
 
   if (!launchFulfillmentEnabled()) {

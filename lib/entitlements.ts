@@ -46,6 +46,23 @@ export async function checkDownloadEntitlement(user: SessionUser | string | null
   const status = (purchase.status ?? purchase.entitlement_status) as PurchaseStatus | undefined;
   if (purchase.refunded_at || status === "refunded") return { allowed: false, reason: "refunded" };
   if (purchase.revoked_at || status === "revoked" || status === "canceled" || status === "past_due") return { allowed: false, reason: "revoked" };
-  if ((purchase.download_count ?? 0) >= DOWNLOAD_CAP) return { allowed: false, reason: "download_limit_reached" };
-  return { allowed: true, purchaseId: purchase.id as string, downloadsUsed: purchase.download_count ?? 0, user: normalizedUser };
+  // Advisory only — claim_download_slot is the authority, because a check here
+  // and a write later can always interleave. This exists so the UI can show an
+  // accurate count without minting a URL.
+  //
+  // It counts events inside the seven-day window. It used to compare the
+  // LIFETIME purchases.download_count against the cap, which never reset, so a
+  // buyer who used three downloads was refused permanently — despite the UI
+  // telling them the window resets after seven days.
+  const windowStart = new Date(Date.now() - DOWNLOAD_WINDOW_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  const { count: usedInWindow } = await supabase
+    .from("download_events")
+    .select("id", { count: "exact", head: true })
+    .eq("purchase_id", purchase.id)
+    .eq("event_type", "download_signed_url_created")
+    .gte("created_at", windowStart);
+
+  const downloadsUsed = usedInWindow ?? 0;
+  if (downloadsUsed >= DOWNLOAD_CAP) return { allowed: false, reason: "download_limit_reached" };
+  return { allowed: true, purchaseId: purchase.id as string, downloadsUsed, user: normalizedUser };
 }
