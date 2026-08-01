@@ -3,7 +3,14 @@
 import { useId, useState, type FormEvent } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+/**
+ * Normalized, because the production value carries a trailing slash. Read raw
+ * it produced `https://…//auth/callback`, a different path from the one in
+ * Supabase's redirect allowlist — magic-link login would fail, and with it
+ * every protected download. `??` also misses the empty-string case that
+ * envOrDefault() exists to absorb.
+ */
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL?.trim() || "http://localhost:3000").replace(/\/+$/, "");
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const id = useId();

@@ -128,6 +128,39 @@ describe("P0.3 — one launch state, price, date, and timezone", () => {
     expect(repoFile("app/buy/page.tsx")).toContain("priceConfig.workbook.amount");
   });
 
+  it("renders every price-bearing route at request time", () => {
+    // resolveLaunchOffer() is time-derived when NEXT_PUBLIC_LAUNCH_STATE is
+    // unset, so a static prerender freezes the price at BUILD time: a build cut
+    // before November 24 would keep showing $17.99 after the release instant
+    // while /api/checkout charged $19.99. Same trap that /order already guards.
+    for (const route of ["app/page.tsx", "app/book/page.tsx", "app/buy/page.tsx", "app/preorder/page.tsx", "app/order/page.tsx"]) {
+      expect(repoFile(route), `${route} must not be statically prerendered`).toMatch(
+        /dynamic\s*=\s*["']force-dynamic["']/
+      );
+    }
+  });
+
+  it("shows the cart the price Stripe will charge", () => {
+    // CART_CATALOG.book is pinned to the preorder amount, so the drawer and
+    // subtotal read $17.99 while checkout charged $19.99 from release day.
+    const cart = repoFile("lib/cart.tsx");
+    expect(cart).toContain("priceOf");
+    expect(cart).toContain("sku === \"book\" ? bookPrice");
+    const drawer = repoFile("components/nav/CartDrawer.tsx");
+    expect(drawer).toContain("cart.priceOf(sku)");
+    expect(drawer).not.toContain("formatUsd(item.price)");
+    expect(repoFile("app/layout.tsx")).toContain("bookPrice={offer.amountDollars}");
+  });
+
+  it("normalizes the site URL everywhere it is read, not just in helpers", () => {
+    // The production value carries a trailing slash. AuthForm read it raw and
+    // built `https://…//auth/callback`, a path Supabase's redirect allowlist
+    // would not match — magic-link login, and every protected download with it.
+    const auth = repoFile("components/AuthForm.tsx");
+    expect(auth).not.toContain('process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"');
+    expect(auth).toMatch(/replace\(\/\\\/\+\$\/, ""\)/);
+  });
+
   it("states the launch window length exactly once", () => {
     // Code and copy disagreed (14 vs 15 days) and neither could be called
     // authoritative. Every surface now renders LAUNCH_WINDOW_DAYS.

@@ -7,6 +7,16 @@ import { ScrollScrubVideo } from "@/components/motion/ScrollScrubVideo";
 import Image from "next/image";
 import { getLaunchStateCopy } from "@/config/launchState";
 
+/**
+ * Must resolve per request. `resolveLaunchOffer()` is time-derived whenever
+ * NEXT_PUBLIC_LAUNCH_STATE is unset, so a static prerender freezes the price
+ * at BUILD time: a build made before November 24 would keep showing $17.99
+ * after the release instant while /api/checkout charges $19.99 — the exact
+ * display-versus-charge mismatch this resolver exists to prevent. Same trap
+ * that made /order force-dynamic (see tests/order-launch-transition.test.ts).
+ */
+export const dynamic = "force-dynamic";
+
 /* The hair story, told by scroll: the camera moves through the dark toward
    the light the way the book moves a stylist through the business. */
 const scrubStages = [
