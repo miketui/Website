@@ -77,6 +77,16 @@ interface CartContextValue {
   workbookGifted: boolean;
   /** True when this sku is currently included free rather than sold. */
   isGifted: (sku: CartSku) => boolean;
+  /**
+   * The live price for a sku — the amount Stripe will actually charge.
+   *
+   * Read this instead of `CART_CATALOG[sku].price`. The catalog's book entry
+   * is pinned to the preorder amount, so rendering it directly showed $17.99
+   * in the drawer and the subtotal while checkout charged $19.99 from the
+   * release instant. The book's amount comes from the server's launch offer;
+   * every other sku is a fixed catalog price.
+   */
+  priceOf: (sku: CartSku) => number;
   add: (sku: CartSku) => void;
   remove: (sku: CartSku) => void;
   has: (sku: CartSku) => boolean;
@@ -99,7 +109,16 @@ function readStored(): CartSku[] {
   }
 }
 
-export function CartProvider({ children, workbookGifted = false }: { children: ReactNode; workbookGifted?: boolean }) {
+export function CartProvider({
+  children,
+  workbookGifted = false,
+  bookPrice = priceConfig.preorderDirect.amount
+}: {
+  children: ReactNode;
+  workbookGifted?: boolean;
+  /** Resolved server-side from the launch offer; see `priceOf`. */
+  bookPrice?: number;
+}) {
   const [items, setItems] = useState<CartSku[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -127,6 +146,11 @@ export function CartProvider({ children, workbookGifted = false }: { children: R
     [workbookGifted, items]
   );
 
+  const priceOf = useCallback(
+    (sku: CartSku) => (sku === "book" ? bookPrice : CART_CATALOG[sku].price),
+    [bookPrice]
+  );
+
   const add = useCallback((sku: CartSku) => {
     setItems((prev) => {
       if (prev.includes(sku)) return prev;
@@ -147,10 +171,11 @@ export function CartProvider({ children, workbookGifted = false }: { children: R
       count: items.length,
       // A gifted line contributes $0 — the drawer total must match the amount
       // Stripe will actually charge, which excludes the gifted workbook.
-      subtotal: items.reduce((sum, sku) => sum + (isGifted(sku) ? 0 : CART_CATALOG[sku].price), 0),
+      subtotal: items.reduce((sum, sku) => sum + (isGifted(sku) ? 0 : priceOf(sku)), 0),
       isOpen,
       workbookGifted,
       isGifted,
+      priceOf,
       add,
       remove,
       has,
@@ -158,7 +183,7 @@ export function CartProvider({ children, workbookGifted = false }: { children: R
       open,
       close
     }),
-    [items, isOpen, workbookGifted, isGifted, add, remove, has, clear, open, close]
+    [items, isOpen, workbookGifted, isGifted, priceOf, add, remove, has, clear, open, close]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

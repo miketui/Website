@@ -12,6 +12,16 @@ import { pageMetadata } from "@/lib/seo";
 import { getLaunchStateCopy, releaseDateLabel } from "@/config/launchState";
 import { priceConfig } from "@/content/book";
 
+/**
+ * Must resolve per request. `resolveLaunchOffer()` is time-derived whenever
+ * NEXT_PUBLIC_LAUNCH_STATE is unset, so a static prerender freezes the price
+ * at BUILD time: a build made before November 24 would keep showing $17.99
+ * after the release instant while /api/checkout charges $19.99 — the exact
+ * display-versus-charge mismatch this resolver exists to prevent. Same trap
+ * that made /order force-dynamic (see tests/order-launch-transition.test.ts).
+ */
+export const dynamic = "force-dynamic";
+
 export const metadata = pageMetadata(
   "A Stylist's Interactive Journey",
   "Curls & Contemplation by Michael David is a 467-page interactive guide for freelance hairstylists building creative confidence, sustainable pricing, visibility, leadership, and career longevity.",

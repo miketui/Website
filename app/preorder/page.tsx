@@ -11,6 +11,16 @@ import { priceConfig } from "@/content/book";
 import { releaseDateLabel } from "@/config/launchState";
 import { productJsonLd, breadcrumbJsonLd } from "@/lib/schema";
 
+/**
+ * Must resolve per request. `resolveLaunchOffer()` is time-derived whenever
+ * NEXT_PUBLIC_LAUNCH_STATE is unset, so a static prerender freezes the price
+ * at BUILD time: a build made before November 24 would keep showing $17.99
+ * after the release instant while /api/checkout charges $19.99 — the exact
+ * display-versus-charge mismatch this resolver exists to prevent. Same trap
+ * that made /order force-dynamic (see tests/order-launch-transition.test.ts).
+ */
+export const dynamic = "force-dynamic";
+
 export const metadata = pageMetadata("Preorder", "Reserve the direct digital edition of Curls & Contemplation at the $17.99 launch price.", { path: "/preorder", image: "/gateway-cover.jpg" });
 
 export default function Page() {

@@ -134,7 +134,7 @@ export function CartDrawer({ sourcePage }: { sourcePage?: string }) {
                     }}
                     className="mt-6 inline-flex items-center rounded-sm bg-antique px-6 py-3 text-sm font-semibold text-obsidian transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique"
                   >
-                    Add the book — {formatUsd(CART_CATALOG.book.price)}
+                    Add the book — {formatUsd(cart.priceOf("book"))}
                   </button>
                 </div>
               ) : (
@@ -154,7 +154,7 @@ export function CartDrawer({ sourcePage }: { sourcePage?: string }) {
                             Remove
                           </button>
                         </div>
-                        <p className="font-semibold text-antique">{cart.isGifted(sku) ? "Included free" : formatUsd(item.price)}</p>
+                        <p className="font-semibold text-antique">{cart.isGifted(sku) ? "Included free" : formatUsd(cart.priceOf(sku))}</p>
                       </li>
                     );
                   })}

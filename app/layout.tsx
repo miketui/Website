@@ -50,6 +50,19 @@ export const metadata: Metadata = {
  */
 const coverCurtainScript = `try{var seen=false;try{seen=document.cookie.indexOf("cc_cover_seen=1")>-1}catch(e){}if(location.pathname==="/"&&!seen)document.documentElement.setAttribute("data-cc-cover","")}catch(e){}`;
 
+/**
+ * The header CTA renders the book's price on EVERY route, so a purely static
+ * site would advertise a stale price site-wide after the release instant —
+ * not just on the purchase pages.
+ *
+ * The purchase surfaces (/, /book, /buy, /preorder, /order) are force-dynamic
+ * and therefore always exact. This bounds staleness of the shared chrome on
+ * the remaining, non-transactional routes to one minute rather than to the
+ * next deploy. Do not raise it without checking what else reads the launch
+ * offer at render time.
+ */
+export const revalidate = 60;
+
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const launch = getLaunchStateCopy();
   const offer = resolveLaunchOffer();
@@ -57,5 +70,5 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   const isVercelRuntime = process.env.VERCEL === "1";
   /* suppressHydrationWarning: the cover curtain script (below) sets a
      data attribute on <html> before hydration by design. */
-  return <html lang="en" suppressHydrationWarning className={`${displayFont.variable} ${accentFont.variable} ${bodyFont.variable}`}><body><script dangerouslySetInnerHTML={{ __html: coverCurtainScript }} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><CartProvider workbookGifted={offer.workbookIncludedFree}><SiteNav preorder={preorder} /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><GoogleAnalytics /><SiteCurlTrail /><Toaster /></CartProvider></ReducedMotionProvider>{isVercelRuntime ? <SpeedInsights /> : null}</body></html>;
+  return <html lang="en" suppressHydrationWarning className={`${displayFont.variable} ${accentFont.variable} ${bodyFont.variable}`}><body><script dangerouslySetInnerHTML={{ __html: coverCurtainScript }} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><CartProvider workbookGifted={offer.workbookIncludedFree} bookPrice={offer.amountDollars}><SiteNav preorder={preorder} /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><GoogleAnalytics /><SiteCurlTrail /><Toaster /></CartProvider></ReducedMotionProvider>{isVercelRuntime ? <SpeedInsights /> : null}</body></html>;
 }
