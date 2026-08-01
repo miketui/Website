@@ -48,7 +48,7 @@ export default function Page() {
       <PageHero
         eyebrow="Direct preorder"
         title="Reserve the direct edition."
-        description="The launch price is $17.99 — and stays there through the first fifteen days after release, then becomes $19.99 permanently. Pay today; your EPUB unlocks in your account on release day, with a receipt now and a download note the moment it's live."
+        description="The preorder price is $17.99 — it holds until release day, then becomes $19.99. Pay today; your EPUB unlocks in your account on release day, with a receipt now and a download note the moment it's live."
         primaryHref="#checkout"
         primaryLabel="Continue to Checkout"
         secondaryHref="/pricing-kit"

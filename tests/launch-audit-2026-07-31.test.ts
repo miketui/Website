@@ -30,12 +30,16 @@ describe("P0.3 — one launch state, price, date, and timezone", () => {
   });
 
   it("is still PREORDER at 4:00 p.m. Pacific the day before release", () => {
+    // This literal stays absolute on purpose: `${date}T00:00:00Z` is exactly
+    // the value the old UTC-based code used as the release instant. Asserting
+    // it is STILL preorder is the regression itself, and deriving it from
+    // releaseInstant() would erase what the test is checking.
     expect(getLaunchState(new Date("2026-11-24T00:00:00Z"))).toBe("PREORDER");
-    expect(getLaunchState(new Date("2026-11-24T07:59:00Z"))).toBe("PREORDER");
+    expect(getLaunchState(new Date(releaseInstant().getTime() - 60_000))).toBe("PREORDER");
   });
 
   it("flips to LAUNCH exactly at the Pacific release instant", () => {
-    expect(getLaunchState(new Date("2026-11-24T08:00:00Z"))).toBe("LAUNCH");
+    expect(getLaunchState(releaseInstant())).toBe("LAUNCH");
   });
 
   it("displays the same price tier that Stripe will charge", () => {
@@ -61,11 +65,18 @@ describe("P0.3 — one launch state, price, date, and timezone", () => {
   it("moves to $19.99 at the release instant, not 14 days later", () => {
     // The discount ends when the book ships. LAUNCH_WINDOW_DAYS shapes badges
     // and urgency copy only — it must never move the price.
-    const oneMinuteBefore = resolveLaunchOffer(new Date("2026-11-24T07:59:00Z"));
+    //
+    // Offsets are derived from releaseInstant() so this survives a RELEASE_DATE
+    // change. The absolute value of that instant is pinned once, in the
+    // timezone test above — asserting it again here would only duplicate the
+    // conversion math, and deriving it there would make that test tautological.
+    const release = releaseInstant().getTime();
+
+    const oneMinuteBefore = resolveLaunchOffer(new Date(release - 60_000));
     expect(oneMinuteBefore.priceTier).toBe("preorder");
     expect(oneMinuteBefore.amountDollars).toBe(17.99);
 
-    const atRelease = resolveLaunchOffer(new Date("2026-11-24T08:00:00Z"));
+    const atRelease = resolveLaunchOffer(new Date(release));
     expect(atRelease.state).toBe("LAUNCH");
     expect(atRelease.priceTier).toBe("regular");
     expect(atRelease.amountDollars).toBe(19.99);
@@ -77,6 +88,44 @@ describe("P0.3 — one launch state, price, date, and timezone", () => {
       expect(offer.priceTier).toBe("regular");
       expect(offer.amountDollars).toBe(19.99);
     }
+  });
+
+  it("has no surface still promising the retired launch-window discount", () => {
+    // Fixing /buy alone left five surfaces — including the welcome email and
+    // the Book/Product JSON-LD — telling buyers $17.99 held for 15 days after
+    // release while checkout charged $19.99 from the release instant. A price
+    // promise in an email or in structured data is as binding as one on a
+    // page, and is far easier to miss.
+    const surfaces = [
+      "app/buy/page.tsx",
+      "app/preorder/page.tsx",
+      "app/thank-you/page.tsx",
+      "components/PreorderCheckout.tsx",
+      "lib/email/resend.ts",
+      "lib/schema.ts"
+    ];
+    for (const surface of surfaces) {
+      const source = repoFile(surface);
+      expect(source, `${surface} still promises a post-release discount window`).not.toMatch(
+        /fifteen days|days after release|holds through/i
+      );
+    }
+  });
+
+  it("advertises the resolver's price in structured data, not a hardcoded tier", () => {
+    const schema = repoFile("lib/schema.ts");
+    expect(schema).toContain("resolveLaunchOffer");
+    // priceValidUntil was RELEASE_DATE + 15 days, a rule that no longer exists.
+    expect(schema).not.toContain("tierFlipDate");
+  });
+
+  it("prices the workbook from its own SKU, never from the book's price", () => {
+    // The workbook is a separate Stripe price (STRIPE_PRICE_ID_WORKBOOK) that
+    // happens to equal the book's regular price today — so copy derived from
+    // priceConfig.regularDirect would silently follow a book price change.
+    expect(priceConfig.workbook.amount).toBe(19.99);
+    expect(repoFile("lib/cart.tsx")).toContain("priceConfig.workbook.amount");
+    expect(repoFile("app/buy/page.tsx")).toContain("priceConfig.workbook.amount");
   });
 
   it("states the launch window length exactly once", () => {

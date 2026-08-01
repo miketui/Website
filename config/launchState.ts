@@ -147,10 +147,17 @@ export type LaunchOffer = {
   /** Commerce overlay: checkout CTAs fall back to the free pricing kit. */
   checkoutPaused: boolean;
   /**
-   * The Idea-to-Action Workbook ships free with a qualifying book order.
-   * Distinct from `priceTier`: the launch window keeps preorder *pricing*
-   * ($17.99) while the workbook becomes a paid product again ("paid
-   * post-launch; free with any preorder that includes the book" — AGENTS.md).
+   * The Idea-to-Action Workbook ships free with a qualifying book order —
+   * "paid post-launch; free with any preorder that includes the book"
+   * (AGENTS.md).
+   *
+   * Under the current rule this is true exactly when `priceTier` is
+   * "preorder", because both end at the release instant. It stays a separate
+   * field rather than an alias: they are answers to different questions (what
+   * do we charge for the book / is the workbook a gift), and they have already
+   * diverged once — an earlier rule held preorder pricing through the 14-day
+   * launch window while the workbook was already paid again. Reading the gift
+   * off `priceTier` is what made that divergence a silent overcharge.
    */
   workbookIncludedFree: boolean;
   releaseDateIso: string;

@@ -92,9 +92,13 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) 
     //
     // `workbook_gift` is written by the server at checkout and is authoritative.
     // The `price_tier === "preorder"` fallback covers sessions created before
-    // that flag existed — it must stay for replay safety, but it is NOT
-    // equivalent: the 14-day launch window keeps preorder *pricing* while the
-    // workbook is already a paid product again.
+    // that flag existed and must stay for replay safety.
+    //
+    // Under the current pricing rule the two agree — both end at the release
+    // instant. They have not always: an earlier rule held preorder pricing
+    // through the 14-day launch window while the workbook was already paid
+    // again, and inferring the gift from the tier is what turned that into a
+    // silent overcharge. Keep reading the explicit flag first.
     const preorderGift =
       session.metadata?.book_included !== "false" &&
       (session.metadata?.workbook_gift === "true" ||

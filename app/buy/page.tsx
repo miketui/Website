@@ -26,7 +26,7 @@ export default function Page() {
       >
         <div className="grid gap-3 text-sm text-whitegold/78">
           <p>Direct digital: {offer.priceLabel}{atRegularPrice ? "" : ` now — $${priceConfig.regularDirect.amount.toFixed(2)} from release day, ${releaseDateLabel()}`}</p>
-          <p>Idea-to-Action Workbook: free with preorder; ${priceConfig.regularDirect.amount.toFixed(2)} from release day.</p>
+          <p>Idea-to-Action Workbook: free with preorder; ${priceConfig.workbook.amount.toFixed(2)} from release day.</p>
           <p>Kindle and paperback: store links will appear here when confirmed.</p>
         </div>
       </PageHero>

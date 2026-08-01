@@ -13,5 +13,6 @@ declare module "../scripts/*.mjs" {
   export const stripeEnvNames: string[];
   export function stripeTestModeStatus(env?: Record<string, string | undefined>): { ok: boolean; skipped?: boolean; missing?: string[]; reason?: string };
   export function collectProdEnvIssues(env?: Record<string, string | undefined>): string[];
-  export function runProdEnvCheck(options?: { env?: Record<string, string | undefined> }): { enforced: boolean; issues: string[]; ok: boolean };
+  export function collectProdEnvWarnings(env?: Record<string, string | undefined>): string[];
+  export function runProdEnvCheck(options?: { env?: Record<string, string | undefined> }): { enforced: boolean; issues: string[]; warnings: string[]; ok: boolean };
 }
