@@ -34,13 +34,22 @@ import { siteConfig } from "@/content/site";
 //    signal for a site taking payments, and a media kit exists to be found by
 //    press. Their `noIndex` flags were removed in the same change that added
 //    them below — tests/seo-contract.test.ts fails if the two ever drift apart.
+//
+//    2026-08-01: the seven policy pages went back to noindex, TEMPORARILY.
+//    They still render text that describes itself as "Draft pending attorney
+//    review", and the 2026-07-31 audit rated indexed draft policies a launch
+//    blocker (P0.7). The 2026-07-28 reasoning is not being reversed — a policy
+//    page is a trust signal *when it states an approved policy*. The moment
+//    counsel returns final text, delete `noIndex: true` from those seven pages
+//    and restore them to `secondaryRoutes` in the same commit.
+//    /media-kit is unaffected and stays indexable.
 
 const primaryRoutes = ["/", "/book", "/preorder", "/buy", "/pricing-kit", "/daily-directives", "/subscribe", "/reset", "/quiz", "/journey", "/blog", "/about", "/faq", "/contact"];
 
 // Indexable, but not acquisition surfaces. Split out so they carry a lower
 // priority and a yearly change frequency — legal text is stable, and letting
 // it compete with /book or /preorder for crawl attention would be backwards.
-const secondaryRoutes = ["/privacy", "/terms", "/cookies", "/refund-policy", "/preorder-policy", "/digital-delivery-policy", "/accessibility", "/media-kit"];
+const secondaryRoutes = ["/media-kit"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

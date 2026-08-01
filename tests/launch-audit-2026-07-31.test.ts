@@ -51,18 +51,32 @@ describe("P0.3 — one launch state, price, date, and timezone", () => {
     }
   });
 
-  it("holds preorder pricing through the launch window (AGENTS.md locked table)", () => {
-    const launchWindow = resolveLaunchOffer(new Date("2026-11-30T00:00:00Z"));
-    expect(launchWindow.state).toBe("LAUNCH");
-    expect(launchWindow.priceTier).toBe("preorder");
-    expect(launchWindow.amountDollars).toBe(17.99);
+  it("charges $17.99 only while preordering (owner decision, 2026-08-01)", () => {
+    const preorder = resolveLaunchOffer(new Date("2026-06-01T00:00:00Z"));
+    expect(preorder.state).toBe("PREORDER");
+    expect(preorder.priceTier).toBe("preorder");
+    expect(preorder.amountDollars).toBe(17.99);
   });
 
-  it("moves to the regular price only after the window closes", () => {
-    const evergreen = resolveLaunchOffer(new Date("2026-12-20T00:00:00Z"));
-    expect(evergreen.state).toBe("EVERGREEN");
-    expect(evergreen.priceTier).toBe("regular");
-    expect(evergreen.amountDollars).toBe(19.99);
+  it("moves to $19.99 at the release instant, not 14 days later", () => {
+    // The discount ends when the book ships. LAUNCH_WINDOW_DAYS shapes badges
+    // and urgency copy only — it must never move the price.
+    const oneMinuteBefore = resolveLaunchOffer(new Date("2026-11-24T07:59:00Z"));
+    expect(oneMinuteBefore.priceTier).toBe("preorder");
+    expect(oneMinuteBefore.amountDollars).toBe(17.99);
+
+    const atRelease = resolveLaunchOffer(new Date("2026-11-24T08:00:00Z"));
+    expect(atRelease.state).toBe("LAUNCH");
+    expect(atRelease.priceTier).toBe("regular");
+    expect(atRelease.amountDollars).toBe(19.99);
+  });
+
+  it("stays at $19.99 through the launch window and into evergreen", () => {
+    for (const iso of ["2026-11-30T00:00:00Z", "2026-12-20T00:00:00Z"]) {
+      const offer = resolveLaunchOffer(new Date(iso));
+      expect(offer.priceTier).toBe("regular");
+      expect(offer.amountDollars).toBe(19.99);
+    }
   });
 
   it("states the launch window length exactly once", () => {

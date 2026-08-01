@@ -31,7 +31,13 @@ const REQUIRED_IN_PRODUCTION = [
       if (!value || !value.trim()) return "is empty or unset — sitemap.xml, robots.txt, and every canonical would resolve to http://localhost:3000";
       if (/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(value)) return `is "${value}" — a localhost URL must never ship to production`;
       if (!/^https:\/\//i.test(value)) return `is "${value}" — production must be https://`;
-      if (/\/$/.test(value)) return `is "${value}" — a trailing slash produces double-slash URLs in sitemap.xml (normalizeSiteUrl strips it, but set it correctly at the source)`;
+      return null;
+    },
+    // Advisory, NOT blocking. See the severity note above `runProdEnvCheck`.
+    advise(value) {
+      if (value && /\/$/.test(value.trim())) {
+        return `has a trailing slash — harmless at runtime (both content/site.ts normalizeSiteUrl and lib/env.ts getSiteUrl strip it) but set it correctly at the source`;
+      }
       return null;
     }
   },
@@ -86,9 +92,40 @@ export function collectProdEnvIssues(env = process.env) {
   return issues;
 }
 
+/** Non-blocking findings: worth fixing, never worth taking the site down for. */
+export function collectProdEnvWarnings(env = process.env) {
+  const warnings = [];
+  for (const { name, advise } of REQUIRED_IN_PRODUCTION) {
+    if (!advise) continue;
+    const note = advise(env[name]);
+    if (note) warnings.push(`${name} ${note}`);
+  }
+  return warnings;
+}
+
+/**
+ * Severity rule, added 2026-08-01 after this guard took the site down.
+ *
+ * A blocking check must be reserved for a value that produces WRONG OUTPUT —
+ * a missing, localhost, or non-https site URL poisons every canonical, and a
+ * green build shipping those is the failure this guard was built to catch.
+ *
+ * A trailing slash is not that. Both readers normalize it, so it changes
+ * nothing at runtime. Blocking on it meant every production deployment failed,
+ * the custom domain had no healthy deployment behind it, and the public site
+ * returned 403 — which the 2026-07-31 audit logged as a separate P0 with an
+ * unknown cause. A cosmetic nit escalated into a total outage, and the guard
+ * that caused it was reported as the thing protecting the deploy.
+ *
+ * Cosmetic findings are warnings. If a check cannot name the wrong output it
+ * prevents, it does not get to fail a build.
+ */
 export function runProdEnvCheck({ env = process.env } = {}) {
   const enforced = isProductionBuild(env);
   const issues = collectProdEnvIssues(env);
+  const warnings = collectProdEnvWarnings(env);
+
+  for (const warning of warnings) console.warn(`[check-prod-env] warning: ${warning}`);
 
   if (!enforced) {
     console.log(
@@ -96,18 +133,18 @@ export function runProdEnvCheck({ env = process.env } = {}) {
         ? `[check-prod-env] Non-production build — ${issues.length} issue(s) noted, not enforced. Run CHECK_PROD_ENV=true pnpm build to enforce.`
         : "[check-prod-env] Non-production build — production variables look valid."
     );
-    return { enforced, issues, ok: true };
+    return { enforced, issues, warnings, ok: true };
   }
 
   if (issues.length) {
     console.error("[check-prod-env] Production build blocked:\n");
     for (const issue of issues) console.error(`  ✗ ${issue}`);
     console.error("\nSet these in the Vercel project (Settings → Environment Variables → Production) and redeploy.\n");
-    return { enforced, issues, ok: false };
+    return { enforced, issues, warnings, ok: false };
   }
 
   console.log("[check-prod-env] Production environment validated.");
-  return { enforced, issues, ok: true };
+  return { enforced, issues, warnings, ok: true };
 }
 
 // Only act when executed directly, so the exports stay importable from tests.

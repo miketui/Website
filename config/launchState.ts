@@ -167,12 +167,14 @@ export type LaunchOffer = {
  * resolved another, because the UI read NEXT_PUBLIC_LAUNCH_STATE and checkout
  * read the legacy NEXT_PUBLIC_LAUNCH_MODE. Both now resolve here.
  *
- * Price tier follows the locked table in AGENTS.md: preorder **and** the launch
- * window are $17.99; only EVERGREEN moves to $19.99.
+ * Pricing rule (owner decision, 2026-08-01): **$17.99 while preordering,
+ * $19.99 from release onward.** The preorder discount ends at the release
+ * instant — it does not extend through the launch window. `LAUNCH_WINDOW_DAYS`
+ * therefore shapes badges, urgency, and copy only; it has no price effect.
  */
 export function resolveLaunchOffer(now: Date = new Date()): LaunchOffer {
   const state = getLaunchState(now);
-  const priceTier: PriceTier = state === "EVERGREEN" ? "regular" : "preorder";
+  const priceTier: PriceTier = state === "PREORDER" ? "preorder" : "regular";
   const price = priceTier === "preorder" ? priceConfig.preorderDirect : priceConfig.regularDirect;
   return {
     state,
