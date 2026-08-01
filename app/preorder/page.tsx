@@ -57,7 +57,7 @@ export default function Page() {
         <ul className="space-y-3 text-sm leading-6 text-whitegold/78">
           <li>• EPUB delivered from private storage only — signed links, 3 downloads over 7 days.</li>
           <li>• <span className="text-antique font-semibold">Preorder gift:</span> the $19.99 Idea-to-Action Workbook — free with every preorder. Interactive on the site plus a printable PDF, unlocked with your book.</li>
-          <li>• Regular direct price becomes ${priceConfig.regularDirect.amount.toFixed(2)} after the launch window.</li>
+          <li>• Regular direct price becomes ${priceConfig.regularDirect.amount.toFixed(2)} from release day.</li>
           <li>• Refunds are a support email away; they close download access. Honest both ways.</li>
         </ul>
       </PageHero>
