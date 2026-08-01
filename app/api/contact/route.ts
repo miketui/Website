@@ -6,6 +6,7 @@ import { recordServerEvent } from "@/lib/events/server-analytics";
 import { requestIp, verifyTurnstileToken } from "@/lib/turnstile";
 import { siteConfig } from "@/content/site";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { LEAD_INTAKE_FAILED_STATUS, leadIntakeFailure, summarizeLeadIntake, type DurableWrite } from "@/lib/lead-intake";
 
 /**
  * Contact form endpoint (PRD v2 §4.5). Intent-prefixed subjects route the
@@ -56,20 +57,28 @@ export async function POST(request: Request) {
     text: `From: ${name} <${email}>\nIntent: ${intentLabel[intent]}\n\n${message}`
   });
 
+  const writes: DurableWrite[] = [{ system: "resend:support_inbox", accepted: sent.ok, detail: sent.ok ? undefined : sent.skipped ? "config_missing" : "provider_error" }];
+
   const supabase = createServerSupabaseClient(true);
   if (supabase) {
-    await supabase.from("contact_submissions").insert({ name, email, intent, message, status: "new", source: "website" });
+    const { error } = await supabase.from("contact_submissions").insert({ name, email, intent, message, status: "new", source: "website" });
+    writes.push({ system: "supabase:contact_submissions", accepted: !error, detail: error?.message });
+  } else {
+    writes.push({ system: "supabase:contact_submissions", accepted: false, detail: "config_missing" });
   }
 
+  // Previously a `config_missing` Resend result "degraded gracefully" to a
+  // success screen with no durable record anywhere — the message was simply
+  // gone, and the sender believed it had been received. A stored submission
+  // now counts (someone can still answer it); nothing stored does not.
+  const intake = summarizeLeadIntake(writes, "resend:support_inbox");
   await recordServerEvent({
     eventName: analyticsEvents.contactSubmitted,
     route: "/api/contact",
-    metadata: { intent, resendSkipped: sent.skipped, databaseConfigured: Boolean(supabase) },
+    metadata: { intent, delivery: intake.delivery, systemsOfRecord: intake.systemsOfRecord.join(","), failures: intake.failures.map((f) => f.system).join(",") },
     operational: true
   });
 
-  if (!sent.ok && !sent.skipped) return NextResponse.json({ ok: false, error: { code: "send_failed" } }, { status: 502 });
-  // config_missing degrades gracefully: the message is acknowledged and the
-  // event recorded so nothing user-facing breaks before Resend DNS is live.
-  return NextResponse.json({ ok: true, delivery: sent.ok ? "sent" : "recorded_pending_config" });
+  if (!intake.accepted) return NextResponse.json(leadIntakeFailure(intake), { status: LEAD_INTAKE_FAILED_STATUS });
+  return NextResponse.json({ ok: true, delivery: intake.delivery, systemsOfRecord: intake.systemsOfRecord });
 }

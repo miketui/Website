@@ -108,8 +108,12 @@ export async function GET(request: Request) {
   for (const purchase of pending ?? []) {
     if (!purchase.email) continue;
     let outcome = await deliverLaunchCopy(supabase, { email: purchase.email, purchaseId: purchase.id, userId: purchase.user_id ?? undefined }, { dryRun: false });
-    if (!outcome.sent) {
-      // One in-run retry per buyer; the daily cron itself is the durable retry.
+    // One in-run retry per buyer; the cron itself is the durable retry.
+    // Never retry an outcome whose email already left — `already_sent` means
+    // another worker holds the claim, and `audit_write_failed_after_send`
+    // means this run sent it. Retrying either is how buyers get two copies.
+    const emailAlreadyLeft = outcome.reason === "already_sent" || outcome.reason?.startsWith("audit_write_failed_after_send");
+    if (!outcome.sent && !emailAlreadyLeft) {
       outcome = await deliverLaunchCopy(supabase, { email: purchase.email, purchaseId: purchase.id, userId: purchase.user_id ?? undefined }, { dryRun: false });
     }
     results.push({ email: outcome.email, sent: outcome.sent, reason: outcome.reason });

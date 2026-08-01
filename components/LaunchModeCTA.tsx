@@ -1,8 +1,8 @@
-import { getLaunchCta, getLaunchMode } from "@/lib/launch-mode";
+import { getLaunchCta } from "@/lib/launch-mode";
 import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 
 export function LaunchModeCTA({ className, showHelper = true }: { className?: string; showHelper?: boolean }) {
-  const cta = getLaunchCta(getLaunchMode());
+  const cta = getLaunchCta();
   return (
     <div>
       <MagneticCurlButton href={cta.href} className={className}>{cta.label}</MagneticCurlButton>

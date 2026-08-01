@@ -6,6 +6,7 @@ import { recordServerEvent } from "@/lib/events/server-analytics";
 import { requestIp, verifyTurnstileToken } from "@/lib/turnstile";
 import { quizArchetypes } from "@/content/funnels";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { LEAD_INTAKE_FAILED_STATUS, leadIntakeFailure, summarizeLeadIntake, type DurableWrite } from "@/lib/lead-intake";
 
 const archetypeSlugs = quizArchetypes.map((a) => a.slug) as [string, ...string[]];
 const schema = z.object({
@@ -36,15 +37,25 @@ export async function POST(request: Request) {
     quiz_next_step: result.nextStep,
     quiz_result_url: resultUrl
   });
+  const writes: DurableWrite[] = [{ system: "mailerlite:quiz", accepted: mailerlite.ok, detail: mailerlite.ok ? undefined : mailerlite.reason }];
   const supabase = createServerSupabaseClient(true);
   if (supabase) {
-    await supabase.from("quiz_leads").upsert({ email: parsed.data.email, archetype: parsed.data.archetype, marketing_consent: true, updated_at: new Date().toISOString() }, { onConflict: "email" });
+    const { error } = await supabase
+      .from("quiz_leads")
+      .upsert({ email: parsed.data.email, archetype: parsed.data.archetype, marketing_consent: true, updated_at: new Date().toISOString() }, { onConflict: "email" });
+    writes.push({ system: "supabase:quiz_leads", accepted: !error, detail: error?.message });
+  } else {
+    writes.push({ system: "supabase:quiz_leads", accepted: false, detail: "config_missing" });
   }
+
+  // "captured_pending_config" was returned when nothing had captured anything.
+  const intake = summarizeLeadIntake(writes, "mailerlite:quiz");
   await recordServerEvent({
     eventName: analyticsEvents.quizCompleted,
     route: "/api/quiz",
-    metadata: { archetype: parsed.data.archetype, mailerliteSkipped: mailerlite.skipped, turnstileSkipped: turnstile.skipped, databaseConfigured: Boolean(supabase) },
+    metadata: { archetype: parsed.data.archetype, turnstileSkipped: turnstile.skipped, delivery: intake.delivery, systemsOfRecord: intake.systemsOfRecord.join(","), failures: intake.failures.map((f) => f.system).join(",") },
     operational: true
   });
-  return NextResponse.json({ ok: true, mailerlite, delivery: mailerlite.ok ? "list_tagged" : "captured_pending_config" });
+  if (!intake.accepted) return NextResponse.json(leadIntakeFailure(intake), { status: LEAD_INTAKE_FAILED_STATUS });
+  return NextResponse.json({ ok: true, mailerlite, delivery: intake.delivery, systemsOfRecord: intake.systemsOfRecord, resultUrl });
 }

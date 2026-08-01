@@ -1,8 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getLaunchState, daysToRelease } from "@/config/launchState";
-import { siteConfig } from "@/content/site";
+import { getLaunchState, daysToRelease, releaseInstant } from "@/config/launchState";
 
 /**
  * Guards the launch-morning failure documented in the 2026-07-27 audit.
@@ -17,7 +16,13 @@ import { siteConfig } from "@/content/site";
  * either half of that regresses — the state machine or the render mode.
  */
 
-const RELEASE = new Date(`${siteConfig.releaseDate}T00:00:00Z`);
+/**
+ * Anchored to `releaseInstant()` — midnight **America/Los_Angeles**, not
+ * midnight UTC. These offsets used to be measured from `${date}T00:00:00Z`,
+ * which is 4:00 p.m. Pacific on November 23: the assertions passed while the
+ * real site would have flipped to launch pricing eight hours early.
+ */
+const RELEASE = releaseInstant();
 const DAY = 86_400_000;
 const at = (offsetDays: number) => new Date(RELEASE.getTime() + offsetDays * DAY);
 

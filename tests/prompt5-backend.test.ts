@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { analyticsEvents, isAnalyticsEventName, sanitizeAnalyticsMetadata } from "@/lib/analytics";
 import { buildCheckoutMetadata, resolveServerPriceId } from "@/lib/stripe";
+import { resolveLaunchOffer } from "@/config/launchState";
 import { deliverables, isSafePrivateDeliverablePath } from "@/lib/downloads";
 import { checkDownloadEntitlement } from "@/lib/entitlements";
 import { mailerLiteGroups, upsertSubscriber } from "@/lib/email/mailerlite";
@@ -12,14 +13,17 @@ describe("Prompt 5 checkout hardening", () => {
     process.env.STRIPE_SECRET_KEY = "placeholder";
     process.env.STRIPE_PRICE_ID_PREORDER = "price_preorder_server";
     process.env.STRIPE_PRICE_ID_REGULAR = "price_regular_server";
-    expect(resolveServerPriceId("preorder", "direct_ebook")).toMatchObject({ ok: true, priceId: "price_preorder_server" });
-    expect(resolveServerPriceId("launched", "direct_ebook")).toMatchObject({ ok: true, priceId: "price_regular_server" });
+    const preorder = resolveLaunchOffer(new Date("2026-01-01T00:00:00Z"));
+    const evergreen = resolveLaunchOffer(new Date("2027-01-01T00:00:00Z"));
+    expect(resolveServerPriceId(preorder, "direct_ebook")).toMatchObject({ ok: true, priceId: "price_preorder_server" });
+    expect(resolveServerPriceId(evergreen, "direct_ebook")).toMatchObject({ ok: true, priceId: "price_regular_server" });
     const metadata = buildCheckoutMetadata({ product: "direct_ebook", sourcePage: "/preorder", customerEmail: "reader@example.com" });
     expect(metadata).toMatchObject({ book_slug: "curls-and-contemplation", source_page: "/preorder", customer_email: "reader@example.com" });
   });
 
   it("paused checkout fails closed", () => {
-    expect(resolveServerPriceId("paused", "direct_ebook")).toMatchObject({ ok: false, reason: "checkout_paused" });
+    const paused = { ...resolveLaunchOffer(), checkoutPaused: true };
+    expect(resolveServerPriceId(paused, "direct_ebook")).toMatchObject({ ok: false, reason: "checkout_paused" });
   });
 });
 

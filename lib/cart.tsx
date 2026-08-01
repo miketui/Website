@@ -65,6 +65,18 @@ interface CartContextValue {
   count: number;
   subtotal: number;
   isOpen: boolean;
+  /**
+   * Server's launch-offer decision, passed down from the root layout — the
+   * client never derives it (RELEASE_DATE is a server-only variable, so a
+   * client-side recomputation would silently read the hardcoded fallback).
+   * When true the workbook ships free with a qualifying book order, so it must
+   * not be priced, suggested, or charged alongside the book. The server
+   * enforces the same rule again in /api/checkout; this only keeps the UI
+   * honest.
+   */
+  workbookGifted: boolean;
+  /** True when this sku is currently included free rather than sold. */
+  isGifted: (sku: CartSku) => boolean;
   add: (sku: CartSku) => void;
   remove: (sku: CartSku) => void;
   has: (sku: CartSku) => boolean;
@@ -87,7 +99,7 @@ function readStored(): CartSku[] {
   }
 }
 
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({ children, workbookGifted = false }: { children: ReactNode; workbookGifted?: boolean }) {
   const [items, setItems] = useState<CartSku[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -110,6 +122,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items, hydrated]);
 
+  const isGifted = useCallback(
+    (sku: CartSku) => sku === "workbook" && workbookGifted && items.includes("book"),
+    [workbookGifted, items]
+  );
+
   const add = useCallback((sku: CartSku) => {
     setItems((prev) => {
       if (prev.includes(sku)) return prev;
@@ -128,8 +145,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     () => ({
       items,
       count: items.length,
-      subtotal: items.reduce((sum, sku) => sum + CART_CATALOG[sku].price, 0),
+      // A gifted line contributes $0 — the drawer total must match the amount
+      // Stripe will actually charge, which excludes the gifted workbook.
+      subtotal: items.reduce((sum, sku) => sum + (isGifted(sku) ? 0 : CART_CATALOG[sku].price), 0),
       isOpen,
+      workbookGifted,
+      isGifted,
       add,
       remove,
       has,
@@ -137,7 +158,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       open,
       close
     }),
-    [items, isOpen, add, remove, has, clear, open, close]
+    [items, isOpen, workbookGifted, isGifted, add, remove, has, clear, open, close]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

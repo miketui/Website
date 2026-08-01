@@ -24,11 +24,22 @@ export function PricingKitForm() {
       });
       const json = await response.json().catch(() => null);
       if (response.ok && json?.ok) {
-        router.push(json.delivery === "email_sent" ? "/thank-you" : "/thank-you?delivery=pending");
+        // `delivered` = the email provider accepted it. `recorded_pending_delivery`
+        // = the lead is stored but nothing has been sent yet, so the thank-you
+        // page must say "pending" rather than "check your inbox". This branch
+        // previously compared against a state name the API has never returned,
+        // so every visitor got the pending page regardless of the outcome.
+        router.push(json.delivery === "delivered" ? "/thank-you" : "/thank-you?delivery=pending");
         return;
       }
       setStatus("error");
-      setMessage(json?.error?.code === "turnstile_failed" ? "We couldn't confirm you're human. Complete the check and try again." : "We couldn't send the guide. Please try again.");
+      setMessage(
+        json?.error?.code === "turnstile_failed"
+          ? "We couldn't confirm you're human. Complete the check and try again."
+          : json?.error?.code === "delivery_failed"
+            ? "We couldn't save your request, so nothing was sent. Please try again in a moment."
+            : "We couldn't send the guide. Please try again."
+      );
     } catch {
       setStatus("error");
       setMessage("Network hiccup. Please try again.");

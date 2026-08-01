@@ -4,15 +4,16 @@ import { Section } from "@/components/design/Section";
 import { PurchaseSummary } from "@/components/PurchaseSummary";
 import { PreorderCheckout } from "@/components/PreorderCheckout";
 import { priceConfig } from "@/content/book";
-import { getLaunchMode } from "@/lib/env";
+import { resolveLaunchOffer } from "@/config/launchState";
 import { productJsonLd, breadcrumbJsonLd } from "@/lib/schema";
 
 export const metadata = pageMetadata("Buy Curls & Contemplation", "Buy the protected direct digital edition of Curls & Contemplation. Kindle and paperback store links will be added when confirmed.", { path: "/buy", image: "/gateway-cover.jpg" });
 
 export default function Page() {
-  // The charge follows launch mode server-side; the label must tell the same story.
-  const launched = getLaunchMode() === "launched";
-  const price = launched ? priceConfig.regularDirect.amount : priceConfig.preorderDirect.amount;
+  // The charge follows the launch resolver server-side; the label reads off the
+  // same object, so a displayed price can never disagree with the Stripe price.
+  const offer = resolveLaunchOffer();
+  const atRegularPrice = offer.priceTier === "regular";
   return (
     <main>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([productJsonLd(), breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Buy", path: "/buy" }])]) }} />
@@ -24,7 +25,7 @@ export default function Page() {
         secondaryLabel="Review the Book"
       >
         <div className="grid gap-3 text-sm text-whitegold/78">
-          <p>Direct digital: ${price.toFixed(2)}{launched ? "" : ` now — $${priceConfig.regularDirect.amount.toFixed(2)} fifteen days after release`}</p>
+          <p>Direct digital: {offer.priceLabel}{atRegularPrice ? "" : ` now — $${priceConfig.regularDirect.amount.toFixed(2)} ${offer.launchWindowDays} days after release`}</p>
           <p>Idea-to-Action Workbook: free with preorder; $19.99 after launch.</p>
           <p>Kindle and paperback: store links will appear here when confirmed.</p>
         </div>
@@ -33,12 +34,12 @@ export default function Page() {
         <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
           <PreorderCheckout
             title="Direct digital edition"
-            price={`$${price.toFixed(2)}`}
-            ctaLabel={`${launched ? "Buy the Book" : "Preorder"} — $${price.toFixed(2)}`}
+            price={offer.priceLabel}
+            ctaLabel={`${offer.state === "PREORDER" ? "Preorder" : "Buy the Book"} — ${offer.priceLabel}`}
             note={
-              launched
+              atRegularPrice
                 ? "EPUB, delivered through your protected account the moment payment clears."
-                : `EPUB through your protected account. $${priceConfig.regularDirect.amount.toFixed(2)} fifteen days after release — the real schedule, the only urgency.`
+                : `EPUB through your protected account. $${priceConfig.regularDirect.amount.toFixed(2)} ${offer.launchWindowDays} days after release — the real schedule, the only urgency.`
             }
             sourcePage="/buy"
           />
