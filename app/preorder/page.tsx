@@ -48,7 +48,7 @@ export default function Page() {
       <PageHero
         eyebrow="Direct preorder"
         title="Reserve the direct edition."
-        description="The launch price is $17.99 — and stays there through the first fifteen days after release, then becomes $19.99 permanently. Pay today; your EPUB unlocks in your account on release day, with a receipt now and a download note the moment it's live."
+        description="The preorder price is $17.99 — it holds until release day, then becomes $19.99. Pay today; your EPUB unlocks in your account on release day, with a receipt now and a download note the moment it's live."
         primaryHref="#checkout"
         primaryLabel="Continue to Checkout"
         secondaryHref="/pricing-kit"
@@ -57,7 +57,7 @@ export default function Page() {
         <ul className="space-y-3 text-sm leading-6 text-whitegold/78">
           <li>• EPUB delivered from private storage only — signed links, 3 downloads over 7 days.</li>
           <li>• <span className="text-antique font-semibold">Preorder gift:</span> the $19.99 Idea-to-Action Workbook — free with every preorder. Interactive on the site plus a printable PDF, unlocked with your book.</li>
-          <li>• Regular direct price becomes ${priceConfig.regularDirect.amount.toFixed(2)} after the launch window.</li>
+          <li>• Regular direct price becomes ${priceConfig.regularDirect.amount.toFixed(2)} from release day.</li>
           <li>• Refunds are a support email away; they close download access. Honest both ways.</li>
         </ul>
       </PageHero>

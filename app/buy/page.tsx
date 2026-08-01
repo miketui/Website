@@ -4,7 +4,7 @@ import { Section } from "@/components/design/Section";
 import { PurchaseSummary } from "@/components/PurchaseSummary";
 import { PreorderCheckout } from "@/components/PreorderCheckout";
 import { priceConfig } from "@/content/book";
-import { resolveLaunchOffer } from "@/config/launchState";
+import { releaseDateLabel, resolveLaunchOffer } from "@/config/launchState";
 import { productJsonLd, breadcrumbJsonLd } from "@/lib/schema";
 
 export const metadata = pageMetadata("Buy Curls & Contemplation", "Buy the protected direct digital edition of Curls & Contemplation. Kindle and paperback store links will be added when confirmed.", { path: "/buy", image: "/gateway-cover.jpg" });
@@ -25,8 +25,8 @@ export default function Page() {
         secondaryLabel="Review the Book"
       >
         <div className="grid gap-3 text-sm text-whitegold/78">
-          <p>Direct digital: {offer.priceLabel}{atRegularPrice ? "" : ` now — $${priceConfig.regularDirect.amount.toFixed(2)} ${offer.launchWindowDays} days after release`}</p>
-          <p>Idea-to-Action Workbook: free with preorder; $19.99 after launch.</p>
+          <p>Direct digital: {offer.priceLabel}{atRegularPrice ? "" : ` now — $${priceConfig.regularDirect.amount.toFixed(2)} from release day, ${releaseDateLabel()}`}</p>
+          <p>Idea-to-Action Workbook: free with preorder; ${priceConfig.workbook.amount.toFixed(2)} from release day.</p>
           <p>Kindle and paperback: store links will appear here when confirmed.</p>
         </div>
       </PageHero>
@@ -39,7 +39,7 @@ export default function Page() {
             note={
               atRegularPrice
                 ? "EPUB, delivered through your protected account the moment payment clears."
-                : `EPUB through your protected account. $${priceConfig.regularDirect.amount.toFixed(2)} ${offer.launchWindowDays} days after release — the real schedule, the only urgency.`
+                : `EPUB through your protected account. $${priceConfig.regularDirect.amount.toFixed(2)} from release day, ${releaseDateLabel()} — the real schedule, the only urgency.`
             }
             sourcePage="/buy"
           />

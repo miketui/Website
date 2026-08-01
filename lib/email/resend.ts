@@ -84,7 +84,7 @@ export function welcomeSubscriberTemplate() {
   const pricingKitUrl = `${getSiteUrl().replace(/\/$/, "")}/pricing-kit`;
   return {
     subject: "You're in — one honest welcome",
-    html: `<p>Thank you for subscribing to Curls &amp; Contemplation.</p><p>Here's the deal: one welcome note (this one), then the occasional letter on pricing, craft, and the business nobody taught you. No spam, no daily blasts, and you can leave any time.</p><p>Start with the free <a href="${pricingKitUrl}">Detailed Pricing Guide for Stylists</a>. The direct book edition is $17.99 through the first fifteen days after release, then $19.99 permanently.</p><p>Talk soon,<br/>Michael David</p>`,
+    html: `<p>Thank you for subscribing to Curls &amp; Contemplation.</p><p>Here's the deal: one welcome note (this one), then the occasional letter on pricing, craft, and the business nobody taught you. No spam, no daily blasts, and you can leave any time.</p><p>Start with the free <a href="${pricingKitUrl}">Detailed Pricing Guide for Stylists</a>. The direct book edition is $17.99 until release day, then $19.99.</p><p>Talk soon,<br/>Michael David</p>`,
     text: `Thank you for subscribing to Curls & Contemplation. Start with the Detailed Pricing Guide for Stylists: ${pricingKitUrl} — Michael David`
   };
 }

@@ -4,8 +4,9 @@ import { MagneticCurlButton } from "@/components/motion/MagneticCurlButton";
 import { PurchaseBurst } from "@/components/motion/PurchaseBurst";
 import { pageMetadata } from "@/lib/seo";
 import { pricingKitLink } from "@/lib/free-assets";
+import { priceConfig } from "@/content/book";
 import { publicEnv } from "@/lib/env";
-import { getLaunchStateCopy } from "@/config/launchState";
+import { getLaunchStateCopy, releaseDateLabel, resolveLaunchOffer } from "@/config/launchState";
 
 export const metadata = pageMetadata("Thank You", "Your Detailed Pricing Guide is on its way.", { path: "/thank-you", noIndex: true });
 
@@ -15,6 +16,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
   const videoId = publicEnv.NEXT_PUBLIC_THANKYOU_VIDEO_ID;
   const emailSent = delivery !== "pending";
   const launch = getLaunchStateCopy();
+  const offer = resolveLaunchOffer();
 
   return (
     <UtilityShell
@@ -52,7 +54,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
         <div>
           <h2 className="font-display text-3xl leading-tight text-white md:text-4xl">If the guide names the gap, the book helps you build the system.</h2>
           <p className="mt-4 leading-8 text-whitegold/80">
-            The direct edition is <strong className="text-white">$17.99</strong>{" "}right now. Fifteen days after release it becomes $19.99 — permanently. That schedule is real — it&rsquo;s in the preorder policy — and it is the only urgency you&rsquo;ll ever get from me. No timers. No &ldquo;only 3 left&rdquo; of a digital file.
+            The direct edition is <strong className="text-white">{offer.priceLabel}</strong>
+            {offer.state === "PREORDER" ? (
+              <> right now. On release day, {releaseDateLabel()}, it becomes ${priceConfig.regularDirect.amount.toFixed(2)} — permanently. That schedule is real — it&rsquo;s in the preorder policy — and it is the only urgency you&rsquo;ll ever get from me. No timers. No &ldquo;only 3 left&rdquo; of a digital file.</>
+            ) : (
+              <>, delivered to your account the moment payment clears. No timers. No &ldquo;only 3 left&rdquo; of a digital file.</>
+            )}
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
             <MagneticCurlButton href={launch.heroCta.href}>{launch.heroCta.label}</MagneticCurlButton>

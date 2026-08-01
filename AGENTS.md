@@ -37,8 +37,8 @@ Source of truth is `content/book.ts`. Do not hardcode prices anywhere else.
 
 | SKU | Price |
 |---|---|
-| Direct digital — preorder / launch | **$17.99** |
-| Direct digital — regular | **$19.99** |
+| Direct digital — preorder (before release) | **$17.99** |
+| Direct digital — from release day onward | **$19.99** |
 | Daily Directives bundle (12 sets, 372 cards) | $59 |
 | Idea-to-Action Workbook | paid post-launch; **free with any preorder that includes the book** |
 

@@ -53,7 +53,7 @@ export const CART_CATALOG: Record<CartSku, CartCatalogEntry> = {
     sku: "workbook",
     name: "The Idea-to-Action Workbook",
     tagline: "21-page buyer companion · interactive on-site + printable PDF",
-    price: 19.99
+    price: priceConfig.workbook.amount
   },
   ...directiveEntries
 };

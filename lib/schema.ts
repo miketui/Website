@@ -3,6 +3,7 @@ import { book, priceConfig } from "@/content/book";
 import { posts } from "@/content/blog";
 import { siteConfig } from "@/content/site";
 import { absoluteUrl } from "@/lib/seo";
+import { resolveLaunchOffer } from "@/config/launchState";
 
 export function personJsonLd() {
   return {
@@ -13,11 +14,26 @@ export function personJsonLd() {
   };
 }
 
-/** The real tier-flip date: launch price holds through RELEASE_DATE + 15 days. */
-export function tierFlipDate() {
-  const release = new Date(`${siteConfig.releaseDate}T00:00:00Z`);
-  release.setUTCDate(release.getUTCDate() + 15);
-  return release.toISOString().slice(0, 10);
+/**
+ * The offer Google sees, resolved from the same function checkout uses.
+ *
+ * This block used to hardcode the preorder price and `PreOrder` availability
+ * with a `priceValidUntil` of RELEASE_DATE + 15 days — a rule that no longer
+ * exists. Structured data that advertises $17.99 after the site has moved to
+ * $19.99 is a price mismatch in the one place a buyer cannot see and Google
+ * can, so it reads the resolver like every other surface.
+ */
+function offerJsonLd(url: string) {
+  const offer = resolveLaunchOffer();
+  return {
+    "@type": "Offer" as const,
+    price: offer.amountDollars.toFixed(2),
+    priceCurrency: "USD",
+    // The preorder price is valid up to the release instant, not past it.
+    priceValidUntil: offer.state === "PREORDER" ? siteConfig.releaseDate : undefined,
+    availability: offer.state === "PREORDER" ? "https://schema.org/PreOrder" : "https://schema.org/InStock",
+    url: absoluteUrl(url)
+  };
 }
 
 export function bookJsonLd() {
@@ -37,14 +53,7 @@ export function bookJsonLd() {
     publisher: { "@type": "Organization", name: siteConfig.name },
     audience: { "@type": "Audience", audienceType: "Freelance hairstylists and beauty professionals" },
     potentialAction: { "@type": "ViewAction", target: absoluteUrl("/pricing-kit") },
-    offers: {
-      "@type": "Offer",
-      price: priceConfig.preorderDirect.amount.toFixed(2),
-      priceCurrency: "USD",
-      priceValidUntil: tierFlipDate(),
-      availability: "https://schema.org/PreOrder",
-      url: absoluteUrl("/preorder")
-    }
+    offers: offerJsonLd("/preorder")
   };
 }
 
@@ -56,14 +65,7 @@ export function productJsonLd() {
     description: book.description,
     image: absoluteUrl("/og-default.png"),
     brand: { "@type": "Brand", name: siteConfig.name },
-    offers: {
-      "@type": "Offer",
-      price: priceConfig.preorderDirect.amount.toFixed(2),
-      priceCurrency: "USD",
-      priceValidUntil: tierFlipDate(),
-      availability: "https://schema.org/PreOrder",
-      url: absoluteUrl("/buy")
-    }
+    offers: offerJsonLd("/buy")
   };
 }
 

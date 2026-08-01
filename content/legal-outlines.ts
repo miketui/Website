@@ -15,14 +15,15 @@ export const legalOutlines = {
   ],
   refund: [
     "Draft pending attorney review. Refund handling must be plain, humane, and consistent with the approved final policy.",
+    "No refund window may be stated on a checkout, cart, receipt, or FAQ surface until this policy is approved and names one. A specific number quoted next to a pay button is a consumer promise, and quoting one this document does not yet contain is how the cart and the policy came to disagree.",
     "If a digital purchase is refunded, the matching entitlement should be revoked so future protected downloads are denied.",
     "Support should use the configured support email to review duplicate purchases, delivery problems, failed access, and other good-faith refund requests.",
     "No copy should imply unlimited access after refund, guaranteed approval, or a policy Michael has not approved.",
     "Final refund window, exceptions, payment-processor timing, and customer notices require human/attorney approval before launch."
   ],
   preorder: [
-    "Draft pending attorney review. Preorder language must state the direct preorder / launch price, expected delivery timing, what customers receive, and how to contact support.",
-    "The locked direct preorder / launch price is $17.99. The regular direct price is $19.99 after launch mode changes, unless Michael approves a documented change.",
+    "Draft pending attorney review. Preorder language must state the direct preorder price, expected delivery timing, what customers receive, and how to contact support.",
+    "The locked direct preorder price is $17.99 and applies until the book is released. From release day onward the direct price is $19.99, unless Michael approves a documented change.",
     "The expected release date currently comes from configuration and must be confirmed by Michael before any public preorder campaign runs.",
     "Preorder buyers should receive access through the protected downloads area after entitlement creation and deliverable availability.",
     "Final preorder terms, tax/payment language, cancellation handling, and launch-date disclosures require human/attorney approval before production."

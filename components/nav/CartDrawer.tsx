@@ -196,8 +196,19 @@ export function CartDrawer({ sourcePage }: { sourcePage?: string }) {
                 >
                   {busy ? "Opening secure checkout…" : "Checkout securely"}
                 </button>
+                {/*
+                  The refund window is deliberately NOT quoted here. This line
+                  promised "14-day refund policy" while /refund-policy said the
+                  window was not final — a specific number next to a pay button
+                  is a consumer promise, and no approved policy backed it. Link
+                  to the policy instead; restore a number only once the approved
+                  text names one, and change both surfaces together.
+                */}
                 <p className="mt-3 text-center text-xs text-whitegold/50">
-                  Secure Stripe checkout · instant account delivery · 14-day refund policy
+                  Secure Stripe checkout · instant account delivery ·{" "}
+                  <a href="/refund-policy" className="underline underline-offset-2 transition-colors hover:text-antique focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique">
+                    refund policy
+                  </a>
                 </p>
               </div>
             )}
