@@ -70,25 +70,67 @@ export async function deliverLaunchCopy(
     return { email: buyer.email, sent: false, reason: `sign_epub_failed: ${epub.error?.message ?? "no url"}` };
   }
 
+  /**
+   * Claim the send BEFORE calling Resend.
+   *
+   * This used to send first and stamp `launch_email_sent_at` afterwards,
+   * discarding the stamp's error. A stamp failure therefore produced a
+   * *reported success* with the row still eligible — and the cron runs hourly,
+   * so the buyer received the launch email again every hour until someone
+   * noticed. Sending twice is a trust incident; claiming first turns the same
+   * failure into a retry, which is not.
+   *
+   * The `.is("launch_email_sent_at", null)` predicate makes the claim atomic:
+   * two overlapping cron invocations race on the same row and exactly one gets
+   * a row back. If the send then fails, the claim is released below so the next
+   * run picks the buyer up again.
+   */
+  const claimedAt = new Date().toISOString();
+  if (!options.dryRun) {
+    if (!buyer.purchaseId) {
+      // Without a purchase row there is nothing to mark, so nothing prevents a
+      // resend. Refuse rather than send an unbounded number of times.
+      return { email: buyer.email, sent: false, reason: "missing_purchase_id" };
+    }
+    const { data: claimed, error: claimError } = await supabase
+      .from("purchases")
+      .update({ launch_email_sent_at: claimedAt, updated_at: claimedAt })
+      .eq("id", buyer.purchaseId)
+      .is("launch_email_sent_at", null)
+      .select("id");
+    if (claimError) return { email: buyer.email, sent: false, reason: `claim_failed: ${claimError.message}` };
+    if (!claimed?.length) return { email: buyer.email, sent: false, reason: "already_sent" };
+  }
+
   const result = await sendLaunchDelivery(buyer.email, { epubUrl: epub.data.signedUrl, expiresDays: LAUNCH_SIGNED_URL_TTL_DAYS });
   if (!result.ok) {
+    if (!options.dryRun && buyer.purchaseId) {
+      // Release the claim so the next cron retries this buyer. Guarded on the
+      // exact timestamp we wrote, so a concurrent successful send is never
+      // un-marked.
+      await supabase
+        .from("purchases")
+        .update({ launch_email_sent_at: null, updated_at: new Date().toISOString() })
+        .eq("id", buyer.purchaseId)
+        .eq("launch_email_sent_at", claimedAt);
+    }
     return { email: buyer.email, sent: false, reason: "skipped" in result && result.skipped ? "resend_not_configured" : "provider_error" };
   }
 
   const expiresAt = new Date(Date.now() + LAUNCH_SIGNED_URL_TTL_SECONDS * 1000).toISOString();
-  await supabase.from("download_events").insert({
+  // The audit row is checked work: a delivery nobody can evidence later is not
+  // a delivery anyone can reconcile. The email did go out, so this is reported
+  // as a failed job (for alerting) without releasing the claim — re-sending to
+  // fix a missing audit row would be the worse trade.
+  const { error: auditError } = await supabase.from("download_events").insert({
     user_id: buyer.userId ?? null,
     purchase_id: buyer.purchaseId ?? null,
     deliverable_slug: deliverables.epub.slug,
     event_type: options.dryRun ? "launch_ebook_dryrun" : "launch_ebook_delivery",
-    metadata: { dry_run: options.dryRun, url_expires_at: expiresAt }
+    metadata: { dry_run: options.dryRun, url_expires_at: expiresAt, claimed_at: options.dryRun ? null : claimedAt }
   });
-
-  if (!options.dryRun && buyer.purchaseId) {
-    await supabase
-      .from("purchases")
-      .update({ launch_email_sent_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-      .eq("id", buyer.purchaseId);
+  if (auditError) {
+    return { email: buyer.email, sent: false, reason: `audit_write_failed_after_send: ${auditError.message}`, epubUrlExpiresAt: expiresAt };
   }
 
   return { email: buyer.email, sent: true, epubUrlExpiresAt: expiresAt };

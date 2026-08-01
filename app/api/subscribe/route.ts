@@ -5,6 +5,7 @@ import { analyticsEvents } from "@/lib/analytics";
 import { recordServerEvent } from "@/lib/events/server-analytics";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { requestIp, verifyTurnstileToken } from "@/lib/turnstile";
+import { LEAD_INTAKE_FAILED_STATUS, leadIntakeFailure, summarizeLeadIntake, type DurableWrite } from "@/lib/lead-intake";
 
 const utmSchema = z
   .object({
@@ -57,10 +58,14 @@ export async function POST(request: Request) {
   // transactional order/access email remains in Resend.
   const nurture = await upsertSubscriber(parsed.data.email, "core_nurture", { source: parsed.data.source ?? "site" });
 
+  // A subscriber the site cannot prove it holds is a lost lead. Report success
+  // only once MailerLite or the subscribers table has actually accepted them.
+  const writes: DurableWrite[] = [{ system: "mailerlite:subscribers", accepted: mailerlite.ok, detail: mailerlite.ok ? undefined : mailerlite.reason }];
+
   const supabase = createServerSupabaseClient(true);
   if (supabase) {
     const now = new Date().toISOString();
-    await supabase.from("subscribers").upsert({
+    const { error: subscriberError } = await supabase.from("subscribers").upsert({
       email: parsed.data.email,
       first_name: parsed.data.firstName || null,
       professional_role: parsed.data.professionalRole || null,
@@ -73,9 +78,24 @@ export async function POST(request: Request) {
       source: parsed.data.source ?? "site",
       updated_at: now
     }, { onConflict: "email" });
-    await supabase.from("consent_log").insert({ email: parsed.data.email, consent_state: { marketing: true, source: parsed.data.source ?? "site" } });
+    writes.push({ system: "supabase:subscribers", accepted: !subscriberError, detail: subscriberError?.message });
+    // Consent proof is a legal record, not telemetry — its failure is reported
+    // even though it alone does not make the signup successful.
+    const { error: consentError } = await supabase.from("consent_log").insert({ email: parsed.data.email, consent_state: { marketing: true, source: parsed.data.source ?? "site" } });
+    if (consentError) writes.push({ system: "supabase:consent_log", accepted: false, detail: consentError.message });
     await supabase.from("subscriber_events").insert({ email: parsed.data.email, event_type: "email_signup_completed", provider: "site", metadata: { source: parsed.data.source ?? "site", ...definedUtm } });
+  } else {
+    writes.push({ system: "supabase:subscribers", accepted: false, detail: "config_missing" });
   }
-  await recordServerEvent({ eventName: analyticsEvents.emailSignupCompleted, route: "/api/subscribe", source: parsed.data.source, metadata: { mailerliteSkipped: mailerlite.skipped, nurtureSkipped: nurture.skipped }, operational: true });
-  return NextResponse.json({ ok: true, mailerlite, nurture, database: supabase ? "recorded" : "skipped_config_missing" });
+
+  const intake = summarizeLeadIntake(writes, "mailerlite:subscribers");
+  await recordServerEvent({
+    eventName: analyticsEvents.emailSignupCompleted,
+    route: "/api/subscribe",
+    source: parsed.data.source,
+    metadata: { delivery: intake.delivery, systemsOfRecord: intake.systemsOfRecord.join(","), failures: intake.failures.map((f) => f.system).join(","), nurtureSkipped: nurture.skipped },
+    operational: true
+  });
+  if (!intake.accepted) return NextResponse.json(leadIntakeFailure(intake), { status: LEAD_INTAKE_FAILED_STATUS });
+  return NextResponse.json({ ok: true, mailerlite, nurture, delivery: intake.delivery, systemsOfRecord: intake.systemsOfRecord });
 }

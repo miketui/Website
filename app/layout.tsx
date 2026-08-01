@@ -15,7 +15,7 @@ import { ReducedMotionProvider } from "@/components/motion/ReducedMotionProvider
 import { displayFont, accentFont, bodyFont } from "@/app/fonts";
 import { siteConfig } from "@/content/site";
 import { personJsonLd } from "@/lib/schema";
-import { getLaunchStateCopy } from "@/config/launchState";
+import { getLaunchStateCopy, resolveLaunchOffer } from "@/config/launchState";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
@@ -52,9 +52,10 @@ const coverCurtainScript = `try{var seen=false;try{seen=document.cookie.indexOf(
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const launch = getLaunchStateCopy();
+  const offer = resolveLaunchOffer();
   const preorder = { href: launch.heroCta.href, label: launch.navOrderLabel };
   const isVercelRuntime = process.env.VERCEL === "1";
   /* suppressHydrationWarning: the cover curtain script (below) sets a
      data attribute on <html> before hydration by design. */
-  return <html lang="en" suppressHydrationWarning className={`${displayFont.variable} ${accentFont.variable} ${bodyFont.variable}`}><body><script dangerouslySetInnerHTML={{ __html: coverCurtainScript }} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><CartProvider><SiteNav preorder={preorder} /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><GoogleAnalytics /><SiteCurlTrail /><Toaster /></CartProvider></ReducedMotionProvider>{isVercelRuntime ? <SpeedInsights /> : null}</body></html>;
+  return <html lang="en" suppressHydrationWarning className={`${displayFont.variable} ${accentFont.variable} ${bodyFont.variable}`}><body><script dangerouslySetInnerHTML={{ __html: coverCurtainScript }} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} /><ReducedMotionProvider><CartProvider workbookGifted={offer.workbookIncludedFree}><SiteNav preorder={preorder} /><PageTransition>{children}</PageTransition><Footer /><ConsentBanner /><PostHogProvider /><GoogleAnalytics /><SiteCurlTrail /><Toaster /></CartProvider></ReducedMotionProvider>{isVercelRuntime ? <SpeedInsights /> : null}</body></html>;
 }

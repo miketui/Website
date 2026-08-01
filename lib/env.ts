@@ -134,8 +134,16 @@ export function requireRuntimeConfig<T>(result: RuntimeConfigResult<T>, label: s
   throw new Error(`${label} is not configured. Missing: ${result.missing.join(", ")}`);
 }
 
+/**
+ * Trailing slashes are stripped here for the same reason `content/site.ts`
+ * strips them: every consumer builds `${siteUrl}${path}`, so a base ending in
+ * "/" yields `…beauty//book`. `siteConfig.siteUrl` was already normalized while
+ * this one was not, so Stripe's success and cancel URLs — the two links a
+ * paying customer follows — kept the double slash. The latest production
+ * deployment logged exactly this misconfigured value.
+ */
 export function getSiteUrl() {
-  return envOrDefault(publicEnv.NEXT_PUBLIC_SITE_URL, "http://localhost:3000");
+  return envOrDefault(publicEnv.NEXT_PUBLIC_SITE_URL, "http://localhost:3000").replace(/\/+$/, "");
 }
 
 export function getLaunchMode(): LaunchMode {

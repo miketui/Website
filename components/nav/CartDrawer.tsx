@@ -51,7 +51,12 @@ export function CartDrawer({ sourcePage }: { sourcePage?: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const suggestion = cart.items.includes("book") ? BUMP_ORDER.find((sku) => !cart.has(sku)) : undefined;
+  // Never upsell something the order already includes free. `isGifted` reports
+  // the server's launch-offer decision (see lib/cart.tsx); /api/checkout drops
+  // the line item regardless, so this only prevents the ask.
+  const suggestion = cart.items.includes("book")
+    ? BUMP_ORDER.find((sku) => !cart.has(sku) && !(sku === "workbook" && cart.workbookGifted))
+    : undefined;
 
   async function checkout() {
     setBusy(true);
@@ -149,7 +154,7 @@ export function CartDrawer({ sourcePage }: { sourcePage?: string }) {
                             Remove
                           </button>
                         </div>
-                        <p className="font-semibold text-antique">{formatUsd(item.price)}</p>
+                        <p className="font-semibold text-antique">{cart.isGifted(sku) ? "Included free" : formatUsd(item.price)}</p>
                       </li>
                     );
                   })}

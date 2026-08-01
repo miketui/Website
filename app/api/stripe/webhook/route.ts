@@ -43,7 +43,11 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) 
   const supabase = createServerSupabaseClient(true);
   if (!supabase) return { ok: false as const, skipped: true as const, reason: "config_missing" as const };
   const amount = session.amount_total ?? 0;
-  const { data: order } = await supabase.from("orders").upsert({
+  // Checked, not fire-and-forget. This upsert used to discard its error and
+  // fall through to `if (order?.id)`, which is falsy on failure — so the
+  // handler skipped every entitlement, returned ok, and the event was stamped
+  // processed. A paid buyer with no order row and no access, permanently.
+  const { data: order, error: orderError } = await supabase.from("orders").upsert({
     email,
     stripe_checkout_session_id: session.id,
     stripe_payment_intent_id: typeof session.payment_intent === "string" ? session.payment_intent : undefined,
@@ -52,7 +56,14 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) 
     currency: session.currency ?? "usd",
     metadata: session.metadata ?? {}
   }, { onConflict: "stripe_checkout_session_id" }).select("id").single();
-  if (order?.id) {
+  if (orderError || !order?.id) {
+    // Throwing keeps processed_at null, so Stripe's retry reprocesses. The
+    // upsert key is the checkout session, so the retry is safe to repeat.
+    throw new Error(`Order write failed for session ${session.id}: ${orderError?.message ?? "no order row returned"}`);
+  }
+  // Block retained (rather than dedented) so this change stays reviewable as a
+  // guard clause; `order.id` is non-null from here down.
+  {
     // Cart-aware: the book row is written unless metadata explicitly says the
     // cart excluded it (workbook-only or deck-only purchases).
     if (session.metadata?.book_included !== "false") {
@@ -60,8 +71,13 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) 
       const { error: bookError } = await supabase.from("purchases").upsert(bookRow, { onConflict: "order_id,book_slug" });
       if (bookError) {
         // Migration 0002 not applied yet: fall back to the legacy unique(order_id)
-        // key so the buyer's book entitlement is never lost.
-        await supabase.from("purchases").upsert(bookRow, { onConflict: "order_id" });
+        // key so the buyer's book entitlement is never lost. The fallback's own
+        // error was previously discarded — meaning both writes could fail while
+        // the handler reported success and Stripe stopped retrying.
+        const { error: legacyBookError } = await supabase.from("purchases").upsert(bookRow, { onConflict: "order_id" });
+        if (legacyBookError) {
+          throw new Error(`Book entitlement failed for order ${order.id}: ${bookError.message} / ${legacyBookError.message}`);
+        }
       }
     }
     const dailyDirectiveSkus = (session.metadata?.daily_directives_skus ?? "").split(",").filter(Boolean);
@@ -71,9 +87,18 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) 
       if (directiveError) { throw new Error(`Daily Directives entitlement failed: ${directiveError.message}`); }
     }
     // Preorder gift (owner-approved 2026-07-09): every preorder that includes
-    // the book also receives the Idea-to-Action Workbook free. Post-launch
-    // (price_tier "regular") the workbook is paid-only via the cart/Ascension.
-    const preorderGift = session.metadata?.price_tier === "preorder" && session.metadata?.book_included !== "false";
+    // the book also receives the Idea-to-Action Workbook free. Post-launch the
+    // workbook is paid-only via the cart/Ascension.
+    //
+    // `workbook_gift` is written by the server at checkout and is authoritative.
+    // The `price_tier === "preorder"` fallback covers sessions created before
+    // that flag existed — it must stay for replay safety, but it is NOT
+    // equivalent: the 14-day launch window keeps preorder *pricing* while the
+    // workbook is already a paid product again.
+    const preorderGift =
+      session.metadata?.book_included !== "false" &&
+      (session.metadata?.workbook_gift === "true" ||
+        (session.metadata?.workbook_gift === undefined && session.metadata?.price_tier === "preorder"));
     if (session.metadata?.workbook === "true" || preorderGift) {
       const { error: workbookError } = await supabase.from("purchases").upsert({ order_id: order.id, email, book_slug: "companion-workbook", status: "active", entitlement_status: "active" }, { onConflict: "order_id,book_slug" });
       if (workbookError) {
@@ -108,9 +133,18 @@ export async function revokeEntitlementForRefund(charge: Stripe.Charge) {
   const email = charge.billing_details?.email ?? undefined;
   const supabase = createServerSupabaseClient(true);
   if (!supabase) return { ok: false as const, skipped: true as const, reason: "config_missing" as const };
-  const { data: order } = await supabase.from("orders").select("id,email").eq("stripe_payment_intent_id", paymentIntent ?? "").maybeSingle();
+  const { data: order, error: lookupError } = await supabase.from("orders").select("id,email").eq("stripe_payment_intent_id", paymentIntent ?? "").maybeSingle();
+  if (lookupError) return { ok: false as const, skipped: true as const, reason: "order_lookup_failed" as const };
   // Revokes every entitlement on the order (book, Daily Directives, and workbook).
-  if (order?.id) await supabase.from("purchases").update({ status: "refunded", entitlement_status: "revoked", refunded_at: new Date().toISOString(), revoked_at: new Date().toISOString() }).eq("order_id", order.id);
+  // The revocation error used to be discarded, so a refunded buyer could keep
+  // full access while Stripe was told the refund had been handled.
+  if (order?.id) {
+    const { error: revokeError } = await supabase
+      .from("purchases")
+      .update({ status: "refunded", entitlement_status: "revoked", refunded_at: new Date().toISOString(), revoked_at: new Date().toISOString() })
+      .eq("order_id", order.id);
+    if (revokeError) return { ok: false as const, skipped: true as const, reason: "revoke_failed" as const };
+  }
   const notifyEmail = email ?? order?.email;
   if (notifyEmail) {
     await upsertSubscriber(notifyEmail, "refunded", { source: "stripe_refund" });

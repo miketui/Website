@@ -1,9 +1,10 @@
 import Stripe from "stripe";
-import { getLaunchMode, getSiteUrl, getStripeConfig, getStripeWebhookConfig, type LaunchMode } from "@/lib/env";
+import { getSiteUrl, getStripeConfig, getStripeWebhookConfig } from "@/lib/env";
+import { resolveLaunchOffer, type LaunchOffer, type PriceTier } from "@/config/launchState";
 import type { DailyDirectiveSku } from "@/content/daily-directives";
 
 export type CheckoutProduct = "direct_ebook";
-export type PriceTier = "preorder" | "regular";
+export type { PriceTier };
 
 // Stripe Price IDs are public catalog identifiers, not credentials. These
 // production fallbacks keep checkout wired when the hosting connector cannot
@@ -36,12 +37,19 @@ export function getStripeForWebhook() {
   return new Stripe(config.value.secretKey);
 }
 
-export function resolveServerPriceId(mode: LaunchMode, _product: CheckoutProduct) {
+/**
+ * The book's Stripe price, resolved from the single launch resolver.
+ *
+ * Takes the whole `LaunchOffer` rather than a launch string so the price ID and
+ * the price the visitor was shown are provably the same decision — the caller
+ * cannot pass one state to the display and another to Stripe.
+ */
+export function resolveServerPriceId(offer: LaunchOffer = resolveLaunchOffer(), _product: CheckoutProduct = "direct_ebook") {
   const config = getStripeConfig();
   if (!config.ok) return { ok: false as const, reason: "config_missing" as const, missing: config.missing };
-  if (mode === "paused") return { ok: false as const, reason: "checkout_paused" as const };
-  const priceId = mode === "launched" ? config.value.regularPriceId : config.value.preorderPriceId;
-  return { ok: true as const, priceId, tier: (mode === "launched" ? "regular" : "preorder") as PriceTier };
+  if (offer.checkoutPaused) return { ok: false as const, reason: "checkout_paused" as const };
+  const priceId = offer.priceTier === "regular" ? config.value.regularPriceId : config.value.preorderPriceId;
+  return { ok: true as const, priceId, tier: offer.priceTier };
 }
 
 /** $59 complete Daily Directives bundle — optional book order bump. */
@@ -71,12 +79,21 @@ export function buildCheckoutMetadata(input: {
   dailyDirectivesSkus?: string[];
   workbook?: boolean;
   bookIncluded?: boolean;
+  /** Server's decision that the workbook shipped free with this order. */
+  workbookGift?: boolean;
+  offer?: LaunchOffer;
 }) {
-  const launchMode = getLaunchMode();
+  const offer = input.offer ?? resolveLaunchOffer();
   return {
     book_slug: "curls-and-contemplation",
-    launch_mode: launchMode,
-    price_tier: launchMode === "launched" ? "regular" : "preorder",
+    launch_state: offer.state,
+    // Retained for webhook events written before launch_state existed.
+    launch_mode: offer.state === "PREORDER" ? "preorder" : "launched",
+    price_tier: offer.priceTier,
+    // Authoritative gift flag. `price_tier === "preorder"` is NOT a proxy for
+    // it: the launch window keeps preorder pricing while the workbook is a
+    // paid product again, so the two diverge for 14 days.
+    workbook_gift: input.workbookGift ? "true" : "false",
     product: input.product,
     daily_directives_skus: input.dailyDirectivesSkus?.join(",") ?? "",
     workbook: input.workbook ? "true" : "false",
@@ -89,11 +106,10 @@ export function buildCheckoutMetadata(input: {
   };
 }
 
-export function checkoutUrls() {
+export function checkoutUrls(offer: LaunchOffer = resolveLaunchOffer()) {
   const siteUrl = getSiteUrl();
-  const mode = getLaunchMode();
   return {
     successUrl: `${siteUrl}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
-    cancelUrl: `${siteUrl}/${mode === "launched" ? "buy" : "preorder"}`
+    cancelUrl: `${siteUrl}/${offer.state === "PREORDER" ? "preorder" : "buy"}`
   };
 }

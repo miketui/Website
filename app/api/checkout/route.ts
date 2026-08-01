@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { z } from "zod";
-import { getLaunchMode } from "@/lib/env";
+import { resolveLaunchOffer } from "@/config/launchState";
 import { analyticsEvents } from "@/lib/analytics";
 import { recordServerEvent } from "@/lib/events/server-analytics";
 import {
@@ -57,8 +57,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: { code: "invalid_request", message: "Invalid checkout request." } }, { status: 400 });
   }
 
-  const mode = getLaunchMode();
-  if (mode === "paused") {
+  // One resolver for state, displayed price, and Stripe price tier.
+  const offer = resolveLaunchOffer();
+  if (offer.checkoutPaused) {
     return NextResponse.json({ ok: false, error: { code: "checkout_paused", message: "Checkout is currently paused." } }, { status: 503 });
   }
 
@@ -82,8 +83,24 @@ export async function POST(request: Request) {
   const lineItems: { price: string; quantity: number }[] = [];
   let bookTier: "preorder" | "regular" | undefined;
 
+  /**
+   * P0.4 — the preorder promise says the Idea-to-Action Workbook is included
+   * free, and the webhook grants it on that basis. Left alone, a buyer could
+   * still add the workbook to the same cart and be charged $19.99 for
+   * something they were about to receive anyway.
+   *
+   * Enforced here, on the server, because the cart UI can be bypassed
+   * entirely: a stale localStorage cart, a direct POST, or a second tab all
+   * reach this route with `items: [{sku:"book"},{sku:"workbook"}]`. Order of
+   * additions, quantities, and client state are all irrelevant — if the
+   * qualifying book is in this cart and the offer gifts the workbook, the
+   * workbook line item is not created.
+   */
+  const workbookGift = skus.has("book") && skus.has("workbook") && offer.workbookIncludedFree;
+  if (workbookGift) skus.delete("workbook");
+
   if (skus.has("book")) {
-    const resolved = resolveServerPriceId(mode, "direct_ebook");
+    const resolved = resolveServerPriceId(offer, "direct_ebook");
     if (!resolved.ok) {
       return NextResponse.json(
         { ok: false, error: { code: resolved.reason, message: "Checkout is not configured.", missing: "missing" in resolved ? resolved.missing : undefined } },
@@ -125,9 +142,12 @@ export async function POST(request: Request) {
     customerEmail: parsed.data.customerEmail,
     dailyDirectivesSkus,
     workbook: skus.has("workbook"),
-    bookIncluded: skus.has("book")
+    bookIncluded: skus.has("book"),
+    // Gifted here, or gifted because a book-only preorder qualifies for it.
+    workbookGift: workbookGift || (skus.has("book") && offer.workbookIncludedFree),
+    offer
   });
-  const urls = checkoutUrls();
+  const urls = checkoutUrls(offer);
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -143,11 +163,12 @@ export async function POST(request: Request) {
       route: "/api/checkout",
       metadata: {
         product: parsed.data.product,
-        launchMode: mode,
+        launchState: offer.state,
         priceTier: bookTier ?? "none",
         skus: Array.from(skus).join(","),
         dailyDirectives: dailyDirectivesSkus.join(","),
-        workbook: skus.has("workbook")
+        workbook: skus.has("workbook"),
+        workbookGift
       },
       operational: true
     });
