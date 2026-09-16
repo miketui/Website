@@ -6,6 +6,7 @@ import { PricingCard } from "@/components/PricingCard";
 import { ScrollScrubVideo } from "@/components/motion/ScrollScrubVideo";
 import Image from "next/image";
 import { getLaunchStateCopy } from "@/config/launchState";
+import { book } from "@/content/book";
 
 /**
  * Must resolve per request. `resolveLaunchOffer()` is time-derived whenever
@@ -25,11 +26,11 @@ const scrubStages = [
   { kicker: "Where you end up", line: "The light was always yours.", detail: "Not louder. Not luckier. Just finally working with the lights on." }
 ] as const;
 
-export const metadata = pageMetadata("Interactive Career Guide for Freelance Hairstylists", "Explore Curls & Contemplation: 467 pages and 16 chapters on creative identity, networking, pricing, digital visibility, leadership, resilience, financial wisdom, and texture-inclusive practice.", { path: "/book", image: "/gateway-cover.jpg" });
+export const metadata = pageMetadata("A Stylist’s Interactive Journey", `Explore Curls & Contemplation: ${book.numberOfPages} pages of worksheets and reflections on creative identity, networking, pricing, digital visibility, leadership, resilience, financial wisdom, and texture-inclusive practice.`, { path: "/book", image: "/gateway-cover.jpg" });
 
 export default function Page() {
   const launch = getLaunchStateCopy();
-  return <main><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([bookJsonLd(), productJsonLd()]) }} /><PageHero eyebrow="Book" title="A map for the parts of this career nobody photographs." description="Across 467 interactive pages, Michael David connects creative identity and technical growth with networking, mentorship, pricing, digital visibility, leadership, financial wisdom, resilience, AI, ethics, and texture-inclusive practice." primaryHref={launch.heroCta.href} primaryLabel={launch.heroCta.label} secondaryHref="/pricing-kit" secondaryLabel="Get the Free Pricing Kit"><Image src="/gateway-cover.jpg" alt="Curls & Contemplation — cover" width={800} height={1200} className="mx-auto w-full max-w-xs rounded-lg shadow-gold" /></PageHero><ScrollScrubVideo src="/curl-scrub.mp4" webmSrc="/curl-scrub.webm" poster="/curl-poster.jpg" trackVh={260} stages={scrubStages.map(({ kicker, line, detail }) => (
+  return <main><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([bookJsonLd(), productJsonLd()]) }} /><PageHero eyebrow="Book" title="A map for the parts of this career nobody photographs." description={`Across ${book.numberOfPages} pages of worksheets and reflections, Michael David connects creative identity and technical growth with networking, mentorship, pricing, digital visibility, leadership, financial wisdom, resilience, AI, ethics, and texture-inclusive practice.`} primaryHref={launch.heroCta.href} primaryLabel={launch.heroCta.label} secondaryHref="/pricing-kit" secondaryLabel="Get the Free Pricing Kit"><Image src="/gateway-cover.jpg" alt="Curls & Contemplation — cover" width={800} height={1200} className="mx-auto w-full max-w-xs rounded-lg shadow-gold" /></PageHero><ScrollScrubVideo src="/curl-scrub.mp4" webmSrc="/curl-scrub.webm" poster="/curl-poster.jpg" trackVh={260} stages={scrubStages.map(({ kicker, line, detail }) => (
     <div key={line} className="max-w-3xl">
       <p className="editorial-kicker mb-4">{kicker}</p>
       <p className="hero-display font-display text-4xl leading-tight text-white md:text-6xl">{line}</p>

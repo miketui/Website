@@ -15,3 +15,12 @@ tmp/
 .cache/ms-playwright/
 # Large local build artifact — never re-commit (audit 2026-07-27)
 elevation-immersive-nav.bundle
+
+# Book product binaries never live in this repo. Self Published owns the
+# digital master pack; fulfillment is private Supabase Storage only.
+release/*.pdf
+release/*.epub
+*.epub
+**/Curls-and-Contemplation*.pdf
+**/Chapter-1-Free-Excerpt.pdf
+**/Curls-Ch1-Excerpt.pdf

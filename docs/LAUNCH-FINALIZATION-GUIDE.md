@@ -27,8 +27,9 @@ From `lib/free-assets.ts`:
 
 | File | Exact path | Bucket |
 |---|---|---|
-| Chapter 1 excerpt PDF | `chapter-1/Curls-Ch1-Excerpt.pdf` | `curls-free` (public) |
 | Pricing Confidence Checklist PDF | `checklists/Pricing-Confidence-Checklist.pdf` | `curls-free` (public) |
+
+Do **not** upload book interiors, chapter excerpts, EPUB, or POD PDF into `curls-free` or this git repo. The digital master pack stays with Self Published; paid fulfillment is private Storage only. The retired Free Chapter tripwire must not be restored.
 
 These are meant to be publicly fetchable (that's the whole point of a lead magnet) — the `curls-free` bucket should have public read access ON.
 

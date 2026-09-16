@@ -13,7 +13,9 @@
  *   workbook/Idea-to-Action-Workbook.pdf
  *   daily-directives/Daily-Directives-Complete-12-Set-Bundle.zip
  *   daily-directives/sets/Daily-Directives-Set-01-....zip through Set 12
- * The EPUB is optional and is uploaded only when present.
+ * The EPUB is optional and is uploaded only when present. It must come from
+ * `--private-dir` (the Self Published master pack). Never commit book EPUB/PDF
+ * files to this site repo.
  *
  * The v13 POD interior PDF is a print artifact for KDP/third-party POD only —
  * it is not a site deliverable and does not belong in Supabase Storage.

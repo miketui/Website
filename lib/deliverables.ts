@@ -1,6 +1,10 @@
 /** Pure, client-safe deliverable metadata. No server-only imports here — this
  * file is used by both client components (DownloadList) and server code
- * (lib/downloads.ts). Never add a server-only import to this file. */
+ * (lib/downloads.ts). Never add a server-only import to this file.
+ *
+ * `path` values are private-bucket object keys in `curls-deliverables`, not
+ * files in this git repo. Book product binaries stay in the Self Published
+ * digital master pack and are uploaded with `pnpm upload:deliverables -- --private-dir`. */
 export const deliverables = {
   epub: { slug: "epub", label: "EPUB", path: "books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub" },
   daily_directives_bundle: { slug: "daily_directives_bundle", label: "Daily Directives — Complete 12-Set Bundle", path: "daily-directives/Daily-Directives-Complete-12-Set-Bundle.zip" },

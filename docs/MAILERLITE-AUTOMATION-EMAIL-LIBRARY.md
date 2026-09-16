@@ -867,7 +867,7 @@ The workbook has been added to your customer library and is available through th
 
 [BUTTON: Open the Workbook]
 
-Use it as a working companion to Curls & Contemplation. You may type into the fillable version, print selected pages, or return to the prompts over time as your career evolves.
+Use it as a working companion to Curls & Contemplation. Work the prompts on the site, print selected pages for handwritten reflection, or return to the worksheets over time as your career evolves.
 
 There is no requirement to complete every page at once. The value is in using the right tool when the right question appears.
 

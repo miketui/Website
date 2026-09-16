@@ -44,7 +44,7 @@ Two connected-service items require owner access before the full production loop
 
 ### Book positioning and SEO
 
-- Used the final 467-page interior PDF as the content authority.
+- Used the then-current interior PDF as the content authority. **Superseded 2026-09-15:** page count is locked to **384** against the digital PDF master; 467 is stale.
 - Updated SEO copy around creative identity, networking, mentorship, pricing, digital visibility, leadership, financial wisdom, ethics, AI, resilience, well-being, and texture-inclusive practice.
 - Matched the manuscript subtitle: **A Stylist’s Interactive Journey**.
 - Removed unverified Kindle and paperback price claims; store availability is now described as pending confirmation.
