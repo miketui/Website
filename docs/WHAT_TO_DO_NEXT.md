@@ -123,23 +123,23 @@ Preview. Anything prefixed `NEXT_PUBLIC_` is exposed to the browser — never pu
    ```
 3. Create **two** storage buckets:
    - `curls-deliverables` — **private** (paid EPUB/PDF).
-   - `curls-free` — **public** (free excerpt + checklist).
+   - `curls-free` — **public** (lead magnets: pricing kit, quiz/challenge worksheets).
 4. Verify RLS is on and the private bucket has **no** public read policy.
 5. `pnpm check:supabase-storage` to confirm the path strings.
 
 ## 3. Upload the book/worksheet files (see Audit §5.B)
 
-Upload to the **private** bucket `curls-deliverables`:
-- EPUB → `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`
-- POD PDF → `books/curls-and-contemplation/pdf/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf`
-  (source files are in the repo `release/` folder — do **not** copy them into `public/`)
+Book product files are **not** in this git repo. Take the digital master from the Self Published pack (local disk, gitignored) and upload to the **private** bucket `curls-deliverables`:
 
-Upload to the **public** bucket `curls-free`:
-- `chapter-1/Curls-Ch1-Excerpt.pdf`
+- EPUB → `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`
+
+Do **not** copy interiors into `public/` or commit them. The POD interior PDF is a print artifact for KDP/third-party POD only — it is not a site deliverable.
+
+Upload to the **public** bucket `curls-free` (lead magnets only — never book interiors or chapter excerpts):
 - `checklists/Pricing-Confidence-Checklist.pdf`
 
-Product / funnel files (paths in `content/funnels.ts` & `lib/downloads.ts`): Affirmation Deck,
-Companion Workbook, 4 quiz worksheets, 5 challenge-day PDFs. Upload these when those offers go
+Product / funnel files (paths in `content/funnels.ts` & `lib/downloads.ts`): Daily Directives,
+Idea-to-Action Workbook, 4 quiz worksheets, 5 challenge-day PDFs. Upload these when those offers go
 live (quiz/challenge are staged + noindex today).
 
 ## 4. Stripe (test mode first)

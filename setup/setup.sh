@@ -96,7 +96,7 @@ elif [[ -f "$ALT_EPUB_PATH" ]]; then
   java -jar "$EPUBCHECK_JAR" "$ALT_EPUB_PATH" > "$REPORTS_DIR/epubcheck-final.txt" 2>&1 || true
   warn "Requested V8 EPUB was not found; validated FINAL EPUB instead."
 else
-  warn "No release EPUB found at expected paths. Codex must inspect release/ and report actual filenames."
+  warn "No release EPUB in this repo (expected). Book product files live in the Self Published digital master pack, not GitHub. Skip local EPUBCheck unless a private --private-dir copy is supplied off-repo."
 fi
 
 if [[ -d "$ROOT/author-site" ]]; then

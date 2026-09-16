@@ -10,12 +10,15 @@ Project facts for `miketui/Website`. Tool-agnostic — read by Claude Code, Code
 
 ## Identity
 
-The direct-to-consumer commerce site for **Curls & Contemplation: A Stylist's Interactive Journey** by **Michael David** — a 467-page interactive business guide for working hairstylists, covering creative identity, pricing, networking, on-set practice, digital visibility, leadership, financial decisions, resilience, AI, ethics, and texture-inclusive work.
+The direct-to-consumer commerce site for **Curls & Contemplation: A Stylist’s Interactive Journey** by **Michael David** — a 384-page book you do (worksheets and reflections, not fillable PDF fields) for working hairstylists, covering creative identity, pricing, networking, on-set practice, digital visibility, leadership, financial decisions, resilience, AI, ethics, and texture-inclusive work.
 
 - **Domain:** `curlscontemplation.beauty`
 - **Publisher:** TAYLKOMB LLC
 - **Launch:** **November 24, 2026.** Any reference to July 14, 2026 is stale.
 - **Author name:** the pen name **Michael David**, everywhere and without exception. His legal name must never appear in this repo, its metadata, its commit history, or any public-facing surface.
+- **Page count:** **384**, matching the digital PDF master. Any reference to 467 pages is stale.
+- **Product language:** worksheets, reflections, “a book you do.” Never promise fillable PDF fields, AcroForm, or interactive digital form fields. The subtitle “Interactive Journey” is the title, not a form-fields claim.
+- **Book binaries stay out of GitHub.** EPUB/PDF interiors live in the Self Published digital master pack and in private Storage (`curls-deliverables`). Never commit them here.
 
 The Next.js app lives at the **repository root**. There is no `author-site/` directory; earlier docs claiming otherwise were wrong.
 

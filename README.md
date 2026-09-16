@@ -121,14 +121,11 @@ supabase db push --include-all
 # or run supabase/migrations/0001_author_commerce.sql in the Supabase SQL editor.
 ```
 
-Create private Storage bucket `curls-deliverables` with public access disabled. Upload the local release artifact from the repo root to this private object path only:
+Create private Storage bucket `curls-deliverables` with public access disabled. Upload the digital master from the **Self Published pack** (kept off GitHub — never commit EPUB/PDF interiors to this site repo) to this private object path only:
 
 - EPUB: `books/curls-and-contemplation/epub/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`
 
-Source artifacts remain outside public:
-
-- `release/Curls-and-Contemplation-v13-KDP-EPUB-FINAL.epub`
-- `release/Curls-and-Contemplation-v13-KDP-POD-RECTO-FINAL.pdf` (POD print interior for KDP/third-party POD only — never uploaded to Storage)
+That path is a **Storage object key**, not a file in this git tree. `lib/deliverables.ts` points fulfillment at the private bucket. A local `release/` copy, if you keep one on disk for upload, is gitignored. The POD interior PDF is a print artifact for KDP/third-party POD only — never uploaded to Storage, never committed here.
 
 After credentials are present, run:
 

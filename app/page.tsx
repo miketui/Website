@@ -10,7 +10,7 @@ import { PricingKitForm } from "@/components/PricingKitForm";
 import { bookJsonLd } from "@/lib/schema";
 import { pageMetadata } from "@/lib/seo";
 import { getLaunchStateCopy, releaseDateLabel } from "@/config/launchState";
-import { priceConfig } from "@/content/book";
+import { book, priceConfig } from "@/content/book";
 
 /**
  * Must resolve per request. `resolveLaunchOffer()` is time-derived whenever
@@ -24,7 +24,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = pageMetadata(
   "A Stylist's Interactive Journey",
-  "Curls & Contemplation by Michael David is a 467-page interactive guide for freelance hairstylists building creative confidence, sustainable pricing, visibility, leadership, and career longevity.",
+  `Curls & Contemplation by Michael David is a ${book.numberOfPages}-page book you do — worksheets and reflections for freelance hairstylists building creative confidence, sustainable pricing, visibility, leadership, and career longevity.`,
   { path: "/", image: "/gateway-cover.jpg" }
 );
 
@@ -73,7 +73,7 @@ export default function HomePage() {
             />
             <p className="mt-4 font-accent text-2xl italic text-mist md:text-3xl">A Stylist&rsquo;s Interactive Journey</p>
             <p className="mt-6 max-w-[46ch] leading-8 text-whitegold/85">
-              A 467-page interactive guide to creative identity, networking, pricing, digital visibility, leadership,
+              A {book.numberOfPages}-page book you do — worksheets and reflections on creative identity, networking, pricing, digital visibility, leadership,
               financial wisdom, resilience, and building a career that can hold your ambition.
             </p>
             <div className="mt-9 flex flex-wrap gap-4">
