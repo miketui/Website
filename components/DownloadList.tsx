@@ -16,7 +16,8 @@ const errorMessages: Record<string, string> = {
   revoked: "Access to this item has been revoked. Contact support if this seems wrong.",
   download_limit_reached: "You've used all 3 downloads for this item in the last 7 days. Try again after the window resets.",
   config_missing: "Downloads aren't available right now. Please try again shortly.",
-  storage_error: "We hit a snag preparing your file. Please try again, or contact support."
+  storage_error: "We hit a snag preparing your file. Please try again, or contact support.",
+  not_yet_released: "The EPUB unlocks on release day. Your copy stays in your account until then."
 };
 
 type RowState = "idle" | "loading" | "error";

@@ -56,4 +56,22 @@ describe("sell-copy honesty — 384 pages, worksheet language, no book binaries"
     );
     expect(leftovers, `book EPUB still in tree: ${leftovers.join(", ")}`).toEqual([]);
   });
+
+  it("does not promise a book PDF alongside the EPUB on cart/checkout/buy surfaces", () => {
+    // Fulfillment ships EPUB only. The workbook printable PDF is a separate SKU.
+    const surfaces = globSync("{app,content,components,lib}/**/*.{ts,tsx}", {
+      cwd: process.cwd()
+    });
+    const bookBothFormats = /EPUB\s*\+\s*PDF|PDF\s*\+\s*EPUB/i;
+    const hits: string[] = [];
+    for (const file of surfaces) {
+      const source = repoFile(file);
+      if (bookBothFormats.test(source)) hits.push(file);
+    }
+    expect(hits, `EPUB + PDF book claims in: ${hits.join(", ")}`).toEqual([]);
+
+    const cart = repoFile("lib/cart.tsx");
+    expect(cart).toContain('tagline: "EPUB · 16 chapters · every worksheet"');
+    expect(cart).toContain("printable PDF");
+  });
 });

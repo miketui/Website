@@ -1,3 +1,4 @@
+import { hasReleaseInstantArrived } from "@/config/launchState";
 import { siteConfig } from "@/content/site";
 import { DOWNLOAD_CAP, DOWNLOAD_WINDOW_DAYS, checkDownloadEntitlement, type DeliverableKind, type DownloadDenialReason } from "@/lib/entitlements";
 import { getSupabaseServerConfig } from "@/lib/env";
@@ -17,6 +18,14 @@ export function isSafePrivateDeliverablePath(path: string) {
 }
 
 export async function createSignedDownloadUrl(user: SessionUser | null, slug: DeliverableSlug): Promise<SignedDownloadResult> {
+  if (!user?.id) return { allowed: false, reason: "unauthenticated" };
+  // Book EPUB only — workbook PDF and Daily Directives keep current behavior.
+  // Check before entitlement/slot claim so a pre-launch tap cannot burn a
+  // download against the 3/7-day cap.
+  if (slug === "epub" && !hasReleaseInstantArrived()) {
+    return { allowed: false, reason: "not_yet_released" };
+  }
+
   const entitlement = await checkDownloadEntitlement(user, slug as DeliverableKind);
   if (!entitlement.allowed) return entitlement;
 
