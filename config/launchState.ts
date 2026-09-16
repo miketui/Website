@@ -93,6 +93,18 @@ export function releaseInstant(): Date {
   return zonedMidnight(siteConfig.releaseDate, RELEASE_TIMEZONE);
 }
 
+/**
+ * Date-only launch gate. True at Pacific midnight on RELEASE_DATE.
+ *
+ * Ignores `NEXT_PUBLIC_LAUNCH_STATE` so previewing launch copy cannot mint the
+ * book EPUB. Pricing and CTAs still follow `resolveLaunchOffer()`; file
+ * delivery follows this instant. Do not re-derive UTC midnight from the date
+ * string — that flipped launch a day early (see `releaseInstant`).
+ */
+export function hasReleaseInstantArrived(now: Date = new Date()): boolean {
+  return now.getTime() >= releaseInstant().getTime();
+}
+
 /** "November 24" — single source for human-readable release copy. */
 export function releaseDateLabel(): string {
   return releaseInstant().toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: RELEASE_TIMEZONE });

@@ -3,7 +3,7 @@ import { orEquals } from "@/lib/supabase/filters";
 import { deliverables, type DeliverableSlug } from "@/lib/deliverables";
 
 export type DeliverableKind = DeliverableSlug;
-export type DownloadDenialReason = "unauthenticated" | "no_purchase" | "refunded" | "revoked" | "download_limit_reached" | "config_missing" | "storage_error";
+export type DownloadDenialReason = "unauthenticated" | "no_purchase" | "refunded" | "revoked" | "download_limit_reached" | "config_missing" | "storage_error" | "not_yet_released";
 export type PurchaseStatus = "active" | "refunded" | "canceled" | "past_due" | "revoked";
 export type EntitlementResult =
   | { allowed: true; purchaseId: string; downloadsUsed: number; user: SessionUser }

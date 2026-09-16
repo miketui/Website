@@ -39,7 +39,7 @@ export const CART_CATALOG: Record<CartSku, CartCatalogEntry> = {
   book: {
     sku: "book",
     name: "Curls & Contemplation — Digital Edition",
-    tagline: "EPUB + PDF · 16 chapters · every worksheet",
+    tagline: "EPUB · 16 chapters · every worksheet",
     price: priceConfig.preorderDirect.amount,
     regularPrice: priceConfig.regularDirect.amount
   },
