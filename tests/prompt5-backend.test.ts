@@ -14,7 +14,7 @@ describe("Prompt 5 checkout hardening", () => {
     process.env.STRIPE_PRICE_ID_PREORDER = "price_preorder_server";
     process.env.STRIPE_PRICE_ID_REGULAR = "price_regular_server";
     const preorder = resolveLaunchOffer(new Date("2026-01-01T00:00:00Z"));
-    const evergreen = resolveLaunchOffer(new Date("2027-01-01T00:00:00Z"));
+    const evergreen = resolveLaunchOffer(new Date("2027-01-20T00:00:00Z"));
     expect(resolveServerPriceId(preorder, "direct_ebook")).toMatchObject({ ok: true, priceId: "price_preorder_server" });
     expect(resolveServerPriceId(evergreen, "direct_ebook")).toMatchObject({ ok: true, priceId: "price_regular_server" });
     const metadata = buildCheckoutMetadata({ product: "direct_ebook", sourcePage: "/preorder", customerEmail: "reader@example.com" });

@@ -8,8 +8,8 @@ import { resolveLaunchOffer } from "@/config/launchState";
  */
 describe("launch CTA", () => {
   const preorder = resolveLaunchOffer(new Date("2026-01-01T00:00:00Z"));
-  const launchWindow = resolveLaunchOffer(new Date("2026-11-25T12:00:00Z"));
-  const evergreen = resolveLaunchOffer(new Date("2027-01-01T00:00:00Z"));
+  const launchWindow = resolveLaunchOffer(new Date("2026-12-28T12:00:00Z"));
+  const evergreen = resolveLaunchOffer(new Date("2027-01-20T00:00:00Z"));
 
   it("shows the preorder price before release", () => {
     expect(getLaunchCta(preorder).label).toBe("Preorder — $17.99");
