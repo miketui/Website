@@ -19,8 +19,8 @@ export const siteConfig = {
     "Your craft is not the problem — the missing business map is. Pricing, networking, on-set etiquette, and leadership for freelance hairstylists.",
   siteUrl: normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL, "http://localhost:3000"),
   supportEmail: envOrDefault(process.env.SUPPORT_EMAIL, "info@curlscontemplation.beauty"),
-  /* PRD v2: launch is Tuesday, November 24, 2026. Env override still wins. */
-  releaseDate: envOrDefault(process.env.RELEASE_DATE, "2026-11-24"),
+  /* Launch is Wednesday, December 23, 2026, Pacific midnight. Env override still wins. */
+  releaseDate: envOrDefault(process.env.RELEASE_DATE, "2026-12-23"),
   storageBucket: envOrDefault(process.env.SUPABASE_STORAGE_BUCKET, "curls-deliverables"),
   external: {
     kindle: "#kindle-link-pending",

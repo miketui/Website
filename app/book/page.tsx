@@ -11,7 +11,7 @@ import { book } from "@/content/book";
 /**
  * Must resolve per request. `resolveLaunchOffer()` is time-derived whenever
  * NEXT_PUBLIC_LAUNCH_STATE is unset, so a static prerender freezes the price
- * at BUILD time: a build made before November 24 would keep showing $17.99
+ * at BUILD time: a build made before December 23 would keep showing $17.99
  * after the release instant while /api/checkout charges $19.99 — the exact
  * display-versus-charge mismatch this resolver exists to prevent. Same trap
  * that made /order force-dynamic (see tests/order-launch-transition.test.ts).
@@ -43,5 +43,5 @@ export default function Page() {
     ["Visibility", "Use digital strategy with intention so excellent work can be found and understood."],
     ["Leadership and legacy", "Turn daily standards into influence, community impact, and work that lasts."],
     ["Resilience and inclusion", "Protect well-being, adapt to change, and honor every texture with skill and respect."]
-  ].map(([title, copy]) => <article key={title} className="editorial-panel rounded-3xl p-6"><h2 className="font-display text-2xl text-white">{title}</h2><p className="mt-3 leading-7 text-whitegold/72">{copy}</p></article>)}</div><div className="mt-10"><PricingCard /></div><p className="mt-5 text-sm text-whitegold/70">The direct digital edition launches November 24, 2026. Kindle and paperback availability will be announced when their store listings are confirmed.</p></Section></main>;
+  ].map(([title, copy]) => <article key={title} className="editorial-panel rounded-3xl p-6"><h2 className="font-display text-2xl text-white">{title}</h2><p className="mt-3 leading-7 text-whitegold/72">{copy}</p></article>)}</div><div className="mt-10"><PricingCard /></div><p className="mt-5 text-sm text-whitegold/70">The direct digital edition launches December 23, 2026. Kindle and paperback availability will be announced when their store listings are confirmed.</p></Section></main>;
 }

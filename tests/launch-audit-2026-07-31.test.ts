@@ -22,11 +22,11 @@ const repoFile = (path: string) => readFileSync(resolve(process.cwd(), path), "u
 
 describe("P0.3 — one launch state, price, date, and timezone", () => {
   it("resolves the release instant in America/Los_Angeles, not UTC", () => {
-    // Midnight Pacific on 2026-11-24 is 08:00 UTC (PST, UTC-8). Deriving it as
-    // `${date}T00:00:00Z` flipped every price and CTA at 4:00 p.m. Pacific on
-    // November 23 — buyers would have seen launch pricing a day early.
+    // Midnight Pacific on 2026-12-23 is 08:00 UTC (PST, UTC-8). Deriving it as
+    // `${date}T00:00:00Z` flipped every price and CTA at 4:00 p.m. Pacific the
+    // day before — buyers would have seen launch pricing a day early.
     expect(RELEASE_TIMEZONE).toBe("America/Los_Angeles");
-    expect(releaseInstant().toISOString()).toBe("2026-11-24T08:00:00.000Z");
+    expect(releaseInstant().toISOString()).toBe("2026-12-23T08:00:00.000Z");
   });
 
   it("is still PREORDER at 4:00 p.m. Pacific the day before release", () => {
@@ -34,7 +34,7 @@ describe("P0.3 — one launch state, price, date, and timezone", () => {
     // the value the old UTC-based code used as the release instant. Asserting
     // it is STILL preorder is the regression itself, and deriving it from
     // releaseInstant() would erase what the test is checking.
-    expect(getLaunchState(new Date("2026-11-24T00:00:00Z"))).toBe("PREORDER");
+    expect(getLaunchState(new Date("2026-12-23T00:00:00Z"))).toBe("PREORDER");
     expect(getLaunchState(new Date(releaseInstant().getTime() - 60_000))).toBe("PREORDER");
   });
 
@@ -83,7 +83,7 @@ describe("P0.3 — one launch state, price, date, and timezone", () => {
   });
 
   it("stays at $19.99 through the launch window and into evergreen", () => {
-    for (const iso of ["2026-11-30T00:00:00Z", "2026-12-20T00:00:00Z"]) {
+    for (const iso of ["2026-12-28T00:00:00Z", "2027-01-20T00:00:00Z"]) {
       const offer = resolveLaunchOffer(new Date(iso));
       expect(offer.priceTier).toBe("regular");
       expect(offer.amountDollars).toBe(19.99);
@@ -131,7 +131,7 @@ describe("P0.3 — one launch state, price, date, and timezone", () => {
   it("renders every price-bearing route at request time", () => {
     // resolveLaunchOffer() is time-derived when NEXT_PUBLIC_LAUNCH_STATE is
     // unset, so a static prerender freezes the price at BUILD time: a build cut
-    // before November 24 would keep showing $17.99 after the release instant
+    // before December 23 would keep showing $17.99 after the release instant
     // while /api/checkout charged $19.99. Same trap that /order already guards.
     for (const route of ["app/page.tsx", "app/book/page.tsx", "app/buy/page.tsx", "app/preorder/page.tsx", "app/order/page.tsx"]) {
       expect(repoFile(route), `${route} must not be statically prerendered`).toMatch(
@@ -182,7 +182,7 @@ describe("P0.4 — the gifted workbook can never be charged", () => {
     // "paid post-launch" (AGENTS.md): the launch window keeps preorder pricing
     // while the workbook is already a paid product again. price_tier is
     // therefore NOT a valid proxy for gift eligibility.
-    expect(resolveLaunchOffer(new Date("2026-11-30T00:00:00Z")).workbookIncludedFree).toBe(false);
+    expect(resolveLaunchOffer(new Date("2026-12-28T00:00:00Z")).workbookIncludedFree).toBe(false);
     expect(resolveLaunchOffer(new Date("2027-03-01T00:00:00Z")).workbookIncludedFree).toBe(false);
   });
 
@@ -333,6 +333,6 @@ describe("P0.1 — deployability", () => {
   });
 
   it("keeps the release date on the locked launch day", () => {
-    expect(siteConfig.releaseDate).toBe("2026-11-24");
+    expect(siteConfig.releaseDate).toBe("2026-12-23");
   });
 });

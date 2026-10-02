@@ -38,7 +38,7 @@ describe("book EPUB sign — release-date gate", () => {
   it("reuses releaseInstant (Pacific midnight), not UTC midnight", () => {
     // UTC midnight on RELEASE_DATE is still the evening before in America/Los_Angeles.
     vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-11-24T00:00:00.000Z"));
+    vi.setSystemTime(new Date("2026-12-23T00:00:00.000Z"));
     expect(hasReleaseInstantArrived()).toBe(false);
     vi.setSystemTime(releaseInstant());
     expect(hasReleaseInstantArrived()).toBe(true);

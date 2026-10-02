@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { siteConfig } from "@/content/site";
 
 /**
- * Live countdown to release (2026-11-24, from siteConfig.releaseDate). Renders
+ * Live countdown to release (from siteConfig.releaseDate). Renders
  * four fixed-width unit tiles so the width never changes as digits tick — zero
  * layout shift. The units are information, not decoration, so they update every
  * second in every state; reduced-motion adds nothing to animate here (there are

@@ -105,7 +105,7 @@ export function hasReleaseInstantArrived(now: Date = new Date()): boolean {
   return now.getTime() >= releaseInstant().getTime();
 }
 
-/** "November 24" — single source for human-readable release copy. */
+/** "December 23" — single source for human-readable release copy. */
 export function releaseDateLabel(): string {
   return releaseInstant().toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: RELEASE_TIMEZONE });
 }
