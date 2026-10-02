@@ -123,7 +123,7 @@ These are settled. Flag violations; do not reopen the decision.
 - **Pen name only.** The author is **Michael David** everywhere — content, metadata, commits, and site copy. His legal name must never appear anywhere in this repo.
 - **ACISS palette and the retired-token ban** (see `AGENTS.md`).
 - **The four-funnel architecture** — wire it, do not redesign it.
-- **Launch date: November 24, 2026.** Any reference to July 14, 2026 is stale and wrong.
+- **Launch date: December 23, 2026.** Any reference to November 24, 2026 or July 14, 2026 is stale and wrong.
 - **No TAYLKOMB comb geometry** in any asset — a patent CIP gates that disclosure.
 - **No photorealistic Black faces or hair-as-subject imagery.** Real footage only.
 - **No paid deliverables in `public/`.** Ever.

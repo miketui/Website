@@ -16,7 +16,7 @@ were tracked. Secrets still belong in Vercel, never in Git.
 |---|---|---|
 | `NEXT_PUBLIC_SITE_URL` | `https://curlscontemplation.beauty` | |
 | `NEXT_PUBLIC_LAUNCH_MODE` | `preorder` | One of `preorder` \| `launched` \| `paused` |
-| `RELEASE_DATE` | `2026-11-24` | Code defaults to this if unset or blank — set it explicitly |
+| `RELEASE_DATE` | `2026-12-23` | Code defaults to this if unset or blank — set it explicitly |
 | `SUPPORT_EMAIL` | `info@curlscontemplation.beauty` | |
 
 ## Supabase

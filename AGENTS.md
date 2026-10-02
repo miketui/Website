@@ -14,7 +14,7 @@ The direct-to-consumer commerce site for **Curls & Contemplation: A Stylist’s 
 
 - **Domain:** `curlscontemplation.beauty`
 - **Publisher:** TAYLKOMB LLC
-- **Launch:** **November 24, 2026.** Any reference to July 14, 2026 is stale.
+- **Launch:** **December 23, 2026.** Any reference to November 24, 2026 or July 14, 2026 is stale.
 - **Author name:** the pen name **Michael David**, everywhere and without exception. His legal name must never appear in this repo, its metadata, its commit history, or any public-facing surface.
 - **Page count:** **384**, matching the digital PDF master. Any reference to 467 pages is stale.
 - **Product language:** worksheets, reflections, “a book you do.” Never promise fillable PDF fields, AcroForm, or interactive digital form fields. The subtitle “Interactive Journey” is the title, not a form-fields claim.
@@ -170,7 +170,7 @@ Full list in `.env.example`. The ones that break things when wrong:
 | `CRON_SECRET` | Guards the launch-day and pre-launch cron routes. **Required in production** — those routes return 503 without it, so launch automation silently would not run. Enforced by the production env guard. |
 | `ALLOW_DEMO_SESSION` | Sandbox only. Must never be `1` in production: it accepts unsigned, spoofable session cookies and admin authorization keys on the cookie-supplied email. Ignored when `VERCEL_ENV=production`, and the production guard rejects it. |
 
-Vercel cron: `/api/cron/launch-day` hourly, `/api/cron/pre-launch-check` on November 23.
+Vercel cron: `/api/cron/launch-day` hourly, `/api/cron/pre-launch-check` on December 22.
 
 ---
 
