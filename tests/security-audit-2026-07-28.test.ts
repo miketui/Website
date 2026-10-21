@@ -63,7 +63,7 @@ describe("cron authentication does not fail open", () => {
 describe("production env guard covers the auth-critical variables", () => {
   const base = {
     NEXT_PUBLIC_SITE_URL: "https://curlscontemplation.beauty",
-    RELEASE_DATE: "2026-12-23",
+    RELEASE_DATE: "2027-01-15",
     CRON_SECRET: CRON_SECRET
   };
 
