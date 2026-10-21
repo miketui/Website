@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/pre-launch-check",
-      "schedule": "30 15 22 12 *"
+      "schedule": "30 15 14 1 *"
     }
   ]
 }

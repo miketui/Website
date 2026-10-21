@@ -4,8 +4,8 @@ import { sendTransactionalEmail } from "@/lib/email/resend";
 import { authorizeCronRequest } from "@/lib/cron-auth";
 
 /**
- * Scheduled for December 22 at 07:30 America/Los_Angeles (24h before the
- * December 23 launch window; see vercel.json): runs the
+ * Scheduled for January 14 at 07:30 America/Los_Angeles (24h before the
+ * January 15 launch window; see vercel.json): runs the
  * launch-day dry-run against the internal route and emails the owner a
  * plain-English pass/fail report so launch morning starts with evidence,
  * not hope. Subject gets the [⚠️ ACTION REQUIRED] prefix when anything —
